@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T08:51:08.124Z",
+  "data": {
+    "effectId": "01KPN1C669DR3BC8F4HZ63C3WK",
+    "invocationKey": "portfolio-3d-core:S000003:scaffold",
+    "invocationHash": "3a0de409c0ddc08bf6ffbc599c4f2858ef8d1bf9461761593887b2ec9e52043f",
+    "stepId": "S000003",
+    "taskId": "scaffold",
+    "kind": "agent",
+    "label": "Scaffold Next.js + R3F + GSAP project",
+    "taskDefRef": "tasks/01KPN1C669DR3BC8F4HZ63C3WK/task.json"
+  },
+  "checksum": "3ceeb4687d5fc76a777e977ebd61b3e524d528d97676891344191dbb96e86fb4"
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPN3CTCF9FTF2HC9SK22SWRH",
+  "taskId": "lighthouse",
+  "invocationKey": "portfolio-3d-core:S000009:lighthouse",
+  "stepId": "S000009",
+  "kind": "agent",
+  "title": "Run Lighthouse audit",
+  "io": {
+    "inputJsonPath": "tasks/01KPN3CTCF9FTF2HC9SK22SWRH/input.json",
+    "outputJsonPath": "tasks/01KPN3CTCF9FTF2HC9SK22SWRH/result.json"
+  },
+  "inputs": {
+    "iteration": 1,
+    "projectName": "portfolio"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPMZ0KPG1H9N768EJ7EGWW69",
+  "taskId": "architect-spec",
+  "invocationKey": "portfolio-3d-core:S000001:architect-spec",
+  "stepId": "S000001",
+  "kind": "agent",
+  "title": "Architect portfolio spec",
+  "io": {
+    "inputJsonPath": "tasks/01KPMZ0KPG1H9N768EJ7EGWW69/input.json",
+    "outputJsonPath": "tasks/01KPMZ0KPG1H9N768EJ7EGWW69/result.json"
+  },
+  "inputs": {
+    "projectName": "portfolio"
+  }
+}

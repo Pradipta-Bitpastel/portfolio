@@ -1,0 +1,223 @@
+{
+  "sections": [
+    {
+      "id": "hero",
+      "name": "Hero",
+      "title": "ALEX CHEN — DEVELOPER CONTROL CORE",
+      "eyebrow": "SYS.BOOT // 01",
+      "codename": "Boot",
+      "progressRange": [0.0, 0.16],
+      "sceneState": "Core scales 0.4->1.0 and pulses up to 1.0 with blue emissive; all 5 modules collapsed at origin (activation 0); no links; camera static at [0,0.6,7.5] fov 42 with slight dolly-in."
+    },
+    {
+      "id": "about",
+      "name": "About",
+      "title": "Five years shipping production software.",
+      "eyebrow": "SYS.INIT // 02 — OPERATOR PROFILE",
+      "codename": "Init",
+      "progressRange": [0.16, 0.32],
+      "sceneState": "Core eases to scale 0.9 pulse 0.6, tint shifts toward purple; modules expand from origin onto orbit with activation 0.3; rig rotation ramps 0->0.04 rad/s; camera drifts to [2.6,1.2,5.8] fov 40; links still 0."
+    },
+    {
+      "id": "skills",
+      "name": "Skills",
+      "title": "Five modules. One runtime.",
+      "eyebrow": "SYS.ACTIVATION // 03 — MODULES ONLINE",
+      "codename": "Activation",
+      "progressRange": [0.32, 0.50],
+      "sceneState": "Core state=active, sinusoidal pulse amp 0.8, tint cycles across module colors; modules fire sequentially (FE, BE, DevOps, Cloud, Mobile) activation 0.3->1.0 with CustomBounce overshoot; connection lines draw in one-by-one via uDraw 0->1; camera arcs to [0,2.4,4.4] top-down via MotionPath."
+    },
+    {
+      "id": "projects",
+      "name": "Projects",
+      "title": "Execution log — 5 builds.",
+      "eyebrow": "SYS.EXECUTION // 04",
+      "codename": "Execution",
+      "progressRange": [0.50, 0.68],
+      "sceneState": "Core state=execute, scale pulses 0.9<->1.1 on card snap, chromatic aberration spikes; rig tilt 0.18->0.32; active module for current project at 1.0 others 0.4; only active link 1.0 others 0.3; camera slides to [-3.2,0.4,5.0]."
+    },
+    {
+      "id": "experience",
+      "name": "Experience",
+      "title": "Roles, in order.",
+      "eyebrow": "SYS.TIMELINE // 05",
+      "codename": "Timeline",
+      "progressRange": [0.68, 0.86],
+      "sceneState": "Core state=timeline, scale 1.1->0.75 collapsing, pulse 0.4; rig radius 3.2->4.6, rotation briefly 0.12 rad/s then settles 0.06; all links alpha 0.7; camera pulls back to [0,-0.3,8.2] fov 50 looking up."
+    },
+    {
+      "id": "contact",
+      "name": "Contact",
+      "title": "Ping the core.",
+      "eyebrow": "SYS.SIGNAL // 06 — OUTBOUND",
+      "codename": "Signal",
+      "progressRange": [0.86, 1.0],
+      "sceneState": "Core state=signal, scale 0.75->1.25 expands, pulse 1.0 then CustomWiggle strobe; modules all activation 1.0 and collapse inward (radius 4.6->1.6) on final 0.05; links full 1.0 with wiggle flicker; bloom 0.9->1.6; camera zooms to [0,0,3.2] fov 36."
+    }
+  ],
+  "stack": {
+    "framework": "Next.js 14 (App Router, TypeScript strict)",
+    "3d": "React Three Fiber + drei + @react-three/postprocessing + three.js",
+    "animation": "GSAP 3 (ScrollTrigger, ScrollSmoother, SplitText, DrawSVG, MorphSVG, MotionPath, Flip, Observer, Inertia, ScrambleText, Physics2D, PhysicsProps, CustomEase, CustomBounce, CustomWiggle, GSDevTools, EaselPlugin, PixiPlugin, TextPlugin) — Club plugins guarded with try/catch fallbacks",
+    "styling": "Tailwind CSS + CSS Modules + clsx + tailwind-merge",
+    "smoothscroll": "ScrollSmoother (primary) with Lenis fallback",
+    "fonts": "Geist Sans + JetBrains Mono via next/font",
+    "state": "Zustand store for scene state",
+    "testing": "Playwright E2E + visual snapshots, Lighthouse CI, Vitest unit",
+    "deploy": "Vercel (edge API route, static page, preview per PR)"
+  },
+  "deps": [
+    "next@14.2.15",
+    "react@18.3.1",
+    "react-dom@18.3.1",
+    "three@0.166.1",
+    "@react-three/fiber@8.17.10",
+    "@react-three/drei@9.114.0",
+    "@react-three/postprocessing@2.16.3",
+    "postprocessing@6.35.3",
+    "gsap@3.12.5",
+    "gsap-trial@3.12.5",
+    "lenis@1.1.13",
+    "zustand@4.5.5",
+    "clsx@2.1.1",
+    "tailwind-merge@2.5.2",
+    "maath@0.10.8",
+    "leva@0.9.35"
+  ],
+  "devDeps": [
+    "typescript@5.6.2",
+    "@types/node@20.16.10",
+    "@types/react@18.3.11",
+    "@types/react-dom@18.3.0",
+    "@types/three@0.166.0",
+    "tailwindcss@3.4.13",
+    "postcss@8.4.47",
+    "autoprefixer@10.4.20",
+    "eslint@8.57.1",
+    "eslint-config-next@14.2.15",
+    "prettier@3.3.3",
+    "prettier-plugin-tailwindcss@0.6.8",
+    "vitest@2.1.2",
+    "@vitest/ui@2.1.2",
+    "jsdom@25.0.1",
+    "@testing-library/react@16.0.1",
+    "@playwright/test@1.47.2",
+    "@lhci/cli@0.14.0",
+    "glslify-loader@2.0.0",
+    "raw-loader@4.0.2"
+  ],
+  "scenePaths": [
+    "src/components/three/SceneRoot.tsx",
+    "src/components/three/SceneProvider.tsx",
+    "src/components/three/useSceneState.ts",
+    "src/components/three/Core.tsx",
+    "src/components/three/CoreMaterial.tsx",
+    "src/components/three/Module.tsx",
+    "src/components/three/ModulesRig.tsx",
+    "src/components/three/ConnectionLines.tsx",
+    "src/components/three/Particles.tsx",
+    "src/components/three/Grid.tsx",
+    "src/components/three/PostFX.tsx",
+    "src/components/three/CameraRig.tsx",
+    "src/components/three/SvgCoreFallback.tsx",
+    "src/components/three/shaders/core.vert.glsl",
+    "src/components/three/shaders/core.frag.glsl",
+    "src/components/three/shaders/line.vert.glsl",
+    "src/components/three/shaders/line.frag.glsl"
+  ],
+  "sectionPaths": [
+    "src/components/sections/Hero.tsx",
+    "src/components/sections/About.tsx",
+    "src/components/sections/Skills.tsx",
+    "src/components/sections/Projects.tsx",
+    "src/components/sections/Experience.tsx",
+    "src/components/sections/Contact.tsx"
+  ],
+  "gsapPaths": [
+    "src/gsap/registerPlugins.ts",
+    "src/gsap/customEases.ts",
+    "src/gsap/index.ts",
+    "src/gsap/timelines/hero.ts",
+    "src/gsap/timelines/about.ts",
+    "src/gsap/timelines/skills.ts",
+    "src/gsap/timelines/projects.ts",
+    "src/gsap/timelines/experience.ts",
+    "src/gsap/timelines/contact.ts"
+  ],
+  "palette": {
+    "bg": "#0b0f19",
+    "bgElevated": "#0f1424",
+    "ink": "#e7ecf5",
+    "inkDim": "#9aa4b8",
+    "blue": "#4f9cff",
+    "purple": "#9b5cff",
+    "cyan": "#00d4ff",
+    "orange": "#ff8a3c",
+    "green": "#39ffa5"
+  },
+  "modules": [
+    { "id": "frontend", "label": "Frontend", "color": "#4f9cff", "icon": "</>", "skills": ["React", "Next.js", "R3F", "GSAP", "TypeScript"] },
+    { "id": "backend",  "label": "Backend",  "color": "#9b5cff", "icon": "{}",  "skills": ["Node", "Go", "Postgres", "Redis", "gRPC"] },
+    { "id": "devops",   "label": "DevOps",   "color": "#00d4ff", "icon": "∞",   "skills": ["Docker", "K8s", "Terraform", "GitHub Actions"] },
+    { "id": "cloud",    "label": "Cloud",    "color": "#ff8a3c", "icon": "☁",   "skills": ["AWS", "GCP", "Cloudflare", "Vercel"] },
+    { "id": "mobile",   "label": "Mobile",   "color": "#39ffa5", "icon": "▢",   "skills": ["React Native", "Expo", "Swift UI"] }
+  ],
+  "persona": {
+    "name": "Alex Chen",
+    "role": "Full-Stack Developer",
+    "tagline": "Orchestrating web, mobile and cloud from a single command surface.",
+    "email": "alex@controlcore.dev"
+  },
+  "projects": [
+    { "id": "neurostream-analytics",   "name": "NeuroStream Analytics",  "module": "backend",  "stack": ["Next.js", "Go", "Kafka", "ClickHouse"] },
+    { "id": "edgecast-cdn",            "name": "EdgeCast CDN",           "module": "cloud",    "stack": ["Cloudflare Workers", "Rust", "R2"] },
+    { "id": "pulse-devops",            "name": "Pulse DevOps",           "module": "devops",   "stack": ["Next.js", "Terraform", "GitHub Actions", "Postgres"] },
+    { "id": "aether-design-system",    "name": "Aether Design System",   "module": "frontend", "stack": ["Storybook", "Figma API", "TypeScript", "Tailwind"] },
+    { "id": "orbital-mobile-banking",  "name": "Orbital Mobile Banking", "module": "mobile",   "stack": ["React Native", "Expo", "Node", "Postgres"] }
+  ],
+  "experience": [
+    { "id": "aurora-labs", "role": "Sr. Fullstack Engineer", "company": "Aurora Labs", "period": "2024-present" },
+    { "id": "pulsegrid",   "role": "Fullstack Engineer",     "company": "PulseGrid",   "period": "2022-2024" },
+    { "id": "moonlit",     "role": "Frontend Engineer",      "company": "Moonlit",     "period": "2020-2022" },
+    { "id": "bitforge",    "role": "Software Intern",        "company": "Bitforge",    "period": "2019-2020" }
+  ],
+  "gsapPlugins": {
+    "free": ["ScrollTrigger", "Observer", "Flip", "CustomEase", "TextPlugin", "EaselPlugin", "PixiPlugin", "MotionPathPlugin"],
+    "club": ["ScrollSmoother", "SplitText", "DrawSVGPlugin", "MorphSVGPlugin", "InertiaPlugin", "ScrambleTextPlugin", "Physics2DPlugin", "PhysicsPropsPlugin", "CustomBounce", "CustomWiggle", "GSDevTools"],
+    "registration": "All plugins registered once client-side in src/gsap/registerPlugins.ts, each wrapped in try/catch. Club plugins attempted from 'gsap/*' then 'gsap-trial/*'; failures log a dev warning and the site uses documented fallbacks (Lenis for ScrollSmoother, manual span split for SplitText, strokeDasharray for DrawSVG, opacity crossfade for MorphSVG, TextPlugin for ScrambleText, CustomEase curves for bounce/wiggle)."
+  },
+  "performanceBudget": {
+    "LCP_ms": 3000,
+    "CLS": 0.1,
+    "TBT_ms": 300,
+    "lighthousePerfMobile": 0.75,
+    "lighthousePerfDesktop": 0.90,
+    "initialJSGzipKB": 220
+  },
+  "mobileFallback": {
+    "component": "src/components/three/SvgCoreFallback.tsx",
+    "triggers": ["no WebGL", "viewport width < 768px", "hardwareConcurrency < 4", "prefers-reduced-motion: reduce"],
+    "behavior": "R3F Canvas replaced by static SVG core+5 orbit nodes animated via CSS keyframes; pinned sections revert to normal flow via ScrollTrigger.matchMedia; postprocessing disabled; GSAP durations scaled to ~0 under reduced-motion."
+  },
+  "testScenarios": [
+    "hero headline visible and contains ALEX CHEN",
+    "hero terminal lines finish typing within 2s",
+    "about stats counters reach final values after 16vh scroll",
+    "skills 5 ModuleBadge elements activate in sequence (frontend, backend, devops, cloud, mobile)",
+    "skills all 5 badges active at section end",
+    "projects horizontal pin scroll cycles data-project-active through all 5 projects",
+    "projects clicking a card opens detail panel",
+    "experience 4 timeline nodes present and DrawSVG path stroke-dashoffset reaches 0",
+    "experience years 2019-2024 visible",
+    "contact form submission shows 'signal received'",
+    "contact MagneticButton transforms on mousemove",
+    "scroll-journey: data-section-active transitions hero->about->skills->projects->experience->contact with no console errors",
+    "a11y: axe-core reports zero critical violations and tab order is complete",
+    "reduced-motion: Canvas replaced by SvgCoreFallback and content remains readable",
+    "lighthouse mobile: LCP<3000, CLS<0.1, TBT<300, perf>=0.75",
+    "visual snapshots match baseline at 0/50/100% per section on desktop and mobile"
+  ],
+  "artifacts": {
+    "spec": "/Users/pradiptajana/Portfolio/artifacts/spec.md"
+  }
+}

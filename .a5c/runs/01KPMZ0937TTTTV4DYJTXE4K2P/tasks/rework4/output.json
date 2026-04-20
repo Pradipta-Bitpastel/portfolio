@@ -1,0 +1,20 @@
+{
+  "contentInsideFrame": true,
+  "hudLabelsRelocated": true,
+  "sectionHudVerticalRail": true,
+  "sectionFrameComponentIntroduced": true,
+  "laptopBigger": true,
+  "cursorTrackedLight": true,
+  "clickCodeCycle": true,
+  "hoverEmissiveBoost": true,
+  "dragRotate": false,
+  "glyphsCursorReactive": true,
+  "typecheckOk": true,
+  "buildOk": true,
+  "visualAssessment": "iter7 hero screenshot confirms the fix: the 1px HUD frame border is clearly visible with corner brackets on all four corners; DEV.OS v14.2.0, UPTIME, LAT/LON, and SID labels all sit INSIDE the border (inset:32px) with visible padding to the edge; scrolling content (giant amber '01', 'SYSTEM // BOOT' headline, boot-log panel, SCROLL indicator) lives strictly INSIDE the frame with ~32px breathing room between content and labels. SectionHUD has been relocated from the top-left (where it collided with DEV.OS v14.2.0) to a vertical rail on the left middle edge at left:32px with [ 01 / 06 ], SYS.BOOT, a vertical progress bar, and 6 section dots — it no longer fights the top HUD. The 3D laptop is substantially larger in the hero (scale 1.0 → 1.55) and now visually dominates the right half of the viewport with screen code, keyboard, glyphs (</>, [], {}, λ) floating around it. The cyan cursor-tracked light and glyph cursor-parallax are wired through a shared useCursor hook that disables itself under prefers-reduced-motion.",
+  "warnings": [
+    "Drag-to-rotate was intentionally skipped per spec (nice-to-have; would fight the SceneDock master timeline and require tricky gsapControlled gating).",
+    "R3F pointer events are now sourced from document.documentElement via Canvas eventSource so the DevStation screen click-to-cycle and hover-emissive-boost fire even though the Canvas wrapper remains pointer-events-none. This required NO DOM layout changes in sections — CTAs and links keep winning the hit-test via z-index stacking.",
+    "Screenshot capture is a static frame; the click-cycle (tsx → py → shell) and hover boost only manifest under real user interaction and are not visible in the iter7 PNGs."
+  ]
+}

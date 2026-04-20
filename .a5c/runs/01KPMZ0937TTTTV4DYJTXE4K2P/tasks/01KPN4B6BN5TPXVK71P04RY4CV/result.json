@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KPN4B6BN5TPXVK71P04RY4CV",
+  "taskId": "build-gate",
+  "invocationKey": "portfolio-3d-core:S000014:build-gate",
+  "status": "ok",
+  "result": {
+    "buildOk": true,
+    "errors": [],
+    "routes": {
+      "/": {
+        "firstLoadJS": "322 kB",
+        "size": "190 kB"
+      }
+    },
+    "success": true,
+    "typecheckOk": true
+  },
+  "startedAt": "2026-04-20T09:43:23.384Z",
+  "finishedAt": "2026-04-20T09:43:23.384Z",
+  "value": {
+    "buildOk": true,
+    "errors": [],
+    "routes": {
+      "/": {
+        "firstLoadJS": "322 kB",
+        "size": "190 kB"
+      }
+    },
+    "success": true,
+    "typecheckOk": true
+  }
+}

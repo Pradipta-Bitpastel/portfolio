@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "typecheckOk": true,
+  "buildOk": true,
+  "errors": [],
+  "routes": { "/": { "size": "190 kB", "firstLoadJS": "322 kB" } }
+}

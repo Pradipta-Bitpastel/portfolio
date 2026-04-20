@@ -1,0 +1,52 @@
+{
+  "overallScore": 82,
+  "breakdown": {
+    "perf": 96,
+    "a11y": 100,
+    "e2e": 100,
+    "visual": 71,
+    "spec": 78
+  },
+  "weightedContributions": {
+    "perf_30": 28.8,
+    "a11y_10": 10.0,
+    "e2e_25": 25.0,
+    "visual_25": 17.75,
+    "spec_10": 7.8
+  },
+  "blockedBy": null,
+  "converged": false,
+  "rationale": "Build + perf + e2e are excellent (Lighthouse 96/100/100/100, 20/20 E2E pass). Visual review at 71 flags real fixable spec gaps: connection lines nearly invisible; hero overlay low-contrast over core; skills section lacks ModuleBadge/SkillBar overlays; projects section too visually similar to skills (no execution-layer distinct state); contact section missing the ping form and proper heading. One polish iteration should lift visual to ~82-85 and push overall above target.",
+  "recommendations": [
+    {
+      "priority": 1,
+      "area": "ConnectionLines visibility",
+      "issue": "Lines core→modules not readable in Projects screenshot despite opacity tween.",
+      "patch": "In components/three/ConnectionLines.tsx: bump default LineMaterial linewidth to 2.5, add transparent glow via additive blending + a thicker soft copy with 0.4 opacity; in ProjectsSection tween connections target to 1.0 (was 0.8); bump Bloom intensity or threshold to catch thin lines."
+    },
+    {
+      "priority": 2,
+      "area": "Hero contrast",
+      "issue": "'SYSTEM // BOOT' headline overlapping glowing core at low contrast.",
+      "patch": "Move hero headline off-center (grid-cols-2 layout on desktop) and raise to z-10 with solid dark gradient scrim (bg-gradient-to-r from-bg via-bg/80 to-transparent) behind text. Also boost tracking on display headline (tracking-tighter → tracking-normal+) and add text-shadow on hover."
+    },
+    {
+      "priority": 3,
+      "area": "Skills section overlays",
+      "issue": "Sub-panel skill lists are thin DOM; spec calls for ModuleBadge + SkillBar components showing per-module proficiency.",
+      "patch": "Create components/ui/SkillBar.tsx (animated GSAP-scrubbed width bar with glow) and ModuleBadge.tsx (icon+label chip). In SkillsSection render 8-10 SkillBars per active module, each tweening width 0% → skill.level% with stagger on sub-step activation. Flip between sets between sub-steps."
+    },
+    {
+      "priority": 4,
+      "area": "Projects distinct state + card layout",
+      "issue": "Projects scene state too similar to Skills; spec calls for an 'Execution Layer' feel with connection network activated and a horizontal pinned carousel of ProjectCard floats.",
+      "patch": "In ProjectsSection, in addition to opening connection lines, tween core to position [0, 0.6, 0] (slight lift) and scale 1.4 with slower rotation; change card layout from vertical grid to horizontal-scroll pinned row (ScrollTrigger horizontal pin tween x translate) — each card with rotate-y parallax; increase card z-depth with CSS perspective-1600 transform-style-preserve-3d."
+    },
+    {
+      "priority": 5,
+      "area": "Contact section completeness",
+      "issue": "Missing 'Ping the core.' heading, contact form / magnetic-button CTA, and proper '// 06' section eyebrow.",
+      "patch": "In ContactSection: add eyebrow '// 06 SIGNAL TRANSMISSION', headline 'Ping the core.', and a 3-field GlassPanel form (name, email, message) with MagneticButton (mouse-attract via GSAP quickTo). Keep existing CTA links below the form. Also strengthen the pulsing-orb effect with a clearer outward-ring keyframe (expanding torus or drei <Trail>)."
+    }
+  ]
+}

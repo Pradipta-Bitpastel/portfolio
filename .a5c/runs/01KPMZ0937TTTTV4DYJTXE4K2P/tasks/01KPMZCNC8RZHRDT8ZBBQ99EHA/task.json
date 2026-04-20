@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPMZCNC8RZHRDT8ZBBQ99EHA",
+  "taskId": "__sdk.breakpoint",
+  "invocationKey": "portfolio-3d-core:S000002:__sdk.breakpoint",
+  "stepId": "S000002",
+  "kind": "breakpoint",
+  "title": "breakpoint",
+  "metadata": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "files": [
+          {
+            "format": "markdown",
+            "label": "Architecture Spec",
+            "path": "artifacts/spec.md"
+          }
+        ]
+      },
+      "question": "Review the architecture spec. Approve to start scaffolding?",
+      "tag": "spec-approval",
+      "title": "Architecture Spec Review"
+    },
+    "requestedAt": "2026-04-20T08:16:26.504Z"
+  },
+  "inputs": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "files": [
+          {
+            "format": "markdown",
+            "label": "Architecture Spec",
+            "path": "artifacts/spec.md"
+          }
+        ]
+      },
+      "question": "Review the architecture spec. Approve to start scaffolding?",
+      "tag": "spec-approval",
+      "title": "Architecture Spec Review"
+    },
+    "requestedAt": "2026-04-20T08:16:26.504Z"
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPN206WZ5FM4WHBC3XE0KM4G",
+  "taskId": "scene3d",
+  "invocationKey": "portfolio-3d-core:S000005:scene3d",
+  "stepId": "S000005",
+  "kind": "agent",
+  "title": "Build the Developer Core 3D scene",
+  "io": {
+    "inputJsonPath": "tasks/01KPN206WZ5FM4WHBC3XE0KM4G/input.json",
+    "outputJsonPath": "tasks/01KPN206WZ5FM4WHBC3XE0KM4G/result.json"
+  },
+  "inputs": {
+    "projectName": "portfolio",
+    "spec": {
+      "artifacts": {
+        "spec": "/Users/pradiptajana/Portfolio/artifacts/spec.md"
+      },
+      "deps": [
+        "next@14.2.15",
+        "react@18.3.1",
+        "react-dom@18.3.1",
+        "three@0.166.1",
+        "@react-three/fiber@8.17.10",
+        "@react-three/drei@9.114.0",
+        "@react-three/postprocessing@2.16.3",
+        "postprocessing@6.35.3",
+        "gsap@3.12.5",
+        "gsap-trial@3.12.5",
+        "lenis@1.1.13",
+        "zustand@4.5.5",
+        "clsx@2.1.1",
+        "tailwind-merge@2.5.2",
+        "maath@0.10.8",
+        "leva@0.9.35"
+      ],
+      "devDeps": [
+        "typescript@5.6.2",
+        "@types/node@20.16.10",
+        "@types/react@18.3.11",
+        "@types/react-dom@18.3.0",
+        "@types/three@0.166.0",
+        "tailwindcss@3.4.13",
+        "postcss@8.4.47",
+        "autoprefixer@10.4.20",
+        "eslint@8.57.1",
+        "eslint-config-next@14.2.15",
+        "prettier@3.3.3",
+        "prettier-plugin-tailwindcss@0.6.8",
+        "vitest@2.1.2",
+        "@vitest/ui@2.1.2",
+        "jsdom@25.0.1",
+        "@testing-library/react@16.0.1",
+        "@playwright/test@1.47.2",
+        "@lhci/cli@0.14.0",
+        "glslify-loader@2.0.0",
+        "raw-loader@4.0.2"
+      ],
+      "experience": [
+        {
+          "company": "Aurora Labs",
+          "id": "aurora-labs",
+          "period": "2024-present",
+          "role": "Sr. Fullstack Engineer"
+        },
+        {
+          "company": "PulseGrid",
+          "id": "pulsegrid",
+          "period": "2022-2024",
+          "role": "Fullstack Engineer"
+        },
+        {
+          "company": "Moonlit",
+          "id": "moonlit",
+          "period": "2020-2022",
+          "role": "Frontend Engineer"
+        },
+        {
+          "company": "Bitforge",
+          "id": "bitforge",
+          "period": "2019-2020",
+          "role": "Software Intern"
+        }
+      ],
+      "gsapPaths": [
+        "src/gsap/registerPlugins.ts",
+        "src/gsap/customEases.ts",
+        "src/gsap/index.ts",
+        "src/gsap/timelines/hero.ts",
+        "src/gsap/timelines/about.ts",
+        "src/gsap/timelines/skills.ts",
+        "src/gsap/timelines/projects.ts",
+        "src/gsap/timelines/experience.ts",
+        "src/gsap/timelines/contact.ts"
+      ],
+      "gsapPlugins": {
+        "club": [
+          "ScrollSmoother",
+          "SplitText",
+          "DrawSVGPlugin",
+          "MorphSVGPlugin",
+          "InertiaPlugin",
+          "ScrambleTextPlugin",
+          "Physics2DPlugin",
+          "PhysicsPropsPlugin",
+          "CustomBounce",
+          "CustomWiggle",
+          "GSDevTools"
+        ],
+        "free": [
+          "ScrollTrigger",
+          "Observer",
+          "Flip",
+          "CustomEase",
+          "TextPlugin",
+          "EaselPlugin",
+          "PixiPlugin",
+          "MotionPathPlugin"
+        ],
+        "registration": "All plugins registered once client-side in src/gsap/registerPlugins.ts, each wrapped in try/catch. Club plugins attempted from 'gsap/*' then 'gsap-trial/*'; failures log a dev warning and the site uses documented fallbacks (Lenis for ScrollSmoother, manual span split for SplitText, strokeDasharray for DrawSVG, opacity crossfade for MorphSVG, TextPlugin for ScrambleText, CustomEase curves for bounce/wiggle)."
+      },
+      "mobileFallback": {
+        "behavior": "R3F Canvas replaced by static SVG core+5 orbit nodes animated via CSS keyframes; pinned sections revert to normal flow via ScrollTrigger.matchMedia; postprocessing disabled; GSAP durations scaled to ~0 under reduced-motion.",
+        "component": "src/components/three/SvgCoreFallback.tsx",
+        "triggers": [
+          "no WebGL",
+          "viewport width < 768px",
+          "hardwareConcurrency < 4",
+          "prefers-reduced-motion: reduce"
+        ]
+      },
+      "modules": [
+        {
+          "color": "#4f9cff",
+          "icon": "</>",
+          "id": "frontend",
+          "label": "Frontend",
+          "skills": [
+            "React",
+            "Next.js",
+            "R3F",
+            "GSAP",
+            "TypeScript"
+          ]
+        },
+        {
+          "color": "#9b5cff",
+          "icon": "{}",
+          "id": "backend",
+          "label": "Backend",
+          "skills": [
+            "Node",
+            "Go",
+            "Postgres",
+            "Redis",
+            "gRPC"
+          ]
+        },
+        {
+          "color": "#00d4ff",
+          "icon": "∞",
+          "id": "devops",
+          "label": "DevOps",
+          "skills": [
+            "Docker",
+            "K8s",
+            "Terraform",
+            "GitHub Actions"
+          ]
+        },
+        {
+          "color": "#ff8a3c",
+          "icon": "☁",
+          "id": "cloud",
+          "label": "Cloud",
+          "skills": [
+            "AWS",
+            "GCP",
+            "Cloudflare",
+            "Vercel"
+          ]
+        },
+        {
+          "color": "#39ffa5",
+          "icon": "▢",
+          "id": "mobile",
+          "label": "Mobile",
+          "skills": [
+            "React Native",
+            "Expo",
+            "Swift UI"
+          ]
+        }
+      ],
+      "palette": {
+        "bg": "#0b0f19",
+        "bgElevated": "#0f1424",
+        "blue": "#4f9cff",
+        "cyan": "#00d4ff",
+        "green": "#39ffa5",
+        "ink": "#e7ecf5",
+        "inkDim": "#9aa4b8",
+        "orange": "#ff8a3c",
+        "purple": "#9b5cff"
+      },
+      "performanceBudget": {
+        "CLS": 0.1,
+        "initialJSGzipKB": 220,
+        "LCP_ms": 3000,
+        "lighthousePerfDesktop": 0.9,
+        "lighthousePerfMobile": 0.75,
+        "TBT_ms": 300
+      },
+      "persona": {
+        "email": "alex@controlcore.dev",
+        "name": "Alex Chen",
+        "role": "Full-Stack Developer",
+        "tagline": "Orchestrating web, mobile and cloud from a single command surface."
+      },
+      "projects": [
+        {
+          "id": "neurostream-analytics",
+          "module": "backend",
+          "name": "NeuroStream Analytics",
+          "stack": [
+            "Next.js",
+            "Go",
+            "Kafka",
+            "ClickHouse"
+          ]
+        },
+        {
+          "id": "edgecast-cdn",
+          "module": "cloud",
+          "name": "EdgeCast CDN",
+          "stack": [
+            "Cloudflare Workers",
+            "Rust",
+            "R2"
+          ]
+        },
+        {
+          "id": "pulse-devops",
+          "module": "devops",
+          "name": "Pulse DevOps",
+          "stack": [
+            "Next.js",
+            "Terraform",
+            "GitHub Actions",
+            "Postgres"
+          ]
+        },
+        {
+          "id": "aether-design-system",
+          "module": "frontend",
+          "name": "Aether Design System",
+          "stack": [
+            "Storybook",
+            "Figma API",
+            "TypeScript",
+            "Tailwind"
+          ]
+        },
+        {
+          "id": "orbital-mobile-banking",
+          "module": "mobile",
+          "name": "Orbital Mobile Banking",
+          "stack": [
+            "React Native",
+            "Expo",
+            "Node",
+            "Postgres"
+          ]
+        }
+      ],
+      "scenePaths": [
+        "src/components/three/SceneRoot.tsx",
+        "src/components/three/SceneProvider.tsx",
+        "src/components/three/useSceneState.ts",
+        "src/components/three/Core.tsx",
+        "src/components/three/CoreMaterial.tsx",
+        "src/components/three/Module.tsx",
+        "src/components/three/ModulesRig.tsx",
+        "src/components/three/ConnectionLines.tsx",
+        "src/components/three/Particles.tsx",
+        "src/components/three/Grid.tsx",
+        "src/components/three/PostFX.tsx",
+        "src/components/three/CameraRig.tsx",
+        "src/components/three/SvgCoreFallback.tsx",
+        "src/components/three/shaders/core.vert.glsl",
+        "src/components/three/shaders/core.frag.glsl",
+        "src/components/three/shaders/line.vert.glsl",
+        "src/components/three/shaders/line.frag.glsl"
+      ],
+      "sectionPaths": [
+        "src/components/sections/Hero.tsx",
+        "src/components/sections/About.tsx",
+        "src/components/sections/Skills.tsx",
+        "src/components/sections/Projects.tsx",
+        "src/components/sections/Experience.tsx",
+        "src/components/sections/Contact.tsx"
+      ],
+      "sections": [
+        {
+          "codename": "Boot",
+          "eyebrow": "SYS.BOOT // 01",
+          "id": "hero",
+          "name": "Hero",
+          "progressRange": [
+            0,
+            0.16
+          ],
+          "sceneState": "Core scales 0.4->1.0 and pulses up to 1.0 with blue emissive; all 5 modules collapsed at origin (activation 0); no links; camera static at [0,0.6,7.5] fov 42 with slight dolly-in.",
+          "title": "ALEX CHEN — DEVELOPER CONTROL CORE"
+        },
+        {
+          "codename": "Init",
+          "eyebrow": "SYS.INIT // 02 — OPERATOR PROFILE",
+          "id": "about",
+          "name": "About",
+          "progressRange": [
+            0.16,
+            0.32
+          ],
+          "sceneState": "Core eases to scale 0.9 pulse 0.6, tint shifts toward purple; modules expand from origin onto orbit with activation 0.3; rig rotation ramps 0->0.04 rad/s; camera drifts to [2.6,1.2,5.8] fov 40; links still 0.",
+          "title": "Five years shipping production software."
+        },
+        {
+          "codename": "Activation",
+          "eyebrow": "SYS.ACTIVATION // 03 — MODULES ONLINE",
+          "id": "skills",
+          "name": "Skills",
+          "progressRange": [
+            0.32,
+            0.5
+          ],
+          "sceneState": "Core state=active, sinusoidal pulse amp 0.8, tint cycles across module colors; modules fire sequentially (FE, BE, DevOps, Cloud, Mobile) activation 0.3->1.0 with CustomBounce overshoot; connection lines draw in one-by-one via uDraw 0->1; camera arcs to [0,2.4,4.4] top-down via MotionPath.",
+          "title": "Five modules. One runtime."
+        },
+        {
+          "codename": "Execution",
+          "eyebrow": "SYS.EXECUTION // 04",
+          "id": "projects",
+          "name": "Projects",
+          "progressRange": [
+            0.5,
+            0.68
+          ],
+          "sceneState": "Core state=execute, scale pulses 0.9<->1.1 on card snap, chromatic aberration spikes; rig tilt 0.18->0.32; active module for current project at 1.0 others 0.4; only active link 1.0 others 0.3; camera slides to [-3.2,0.4,5.0].",
+          "title": "Execution log — 5 builds."
+        },
+        {
+          "codename": "Timeline",
+          "eyebrow": "SYS.TIMELINE // 05",
+          "id": "experience",
+          "name": "Experience",
+          "progressRange": [
+            0.68,
+            0.86
+          ],
+          "sceneState": "Core state=timeline, scale 1.1->0.75 collapsing, pulse 0.4; rig radius 3.2->4.6, rotation briefly 0.12 rad/s then settles 0.06; all links alpha 0.7; camera pulls back to [0,-0.3,8.2] fov 50 looking up.",
+          "title": "Roles, in order."
+        },
+        {
+          "codename": "Signal",
+          "eyebrow": "SYS.SIGNAL // 06 — OUTBOUND",
+          "id": "contact",
+          "name": "Contact",
+          "progressRange": [
+            0.86,
+            1
+          ],
+          "sceneState": "Core state=signal, scale 0.75->1.25 expands, pulse 1.0 then CustomWiggle strobe; modules all activation 1.0 and collapse inward (radius 4.6->1.6) on final 0.05; links full 1.0 with wiggle flicker; bloom 0.9->1.6; camera zooms to [0,0,3.2] fov 36.",
+          "title": "Ping the core."
+        }
+      ],
+      "stack": {
+        "3d": "React Three Fiber + drei + @react-three/postprocessing + three.js",
+        "animation": "GSAP 3 (ScrollTrigger, ScrollSmoother, SplitText, DrawSVG, MorphSVG, MotionPath, Flip, Observer, Inertia, ScrambleText, Physics2D, PhysicsProps, CustomEase, CustomBounce, CustomWiggle, GSDevTools, EaselPlugin, PixiPlugin, TextPlugin) — Club plugins guarded with try/catch fallbacks",
+        "deploy": "Vercel (edge API route, static page, preview per PR)",
+        "fonts": "Geist Sans + JetBrains Mono via next/font",
+        "framework": "Next.js 14 (App Router, TypeScript strict)",
+        "smoothscroll": "ScrollSmoother (primary) with Lenis fallback",
+        "state": "Zustand store for scene state",
+        "styling": "Tailwind CSS + CSS Modules + clsx + tailwind-merge",
+        "testing": "Playwright E2E + visual snapshots, Lighthouse CI, Vitest unit"
+      },
+      "testScenarios": [
+        "hero headline visible and contains ALEX CHEN",
+        "hero terminal lines finish typing within 2s",
+        "about stats counters reach final values after 16vh scroll",
+        "skills 5 ModuleBadge elements activate in sequence (frontend, backend, devops, cloud, mobile)",
+        "skills all 5 badges active at section end",
+        "projects horizontal pin scroll cycles data-project-active through all 5 projects",
+        "projects clicking a card opens detail panel",
+        "experience 4 timeline nodes present and DrawSVG path stroke-dashoffset reaches 0",
+        "experience years 2019-2024 visible",
+        "contact form submission shows 'signal received'",
+        "contact MagneticButton transforms on mousemove",
+        "scroll-journey: data-section-active transitions hero->about->skills->projects->experience->contact with no console errors",
+        "a11y: axe-core reports zero critical violations and tab order is complete",
+        "reduced-motion: Canvas replaced by SvgCoreFallback and content remains readable",
+        "lighthouse mobile: LCP<3000, CLS<0.1, TBT<300, perf>=0.75",
+        "visual snapshots match baseline at 0/50/100% per section on desktop and mobile"
+      ]
+    }
+  }
+}

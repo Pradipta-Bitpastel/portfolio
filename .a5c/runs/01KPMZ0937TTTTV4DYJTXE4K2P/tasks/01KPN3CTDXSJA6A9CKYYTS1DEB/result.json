@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KPN3CTDXSJA6A9CKYYTS1DEB",
+  "taskId": "visual-review",
+  "invocationKey": "portfolio-3d-core:S000011:visual-review",
+  "status": "ok",
+  "result": {
+    "issues": [
+      "Hero headline 'SYSTEM // BOOT' overlaps the 3D core with insufficient contrast; no 'ALEX CHEN — DEVELOPER CONTROL CORE' primary headline or terminal Scramble lines visible per spec §9.1",
+      "ConnectionLines between core and modules are not visible on any section — either uDraw is staying at 0 or bloom/line-shader is not rendering the glowing lines (spec §6 + §7.3/§7.6)",
+      "Skills section missing <ModuleBadge> DOM cards and <SkillBar>s at section top; only 3D is present so skill labels (React, Node, Docker, AWS, React Native) are not communicated",
+      "Projects camera/3D state is nearly identical to skills — lacks distinct 'execution' treatment (spec §7.4: camera left to [-3.2,0.4,5.0], active module brighter, others dimmed). Horizontal ProjectCard carousel not anchored at section top",
+      "Contact section eyebrow reads 'SYS.SIGNAL // 04' but spec §9.6 mandates '// 06'; primary 'Ping the core.' heading and the contact form (Name/Email/Message + MagneticButton) are not visible in the 1440x900 top-of-section frame",
+      "Ground Grid plane (spec §6) not visible in any section — may be disabled or gridOpacity stuck at 0",
+      "PostFX bloom feels subtle — neon glow halos around modules are faint; would lift glass panels and line visibility if intensity ~0.9 per spec is actually reaching the render",
+      "On several sections (projects/experience/contact) overlay copy collides with 3D geometry reducing legibility; a right-side or bottom glass panel layout would keep text over solid glass"
+    ],
+    "perSection": {
+      "about": {
+        "notes": "Glass panel on left reads well: backdrop-blur + subtle border visible, eyebrow 'SYS.INIT // 02 — OPERATOR PROFILE' rendered in mono eyebrow, gradient heading 'Five years shipping production software.' Stats row (120+, 99.98%, 5) present inside panel. Camera offset right creates a distinct 'state' from hero. Core + ghosted modules linger behind — nice continuity. Minor: the right-side glass panel (if intended) looks like a dim empty rectangle overlay. Headline gradient stops slightly washed.",
+        "score": 74
+      },
+      "contact": {
+        "notes": "Dark bg + core pulsing with brighter cyan/blue emissive (core scale looks expanded 1.25 per §7.6 — good). Eyebrow shows 'SYS.SIGNAL // 04 - OUTBOUND' but spec §9.6 calls for '// 06' — numbering bug. 'Ping the core.' heading NOT visible — subtitle text 'Open to full-stack and 3D-web roles...' overlaps the purple module, hurting readability. No contact form fields (Name/Email/Message) or 'Send signal ↗' MagneticButton in frame. Footer text '© 2026 ALEX CHEN — DESIGNED & CODED IN NEXT.JS 14 + R3F + GSAP' anchors bottom. Palette and core state are on brand; DOM content is the weakness.",
+        "score": 68
+      },
+      "experience": {
+        "notes": "Eyebrow 'SYS.TIMELINE // 05 - HISTORY' and gradient headline 'A short history of shipping.' readable and distinct. A thin curved orbital/timeline arc path is visible behind modules (first hint of SVG draw/connection on any section). Core is slightly smaller (matches scale 1.1→0.75 per §7.5), rig tilt appears increased. TimelineNode list not visible in this top-of-section frame; DrawSVG path stroke animation not in-progress statically. Camera pulled back feel is consistent with spec.",
+        "score": 73
+      },
+      "hero": {
+        "notes": "Dark bg #0b0f19 is present. Cyan/blue core + 5 neon orbiting modules (green torus-knot, purple sphere, orange cube, blue shape, cyan bar) clearly visible — strong 3D presence. Gradient headline 'SYSTEM // BOOT' is readable but overlaps the central core, hurting legibility; needs a vignette/backdrop or offset layout. No visible 'ALEX CHEN' primary headline per spec §9.1. No terminal/Scramble lines visible in frame. Scroll hint tiny text near bottom. Grid ground plane not visible. Bloom/postFX appears mild.",
+        "score": 72
+      },
+      "projects": {
+        "notes": "Section eyebrow 'SYS.EXECUTION // 04 - SELECTED WORK', gradient headline 'Execution.' and sub 'Five production systems...' visible. 3D scene is essentially identical to skills camera — not distinctly 'execution' state. No ProjectCard horizontal carousel visible in frame, no active module highlight, no dimming of inactive modules per spec §9.4. Connection lines not visible (no bloom to reveal). ChromaticAberration spikes not evident. Overall this section on the static shot reads more like a reprise of skills; the horizontal pinned scroll content isn't showing at section-top anchor.",
+        "score": 66
+      },
+      "skills": {
+        "notes": "Clearest 3D frame: core icosahedron + 5 modules spread wide, neon palette holds (blue, cyan, green, orange, purple). Gradient headline 'Five modules. One runtime.' readable, eyebrow 'SYS.ACTIVATION // 03 - MODULES ONLINE' present. Missing per spec §9.3: <ModuleBadge> cards (should show 5 badges with skill labels) and <SkillBar>s — no DOM overlay of skills visible at this scroll position. Connection lines between core and modules not discernible. Distinct camera vs hero (modules spread wider, core slightly lower), state feels 'active'.",
+        "score": 70
+      }
+    },
+    "screenshots": [
+      "artifacts/screenshots/section-hero-iter1.png",
+      "artifacts/screenshots/section-about-iter1.png",
+      "artifacts/screenshots/section-skills-iter1.png",
+      "artifacts/screenshots/section-projects-iter1.png",
+      "artifacts/screenshots/section-experience-iter1.png",
+      "artifacts/screenshots/section-contact-iter1.png"
+    ],
+    "visualScore": 71
+  },
+  "startedAt": "2026-04-20T09:33:29.675Z",
+  "finishedAt": "2026-04-20T09:33:29.675Z",
+  "value": {
+    "issues": [
+      "Hero headline 'SYSTEM // BOOT' overlaps the 3D core with insufficient contrast; no 'ALEX CHEN — DEVELOPER CONTROL CORE' primary headline or terminal Scramble lines visible per spec §9.1",
+      "ConnectionLines between core and modules are not visible on any section — either uDraw is staying at 0 or bloom/line-shader is not rendering the glowing lines (spec §6 + §7.3/§7.6)",
+      "Skills section missing <ModuleBadge> DOM cards and <SkillBar>s at section top; only 3D is present so skill labels (React, Node, Docker, AWS, React Native) are not communicated",
+      "Projects camera/3D state is nearly identical to skills — lacks distinct 'execution' treatment (spec §7.4: camera left to [-3.2,0.4,5.0], active module brighter, others dimmed). Horizontal ProjectCard carousel not anchored at section top",
+      "Contact section eyebrow reads 'SYS.SIGNAL // 04' but spec §9.6 mandates '// 06'; primary 'Ping the core.' heading and the contact form (Name/Email/Message + MagneticButton) are not visible in the 1440x900 top-of-section frame",
+      "Ground Grid plane (spec §6) not visible in any section — may be disabled or gridOpacity stuck at 0",
+      "PostFX bloom feels subtle — neon glow halos around modules are faint; would lift glass panels and line visibility if intensity ~0.9 per spec is actually reaching the render",
+      "On several sections (projects/experience/contact) overlay copy collides with 3D geometry reducing legibility; a right-side or bottom glass panel layout would keep text over solid glass"
+    ],
+    "perSection": {
+      "about": {
+        "notes": "Glass panel on left reads well: backdrop-blur + subtle border visible, eyebrow 'SYS.INIT // 02 — OPERATOR PROFILE' rendered in mono eyebrow, gradient heading 'Five years shipping production software.' Stats row (120+, 99.98%, 5) present inside panel. Camera offset right creates a distinct 'state' from hero. Core + ghosted modules linger behind — nice continuity. Minor: the right-side glass panel (if intended) looks like a dim empty rectangle overlay. Headline gradient stops slightly washed.",
+        "score": 74
+      },
+      "contact": {
+        "notes": "Dark bg + core pulsing with brighter cyan/blue emissive (core scale looks expanded 1.25 per §7.6 — good). Eyebrow shows 'SYS.SIGNAL // 04 - OUTBOUND' but spec §9.6 calls for '// 06' — numbering bug. 'Ping the core.' heading NOT visible — subtitle text 'Open to full-stack and 3D-web roles...' overlaps the purple module, hurting readability. No contact form fields (Name/Email/Message) or 'Send signal ↗' MagneticButton in frame. Footer text '© 2026 ALEX CHEN — DESIGNED & CODED IN NEXT.JS 14 + R3F + GSAP' anchors bottom. Palette and core state are on brand; DOM content is the weakness.",
+        "score": 68
+      },
+      "experience": {
+        "notes": "Eyebrow 'SYS.TIMELINE // 05 - HISTORY' and gradient headline 'A short history of shipping.' readable and distinct. A thin curved orbital/timeline arc path is visible behind modules (first hint of SVG draw/connection on any section). Core is slightly smaller (matches scale 1.1→0.75 per §7.5), rig tilt appears increased. TimelineNode list not visible in this top-of-section frame; DrawSVG path stroke animation not in-progress statically. Camera pulled back feel is consistent with spec.",
+        "score": 73
+      },
+      "hero": {
+        "notes": "Dark bg #0b0f19 is present. Cyan/blue core + 5 neon orbiting modules (green torus-knot, purple sphere, orange cube, blue shape, cyan bar) clearly visible — strong 3D presence. Gradient headline 'SYSTEM // BOOT' is readable but overlaps the central core, hurting legibility; needs a vignette/backdrop or offset layout. No visible 'ALEX CHEN' primary headline per spec §9.1. No terminal/Scramble lines visible in frame. Scroll hint tiny text near bottom. Grid ground plane not visible. Bloom/postFX appears mild.",
+        "score": 72
+      },
+      "projects": {
+        "notes": "Section eyebrow 'SYS.EXECUTION // 04 - SELECTED WORK', gradient headline 'Execution.' and sub 'Five production systems...' visible. 3D scene is essentially identical to skills camera — not distinctly 'execution' state. No ProjectCard horizontal carousel visible in frame, no active module highlight, no dimming of inactive modules per spec §9.4. Connection lines not visible (no bloom to reveal). ChromaticAberration spikes not evident. Overall this section on the static shot reads more like a reprise of skills; the horizontal pinned scroll content isn't showing at section-top anchor.",
+        "score": 66
+      },
+      "skills": {
+        "notes": "Clearest 3D frame: core icosahedron + 5 modules spread wide, neon palette holds (blue, cyan, green, orange, purple). Gradient headline 'Five modules. One runtime.' readable, eyebrow 'SYS.ACTIVATION // 03 - MODULES ONLINE' present. Missing per spec §9.3: <ModuleBadge> cards (should show 5 badges with skill labels) and <SkillBar>s — no DOM overlay of skills visible at this scroll position. Connection lines between core and modules not discernible. Distinct camera vs hero (modules spread wider, core slightly lower), state feels 'active'.",
+        "score": 70
+      }
+    },
+    "screenshots": [
+      "artifacts/screenshots/section-hero-iter1.png",
+      "artifacts/screenshots/section-about-iter1.png",
+      "artifacts/screenshots/section-skills-iter1.png",
+      "artifacts/screenshots/section-projects-iter1.png",
+      "artifacts/screenshots/section-experience-iter1.png",
+      "artifacts/screenshots/section-contact-iter1.png"
+    ],
+    "visualScore": 71
+  }
+}

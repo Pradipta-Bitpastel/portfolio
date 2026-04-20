@@ -1,0 +1,34 @@
+{
+  "filesCreated": [
+    "lib/gsap.ts",
+    "lib/sections.ts",
+    "lib/useIsMobile.ts",
+    "lib/useSectionProgress.ts",
+    "lib/cn.ts",
+    "components/providers/SmoothScrollProvider.tsx",
+    "components/three/SceneContainer.tsx",
+    "components/three/_Scene.tsx",
+    "components/SvgCoreFallback.tsx",
+    "components/ui/GlassPanel.tsx",
+    "components/ui/NeonText.tsx",
+    "components/ui/SectionNav.tsx"
+  ],
+  "filesUpdated": [
+    "app/layout.tsx",
+    "app/page.tsx",
+    "app/globals.css"
+  ],
+  "typecheckOk": true,
+  "buildOk": true,
+  "errors": [],
+  "warnings": [
+    "Club GSAP plugins (ScrollSmoother, SplitText, DrawSVGPlugin, MorphSVGPlugin, InertiaPlugin, ScrambleTextPlugin, Physics2DPlugin, PhysicsPropsPlugin, CustomBounce, CustomWiggle, GSDevTools) are dynamically imported at runtime. This installation of gsap (3.15.0 / gsap free npm package) ships bundled .js files for all of them, so they register successfully in this dev env. Without a Club license in a stricter registry environment these imports would fall through to console.warn and the Lenis fallback path in SmoothScrollProvider would activate.",
+    "SmoothScrollProvider will swap to Lenis + gsap.ticker bridge automatically if ScrollSmoother fails to resolve; no caller changes needed.",
+    "prefers-reduced-motion visitors get native scroll (no smoother) and the SvgCoreFallback in place of the R3F Canvas via useIsMobile."
+  ],
+  "notes": {
+    "typecheck": "npx tsc --noEmit — exit 0",
+    "build": "npx next build — exit 0, route '/' 9.09 kB / 142 kB First Load JS, 4/4 static pages generated",
+    "scope": "Infra only. No Core/Module geometry, no section timelines. Placeholder DemoCube in _Scene.tsx proves the R3F pipeline is wired; real scene graph lands in a later phase."
+  }
+}

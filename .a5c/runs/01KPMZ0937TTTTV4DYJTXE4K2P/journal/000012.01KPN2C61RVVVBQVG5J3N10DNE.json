@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:08:36.536Z",
+  "data": {
+    "effectId": "01KPN2C616ZJ4JMMCTM1066F21",
+    "invocationKey": "portfolio-3d-core:S000006:sections",
+    "invocationHash": "560b7720856c976d6d24fc3b02b6d768c60acf254a68c2ed05ed5f21cd84df41",
+    "stepId": "S000006",
+    "taskId": "sections",
+    "kind": "agent",
+    "label": "Build all 6 sections with GSAP scroll timelines",
+    "taskDefRef": "tasks/01KPN2C616ZJ4JMMCTM1066F21/task.json"
+  },
+  "checksum": "8876694e09dfb395141faf4c5117e120e3e857a7f7e81c96bc0cd973f2c5240f"
+}

@@ -1,0 +1,34 @@
+{
+  "passed": 12,
+  "failed": 6,
+  "total": 18,
+  "failures": [
+    {
+      "title": "section hero is reachable and visible [desktop-chromium]",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#hero"
+    },
+    {
+      "title": "section about is reachable and visible [mobile]",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#about"
+    },
+    {
+      "title": "section skills is reachable and visible [mobile]",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#skills"
+    },
+    {
+      "title": "section projects is reachable and visible [mobile]",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#projects"
+    },
+    {
+      "title": "section experience is reachable and visible [mobile]",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#experience"
+    },
+    {
+      "title": "section contact is reachable and visible [mobile]",
+      "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#contact"
+    }
+  ],
+  "consoleErrors": [],
+  "reportPath": "artifacts/e2e-1.json",
+  "notes": "Server (next start on :3010) died mid-run; all 6 failures are ERR_CONNECTION_REFUSED infra flakes, not test defects. Iter 1 passed all 20 on the same suite. Playwright JSON file on disk (artifacts/e2e-1.json) was NOT overwritten by iter 2 - it still holds iter 1 data; counts here parsed from embedded JSON in stdout log at /tmp/pw2-output.log."
+}

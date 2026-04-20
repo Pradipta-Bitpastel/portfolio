@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KPN4BWFJSZ6RCMVCSDM76MQQ",
+  "taskId": "visual-review",
+  "invocationKey": "portfolio-3d-core:S000017:visual-review",
+  "status": "ok",
+  "result": {
+    "issues": [
+      "Skills screenshot does not show ModuleBadge + SkillBars — captured frame is at the intro/title state of a pinned section, so the skill overlays never came into view. Either (a) the pinned-scroll sub-slide needs to be triggered after scrollIntoView via an additional window.scrollBy or timeline advance, or (b) the overlay needs to be visible on first sub-slide.",
+      "Projects screenshot shows the section title + carousel dot-paginator but no actual project card with neon border is in-frame. Same pinned-section capture issue as Skills: cards likely live in later sub-slides.",
+      "Connection lines are not readable as a glowing web in the Projects screenshot. The Experience screenshot shows the clearest line (faint dotted arc). Thickness/double-render may need another bump, or the lines need to draw between visible module positions rather than off-viewport anchors.",
+      "Contact 'Ping the core.' headline is not visible in the captured frame — the bright expanding ping-ring glow is overlapping/obscuring the headline zone, or the headline z-index/position puts it under the radial gradient.",
+      "Hero headline wraps as 'SYSTEM // BOO' / 'T' at 1440w — consider a tighter tracking or a smaller font-size breakpoint so 'SYSTEM // BOOT' fits on one line (or intentionally breaks at '//').",
+      "Screenshot spec uses a fixed 1400ms wait after scrollIntoView; pinned / scroll-triggered sub-slides (skills, projects) need extra scroll events to actually reveal the badge/bar/card content — consider scripting a window.scrollBy sequence per pinned section."
+    ],
+    "perSection": {
+      "about": {
+        "notes": "GlassPanel rendering well with purple border glow, 'Five years shipping production software.' headline, eyebrow 'SYS.INIT // 00 -- OPERATOR PROFILE', metrics row (120+ SHIPPED / 99.70% UPTIME / 5 STACKS MASTERED), paragraph copy, and three colored 3D blobs (green/cyan/orange) visible behind/beside the panel. Glass fidelity good, typography clean. (a)85 (b)85 (c)75 (d)80 (e)70.",
+        "score": 78
+      },
+      "contact": {
+        "notes": "Form landed: GlassPanel with Name / Email / Message fields and teal 'SEND SIGNAL' button, eyebrow '// 06 SIGNAL TRANSMISSION' is present at top, subtext 'Open to full-stack and 3D-web roles...' present, closing pill 'LET'S BUILD SOMETHING POWERFUL.' present. A bright blue radial glow (expanding ping ring visible mid-animation) fills the panel center. MISSING/OBSCURED: the large 'Ping the core.' headline is not visible — either it is covered by the ping-ring glow or rendered behind/outside the captured frame. Orange and cyan module shapes flank the panel. (a)85 (b)85 (c)75 (d)78 (e)80.",
+        "score": 80
+      },
+      "experience": {
+        "notes": "'A short history of shipping.' headline with eyebrow 'SYS.TIMELINE // 05 -- HISTORY'. 3D shapes are arranged along an arc with a faint dotted connection line curving through — this is the clearest instance of the double-rendered connection line, though still subtle. No timeline cards visible in this frame (likely below the viewport). (a)82 (b)65 (c)78 (d)78 (e)70.",
+        "score": 72
+      },
+      "hero": {
+        "notes": "12-col grid landed: 'SYSTEM // BOOT' headline is left-weighted with boot-log terminal panel on the right showing green 'running review v2.1 / loading module 0/5 / ready -- press enter to init' lines. Eyebrow '//BOOT.00', subhead 'The Developer Control Core', CTA 'SCROLL TO INIT ->' all present. Glow/dropshadow on headline is visible and a faint horizontal scrim sits behind it. Palette on-brand (deep navy, cyan+magenta accents). Minor concern: headline wraps awkwardly ('BOOT' / 'T' on second line) at 1440w and terminal panel looks a bit small/cropped in upper-right corner. (a)90 (b)78 (c)70 (d)85 (e)88.",
+        "score": 82
+      },
+      "projects": {
+        "notes": "Eyebrow 'SYS.EXECUTION // 04 -- SELECTED WORK', 'Execution.' magenta headline, subhead about '5 production systems', and a vertical dot-paginator on the right edge (suggesting a carousel) all rendered. HOWEVER no neon-bordered project cards are actually visible in the frame — only the large central sphere with play icon and the floating module shapes. Horizontal pinned carousel implied by the dot-nav but the card track itself is empty/offscreen in this screenshot. Connection lines: not clearly readable as a 'glowing web' between core and modules; at best, faint aura around the central sphere. (a)80 (b)55 (c)80 (d)75 (e)60.",
+        "score": 62
+      },
+      "skills": {
+        "notes": "CRITICAL GAP: screenshot shows only the section header state ('Five modules. One runtime.' + 3D module cluster) — NO ModuleBadge or SkillBars visible. Expected gradient-filled bars with % labels are absent in the captured frame. Eyebrow 'SYS.ACTIVATION // 03 -- MODULES ONLINE' is present. The 3D scene (sphere, torus knot, cubes) is vibrant but the whole point of iter2 (badge + bars overlay) did not render in the captured viewport — either the sub-slide hasn't activated by scroll-start or the overlay lives further down the pinned section. (a)75 (b)40 (c)85 (d)70 (e)55.",
+        "score": 55
+      }
+    },
+    "refinementsLanded": {
+      "connectionLines": false,
+      "contactComplete": false,
+      "heroContrast": true,
+      "projectsCarousel": false,
+      "skillsOverlays": false
+    },
+    "screenshots": [
+      "artifacts/screenshots/section-hero-iter2.png",
+      "artifacts/screenshots/section-about-iter2.png",
+      "artifacts/screenshots/section-skills-iter2.png",
+      "artifacts/screenshots/section-projects-iter2.png",
+      "artifacts/screenshots/section-experience-iter2.png",
+      "artifacts/screenshots/section-contact-iter2.png"
+    ],
+    "visualScore": 74
+  },
+  "startedAt": "2026-04-20T09:47:25.760Z",
+  "finishedAt": "2026-04-20T09:47:25.760Z",
+  "value": {
+    "issues": [
+      "Skills screenshot does not show ModuleBadge + SkillBars — captured frame is at the intro/title state of a pinned section, so the skill overlays never came into view. Either (a) the pinned-scroll sub-slide needs to be triggered after scrollIntoView via an additional window.scrollBy or timeline advance, or (b) the overlay needs to be visible on first sub-slide.",
+      "Projects screenshot shows the section title + carousel dot-paginator but no actual project card with neon border is in-frame. Same pinned-section capture issue as Skills: cards likely live in later sub-slides.",
+      "Connection lines are not readable as a glowing web in the Projects screenshot. The Experience screenshot shows the clearest line (faint dotted arc). Thickness/double-render may need another bump, or the lines need to draw between visible module positions rather than off-viewport anchors.",
+      "Contact 'Ping the core.' headline is not visible in the captured frame — the bright expanding ping-ring glow is overlapping/obscuring the headline zone, or the headline z-index/position puts it under the radial gradient.",
+      "Hero headline wraps as 'SYSTEM // BOO' / 'T' at 1440w — consider a tighter tracking or a smaller font-size breakpoint so 'SYSTEM // BOOT' fits on one line (or intentionally breaks at '//').",
+      "Screenshot spec uses a fixed 1400ms wait after scrollIntoView; pinned / scroll-triggered sub-slides (skills, projects) need extra scroll events to actually reveal the badge/bar/card content — consider scripting a window.scrollBy sequence per pinned section."
+    ],
+    "perSection": {
+      "about": {
+        "notes": "GlassPanel rendering well with purple border glow, 'Five years shipping production software.' headline, eyebrow 'SYS.INIT // 00 -- OPERATOR PROFILE', metrics row (120+ SHIPPED / 99.70% UPTIME / 5 STACKS MASTERED), paragraph copy, and three colored 3D blobs (green/cyan/orange) visible behind/beside the panel. Glass fidelity good, typography clean. (a)85 (b)85 (c)75 (d)80 (e)70.",
+        "score": 78
+      },
+      "contact": {
+        "notes": "Form landed: GlassPanel with Name / Email / Message fields and teal 'SEND SIGNAL' button, eyebrow '// 06 SIGNAL TRANSMISSION' is present at top, subtext 'Open to full-stack and 3D-web roles...' present, closing pill 'LET'S BUILD SOMETHING POWERFUL.' present. A bright blue radial glow (expanding ping ring visible mid-animation) fills the panel center. MISSING/OBSCURED: the large 'Ping the core.' headline is not visible — either it is covered by the ping-ring glow or rendered behind/outside the captured frame. Orange and cyan module shapes flank the panel. (a)85 (b)85 (c)75 (d)78 (e)80.",
+        "score": 80
+      },
+      "experience": {
+        "notes": "'A short history of shipping.' headline with eyebrow 'SYS.TIMELINE // 05 -- HISTORY'. 3D shapes are arranged along an arc with a faint dotted connection line curving through — this is the clearest instance of the double-rendered connection line, though still subtle. No timeline cards visible in this frame (likely below the viewport). (a)82 (b)65 (c)78 (d)78 (e)70.",
+        "score": 72
+      },
+      "hero": {
+        "notes": "12-col grid landed: 'SYSTEM // BOOT' headline is left-weighted with boot-log terminal panel on the right showing green 'running review v2.1 / loading module 0/5 / ready -- press enter to init' lines. Eyebrow '//BOOT.00', subhead 'The Developer Control Core', CTA 'SCROLL TO INIT ->' all present. Glow/dropshadow on headline is visible and a faint horizontal scrim sits behind it. Palette on-brand (deep navy, cyan+magenta accents). Minor concern: headline wraps awkwardly ('BOOT' / 'T' on second line) at 1440w and terminal panel looks a bit small/cropped in upper-right corner. (a)90 (b)78 (c)70 (d)85 (e)88.",
+        "score": 82
+      },
+      "projects": {
+        "notes": "Eyebrow 'SYS.EXECUTION // 04 -- SELECTED WORK', 'Execution.' magenta headline, subhead about '5 production systems', and a vertical dot-paginator on the right edge (suggesting a carousel) all rendered. HOWEVER no neon-bordered project cards are actually visible in the frame — only the large central sphere with play icon and the floating module shapes. Horizontal pinned carousel implied by the dot-nav but the card track itself is empty/offscreen in this screenshot. Connection lines: not clearly readable as a 'glowing web' between core and modules; at best, faint aura around the central sphere. (a)80 (b)55 (c)80 (d)75 (e)60.",
+        "score": 62
+      },
+      "skills": {
+        "notes": "CRITICAL GAP: screenshot shows only the section header state ('Five modules. One runtime.' + 3D module cluster) — NO ModuleBadge or SkillBars visible. Expected gradient-filled bars with % labels are absent in the captured frame. Eyebrow 'SYS.ACTIVATION // 03 -- MODULES ONLINE' is present. The 3D scene (sphere, torus knot, cubes) is vibrant but the whole point of iter2 (badge + bars overlay) did not render in the captured viewport — either the sub-slide hasn't activated by scroll-start or the overlay lives further down the pinned section. (a)75 (b)40 (c)85 (d)70 (e)55.",
+        "score": 55
+      }
+    },
+    "refinementsLanded": {
+      "connectionLines": false,
+      "contactComplete": false,
+      "heroContrast": true,
+      "projectsCarousel": false,
+      "skillsOverlays": false
+    },
+    "screenshots": [
+      "artifacts/screenshots/section-hero-iter2.png",
+      "artifacts/screenshots/section-about-iter2.png",
+      "artifacts/screenshots/section-skills-iter2.png",
+      "artifacts/screenshots/section-projects-iter2.png",
+      "artifacts/screenshots/section-experience-iter2.png",
+      "artifacts/screenshots/section-contact-iter2.png"
+    ],
+    "visualScore": 74
+  }
+}

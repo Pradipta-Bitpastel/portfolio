@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPN4B6BN5TPXVK71P04RY4CV",
+  "taskId": "build-gate",
+  "invocationKey": "portfolio-3d-core:S000014:build-gate",
+  "stepId": "S000014",
+  "kind": "agent",
+  "title": "Run build + typecheck",
+  "io": {
+    "inputJsonPath": "tasks/01KPN4B6BN5TPXVK71P04RY4CV/input.json",
+    "outputJsonPath": "tasks/01KPN4B6BN5TPXVK71P04RY4CV/result.json"
+  },
+  "inputs": {
+    "iteration": 1,
+    "projectName": "portfolio"
+  }
+}

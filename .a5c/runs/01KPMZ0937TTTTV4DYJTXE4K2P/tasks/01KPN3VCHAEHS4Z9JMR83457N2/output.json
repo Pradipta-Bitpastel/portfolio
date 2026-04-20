@@ -1,0 +1,55 @@
+{
+  "patchesApplied": [
+    {
+      "priority": 1,
+      "area": "ConnectionLines",
+      "files": [
+        "components/three/ConnectionLines.tsx",
+        "components/sections/ProjectsSection.tsx"
+      ],
+      "summary": "Each ModuleLink now renders two drei <Line/> copies: outer soft-glow (lineWidth 6, module color, THREE.AdditiveBlending) and inner crisp readability (lineWidth 2, white, normal blending). Both endpoints are updated every frame from the live module group world position. ProjectsSection walks connection descendants (traverse) and animates the outer to opacity 0.35 and inner to 1.0 via the section-enter scrub, and adds an independent sine yoyo +0.15 opacity overlay so the network breathes."
+    },
+    {
+      "priority": 2,
+      "area": "HeroSection contrast",
+      "files": [
+        "components/sections/HeroSection.tsx"
+      ],
+      "summary": "Replaced centered stack with a 12-col grid (text col-span-8 left, terminal panel col-span-4 right on md+). Added a horizontal bg-gradient scrim (from-#0b0f19 via-80% to-transparent) behind the z-10 grid so the headline reads cleanly over the 3D core. Headline now uses font-black, tracking-tight md:tracking-normal, and drop-shadow-[0_0_30px_rgba(79,156,255,0.45)]. Right-column terminal panel shows an ASCII boot log (3 lines) with a TextPlugin-driven typewriter and a manual per-character fallback. Added a 'Scroll to init ->' CTA arrow under the subtitle."
+    },
+    {
+      "priority": 3,
+      "area": "Skills overlays",
+      "files": [
+        "components/ui/SkillBar.tsx",
+        "components/ui/ModuleBadge.tsx",
+        "components/sections/SkillsSection.tsx"
+      ],
+      "summary": "New SkillBar ({name, level, color}) renders a label + % + horizontal bar with a gradient fill, data-level attribute, and a color-tinted glow (boxShadow ~40% alpha). New ModuleBadge ({label, color, icon?}) renders a rounded chip with a colored left accent bar and uppercase mono tracking. SkillsSection maps each of the 5 module sub-slides to a GlassPanel containing the ModuleBadge plus a list of SkillBars with derived levels (60 + (idx*3)%35 → 60-95%). On sub-step enter, each .skillbar-fill animates from width:0 to width:level% with duration 0.8, stagger 0.06, ease power3.out. Bars are reset/hidden when sub-steps leave."
+    },
+    {
+      "priority": 4,
+      "area": "Projects distinct state + card layout",
+      "files": [
+        "components/sections/ProjectsSection.tsx"
+      ],
+      "summary": "Section-enter scrub now also drives the scene core: scale 1 → 1.4, position.y 0 → 0.6, rotation.y +=PI*0.5 (slower rotation feel). Cards on <lg render the original grid; on lg+ the section adds a pinned horizontal carousel — all 5 cards wrapped in a single flex gap-8 track with pl-24/pr-24, ScrollTrigger matchMedia pins the outer container and tweens x from 0 to -(scrollWidth - viewport) with scrub 1, invalidateOnRefresh true. ProjectCard bumped to perspective-1600 + preserve-3d, added neon border/glow on hover (per-project color), and pointer-tilt increased up to ±10deg on rotateX/rotateY."
+    },
+    {
+      "priority": 5,
+      "area": "Contact completeness",
+      "files": [
+        "components/sections/ContactSection.tsx",
+        "components/ui/MagneticButton.tsx"
+      ],
+      "summary": "Added eyebrow '// 06 SIGNAL TRANSMISSION' in mono cyan; primary headline changed to 'Ping the core.'. Added a GlassPanel form with Name (text), Email (email), and Message (textarea) fields styled with focus:ring-cyan; submit handler preventDefaults and console.logs the payload. New MagneticButton client component (polymorphic a/button) uses gsap.quickTo on x/y to pull the button up to 14px toward the cursor and resets on pointerleave — wired into the form submit and the 'Let's build something powerful.' CTA anchor. Added 3 expanding SVG ping rings (r 20 → 180, opacity 0.9 → 0, staggered 0.8s, infinite) around the core-collapse area. Existing email/github/linkedin/x links retained as a secondary row."
+    }
+  ],
+  "buildOk": true,
+  "typecheckOk": true,
+  "warnings": [
+    "ConnectionLines outer/inner detection uses THREE.AdditiveBlending on the material — safe because drei's Line2 material preserves the blending prop.",
+    "Horizontal carousel pin only activates when ScrollTrigger.matchMedia is available at runtime; on very old/failing environments cards still render in the <lg grid.",
+    "skills.ts items are strings; SkillBar levels are synthesized (60-95%) as per instruction — no data-shape changes."
+  ]
+}

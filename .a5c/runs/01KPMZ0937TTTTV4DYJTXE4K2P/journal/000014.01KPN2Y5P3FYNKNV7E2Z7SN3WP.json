@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:18:25.987Z",
+  "data": {
+    "effectId": "01KPN2Y5NKG9Q1WHAK40986077",
+    "invocationKey": "portfolio-3d-core:S000007:content-mobile-deploy",
+    "invocationHash": "b96fc4106347935c2af59d3898a57adb2c444e6079e7a1b58d74bb56f36bc39b",
+    "stepId": "S000007",
+    "taskId": "content-mobile-deploy",
+    "kind": "agent",
+    "label": "Content data, mobile fallback, Vercel deploy config",
+    "taskDefRef": "tasks/01KPN2Y5NKG9Q1WHAK40986077/task.json"
+  },
+  "checksum": "78ddc5842148191b07dca4248c31588ac46b3e1586f92f8179aa1d9d12d26d7a"
+}

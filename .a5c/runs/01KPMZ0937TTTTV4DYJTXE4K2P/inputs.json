@@ -1,0 +1,6 @@
+{
+  "projectName": "portfolio",
+  "targetQuality": 85,
+  "maxIterations": 4,
+  "lighthousePerfMin": 75
+}

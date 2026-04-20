@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPN4BWEYQKS7ADAG3DDVHT8K",
+  "taskId": "e2e",
+  "invocationKey": "portfolio-3d-core:S000016:e2e",
+  "stepId": "S000016",
+  "kind": "agent",
+  "title": "Run Playwright E2E scroll tests",
+  "io": {
+    "inputJsonPath": "tasks/01KPN4BWEYQKS7ADAG3DDVHT8K/input.json",
+    "outputJsonPath": "tasks/01KPN4BWEYQKS7ADAG3DDVHT8K/result.json"
+  },
+  "inputs": {
+    "iteration": 2,
+    "projectName": "portfolio"
+  }
+}

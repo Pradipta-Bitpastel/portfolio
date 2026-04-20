@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KPN3CTD8MVGFQEDSM8RM7B81",
+  "taskId": "e2e",
+  "invocationKey": "portfolio-3d-core:S000010:e2e",
+  "status": "ok",
+  "result": {
+    "consoleErrors": [],
+    "failed": 0,
+    "failures": [],
+    "notes": "14 tests from tests/e2e/portfolio.spec.ts (7 tests x 2 projects: desktop-chromium + mobile) + 6 pre-existing tests/visual/screenshot.spec.ts tests. Initial run required a rebuild of .next (missing vendor-chunks). Added data-fallback=\"core\" attribute to components/SvgCoreFallback.tsx root <svg>.",
+    "passed": 20,
+    "reportPath": "artifacts/e2e-1.json",
+    "total": 20
+  },
+  "startedAt": "2026-04-20T09:33:29.593Z",
+  "finishedAt": "2026-04-20T09:33:29.593Z",
+  "value": {
+    "consoleErrors": [],
+    "failed": 0,
+    "failures": [],
+    "notes": "14 tests from tests/e2e/portfolio.spec.ts (7 tests x 2 projects: desktop-chromium + mobile) + 6 pre-existing tests/visual/screenshot.spec.ts tests. Initial run required a rebuild of .next (missing vendor-chunks). Added data-fallback=\"core\" attribute to components/SvgCoreFallback.tsx root <svg>.",
+    "passed": 20,
+    "reportPath": "artifacts/e2e-1.json",
+    "total": 20
+  }
+}

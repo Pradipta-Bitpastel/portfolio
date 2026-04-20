@@ -1,0 +1,29 @@
+{
+  "filesCreated": [
+    "package.json",
+    "tsconfig.json",
+    "next.config.mjs",
+    "next-env.d.ts",
+    "tailwind.config.ts",
+    "postcss.config.js",
+    ".eslintrc.json",
+    ".gitignore",
+    ".nvmrc",
+    "README.md",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "app/globals.css",
+    "app/loading.tsx",
+    "public/.gitkeep"
+  ],
+  "installOk": true,
+  "playwrightOk": true,
+  "typecheckOk": true,
+  "warnings": [
+    "Spec file-tree shows src/ layout, but task brief explicitly listed app/ at project root in the Files-to-create section, so scaffold uses root-level app/. If downstream tasks expect src/, paths will need to be relocated.",
+    "npm install succeeded on first try but emitted standard peer-dep ERESOLVE warnings and deprecation notices (eslint@8.57.1, rimraf, glob, three-mesh-bvh, whatwg-encoding, etc.). 17 audit vulnerabilities reported (8 low / 5 moderate / 4 high) — typical for this dep set; not addressed in scaffold phase.",
+    "Used Inter via next/font/google as Geist Sans fallback (task permitted this). When self-hosted Geist fonts are added to public/fonts/, switch app/layout.tsx to next/font/local.",
+    "Spec lists additional deps (postprocessing, zustand, maath, leva, gsap-trial, prettier, glslify-loader, raw-loader, @vitest/ui) not required by the scaffold brief; those can be added in later phases.",
+    "Next build was NOT run (brief says skip if typecheck passes and time allows; leaving for the next task)."
+  ]
+}

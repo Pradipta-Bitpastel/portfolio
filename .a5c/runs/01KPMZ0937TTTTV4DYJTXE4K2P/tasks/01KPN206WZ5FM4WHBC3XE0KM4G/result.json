@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KPN206WZ5FM4WHBC3XE0KM4G",
+  "taskId": "scene3d",
+  "invocationKey": "portfolio-3d-core:S000005:scene3d",
+  "status": "ok",
+  "result": {
+    "buildOk": true,
+    "filesCreated": [
+      "lib/sceneStore.ts",
+      "components/three/Core.tsx",
+      "components/three/Modules.tsx",
+      "components/three/ConnectionLines.tsx",
+      "components/three/TimelineRing.tsx",
+      "components/three/Lights.tsx",
+      "components/three/CameraController.tsx",
+      "components/three/Scene.tsx"
+    ],
+    "filesModified": [
+      "components/three/_Scene.tsx"
+    ],
+    "typecheckOk": true,
+    "warnings": [
+      "@react-three/postprocessing EffectComposer uses `enableNormalPass={false}` (not `disableNormalPass`) in the installed version — prop was swapped.",
+      "drei <Environment preset='city' /> fetches its HDR asset lazily at runtime; intensity is passed via `environmentIntensity` (the `intensity` prop is not supported by this version).",
+      "drei <Line/> forwardRef type is Line2 | LineSegments2; we use a callback ref narrowed to a minimal `LineLike` shape to update geometry.setPositions() per-frame without re-rendering."
+    ]
+  },
+  "startedAt": "2026-04-20T09:08:36.173Z",
+  "finishedAt": "2026-04-20T09:08:36.173Z",
+  "value": {
+    "buildOk": true,
+    "filesCreated": [
+      "lib/sceneStore.ts",
+      "components/three/Core.tsx",
+      "components/three/Modules.tsx",
+      "components/three/ConnectionLines.tsx",
+      "components/three/TimelineRing.tsx",
+      "components/three/Lights.tsx",
+      "components/three/CameraController.tsx",
+      "components/three/Scene.tsx"
+    ],
+    "filesModified": [
+      "components/three/_Scene.tsx"
+    ],
+    "typecheckOk": true,
+    "warnings": [
+      "@react-three/postprocessing EffectComposer uses `enableNormalPass={false}` (not `disableNormalPass`) in the installed version — prop was swapped.",
+      "drei <Environment preset='city' /> fetches its HDR asset lazily at runtime; intensity is passed via `environmentIntensity` (the `intensity` prop is not supported by this version).",
+      "drei <Line/> forwardRef type is Line2 | LineSegments2; we use a callback ref narrowed to a minimal `LineLike` shape to update geometry.setPositions() per-frame without re-rendering."
+    ]
+  }
+}

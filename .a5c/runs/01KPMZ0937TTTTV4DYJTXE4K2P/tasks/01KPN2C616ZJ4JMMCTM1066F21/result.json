@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KPN2C616ZJ4JMMCTM1066F21",
+  "taskId": "sections",
+  "invocationKey": "portfolio-3d-core:S000006:sections",
+  "status": "ok",
+  "result": {
+    "buildOk": true,
+    "filesCreated": [
+      "/Users/pradiptajana/Portfolio/content/profile.ts",
+      "/Users/pradiptajana/Portfolio/content/projects.ts",
+      "/Users/pradiptajana/Portfolio/content/experience.ts",
+      "/Users/pradiptajana/Portfolio/content/skills.ts",
+      "/Users/pradiptajana/Portfolio/components/sections/HeroSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/AboutSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/SkillsSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/ProjectsSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/ExperienceSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/ContactSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/Footer.tsx"
+    ],
+    "filesModified": [
+      "/Users/pradiptajana/Portfolio/app/page.tsx"
+    ],
+    "typecheckOk": true,
+    "warnings": [
+      "Club plugins (SplitText, DrawSVG, MorphSVG, ScrambleText, CustomBounce, CustomWiggle, Physics2D, InertiaPlugin) are not present in this environment; each section wraps those plugin calls with hasPlugin(...) checks and falls back to manual char/line splits, stroke-dash reveals, or power-eased yoyo tweens — no runtime errors either way.",
+      "Skills section uses 500vh + sticky pin; sub-panel ScrollTriggers fade panels and run activate(moduleId) to push the chosen 3D module's emissiveIntensity / scale up and dim the rest. Base Z per module group is cached on group.userData.baseZ so resets restore cleanly.",
+      "Experience section sets timelineRing.visible=true at section-enter and animates torus + 4 node material opacity 0→1 via ScrollTrigger scrub. Camera orbit uses a proxy {p:0..1} whose onUpdate writes cam.position.x/y/z from sin/cos of p*2π.",
+      "Contact section pulses the core with repeated yoyo tween using bounce.out if CustomBounce is registered, otherwise power2.inOut."
+    ]
+  },
+  "startedAt": "2026-04-20T09:18:25.588Z",
+  "finishedAt": "2026-04-20T09:18:25.588Z",
+  "value": {
+    "buildOk": true,
+    "filesCreated": [
+      "/Users/pradiptajana/Portfolio/content/profile.ts",
+      "/Users/pradiptajana/Portfolio/content/projects.ts",
+      "/Users/pradiptajana/Portfolio/content/experience.ts",
+      "/Users/pradiptajana/Portfolio/content/skills.ts",
+      "/Users/pradiptajana/Portfolio/components/sections/HeroSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/AboutSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/SkillsSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/ProjectsSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/ExperienceSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/sections/ContactSection.tsx",
+      "/Users/pradiptajana/Portfolio/components/Footer.tsx"
+    ],
+    "filesModified": [
+      "/Users/pradiptajana/Portfolio/app/page.tsx"
+    ],
+    "typecheckOk": true,
+    "warnings": [
+      "Club plugins (SplitText, DrawSVG, MorphSVG, ScrambleText, CustomBounce, CustomWiggle, Physics2D, InertiaPlugin) are not present in this environment; each section wraps those plugin calls with hasPlugin(...) checks and falls back to manual char/line splits, stroke-dash reveals, or power-eased yoyo tweens — no runtime errors either way.",
+      "Skills section uses 500vh + sticky pin; sub-panel ScrollTriggers fade panels and run activate(moduleId) to push the chosen 3D module's emissiveIntensity / scale up and dim the rest. Base Z per module group is cached on group.userData.baseZ so resets restore cleanly.",
+      "Experience section sets timelineRing.visible=true at section-enter and animates torus + 4 node material opacity 0→1 via ScrollTrigger scrub. Camera orbit uses a proxy {p:0..1} whose onUpdate writes cam.position.x/y/z from sin/cos of p*2π.",
+      "Contact section pulses the core with repeated yoyo tween using bounce.out if CustomBounce is registered, otherwise power2.inOut."
+    ]
+  }
+}

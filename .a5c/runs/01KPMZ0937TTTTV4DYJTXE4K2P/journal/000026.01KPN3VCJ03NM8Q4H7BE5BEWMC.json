@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:34:23.296Z",
+  "data": {
+    "effectId": "01KPN3VCHAEHS4Z9JMR83457N2",
+    "invocationKey": "portfolio-3d-core:S000013:refine",
+    "invocationHash": "749a5a29342bef4b2f7d06de3b710730e73e8c995e3a5c57aadfc1a102df536f",
+    "stepId": "S000013",
+    "taskId": "refine",
+    "kind": "agent",
+    "label": "Refine based on recommendations",
+    "taskDefRef": "tasks/01KPN3VCHAEHS4Z9JMR83457N2/task.json"
+  },
+  "checksum": "fafc5a01ea4b34701d4cf274701e51b7c7a5c21047f8b3196f5de58474c3c00d"
+}

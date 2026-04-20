@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:43:23.880Z",
+  "data": {
+    "effectId": "01KPN4BWEYQKS7ADAG3DDVHT8K",
+    "invocationKey": "portfolio-3d-core:S000016:e2e",
+    "invocationHash": "5c5da88617b391579c5bf720afd8172927c03c1dd295f1b37882554d99ad90b8",
+    "stepId": "S000016",
+    "taskId": "e2e",
+    "kind": "agent",
+    "label": "Run Playwright E2E scroll tests",
+    "taskDefRef": "tasks/01KPN4BWEYQKS7ADAG3DDVHT8K/task.json"
+  },
+  "checksum": "18d64464ec4e0efe0a127dfc073479789d24143a1e99aee166b6785e4b8ff5df"
+}

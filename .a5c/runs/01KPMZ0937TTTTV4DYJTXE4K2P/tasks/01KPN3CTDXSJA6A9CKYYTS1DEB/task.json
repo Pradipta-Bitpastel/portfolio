@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPN3CTDXSJA6A9CKYYTS1DEB",
+  "taskId": "visual-review",
+  "invocationKey": "portfolio-3d-core:S000011:visual-review",
+  "stepId": "S000011",
+  "kind": "agent",
+  "title": "Visual design review via Playwright screenshots",
+  "io": {
+    "inputJsonPath": "tasks/01KPN3CTDXSJA6A9CKYYTS1DEB/input.json",
+    "outputJsonPath": "tasks/01KPN3CTDXSJA6A9CKYYTS1DEB/result.json"
+  },
+  "inputs": {
+    "iteration": 1,
+    "projectName": "portfolio"
+  }
+}

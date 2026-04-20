@@ -1,0 +1,13 @@
+{
+  "runId": "01KPMZ0937TTTTV4DYJTXE4K2P",
+  "request": "portfolio-3d-core",
+  "processId": "portfolio-3d-core",
+  "entrypoint": {
+    "importPath": "../../processes/portfolio-3d-core.js",
+    "exportName": "process"
+  },
+  "processPath": "../../processes/portfolio-3d-core.js",
+  "layoutVersion": "2026.01-storage-preview",
+  "createdAt": "2026-04-20T08:09:40.725Z",
+  "completionProof": "1a7add1773a0029a39b4388e17195e5c"
+}

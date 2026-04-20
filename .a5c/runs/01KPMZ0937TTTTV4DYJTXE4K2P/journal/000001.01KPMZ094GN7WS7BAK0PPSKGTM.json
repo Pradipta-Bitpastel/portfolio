@@ -1,0 +1,14 @@
+{
+  "type": "RUN_CREATED",
+  "recordedAt": "2026-04-20T08:09:40.753Z",
+  "data": {
+    "runId": "01KPMZ0937TTTTV4DYJTXE4K2P",
+    "processId": "portfolio-3d-core",
+    "entrypoint": {
+      "importPath": "../../processes/portfolio-3d-core.js",
+      "exportName": "process"
+    },
+    "inputsRef": "inputs.json"
+  },
+  "checksum": "eb6532b181760bd15f38b3a10c41bfbe15095444cdb57fcac41f902684302018"
+}

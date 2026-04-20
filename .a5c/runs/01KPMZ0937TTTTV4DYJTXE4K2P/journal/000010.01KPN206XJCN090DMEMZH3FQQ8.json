@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:02:04.210Z",
+  "data": {
+    "effectId": "01KPN206WZ5FM4WHBC3XE0KM4G",
+    "invocationKey": "portfolio-3d-core:S000005:scene3d",
+    "invocationHash": "f8bc548f32f90ccd9e571d782714cc520c07213d210d74609bb5f4f986e5bd77",
+    "stepId": "S000005",
+    "taskId": "scene3d",
+    "kind": "agent",
+    "label": "Build the Developer Core 3D scene",
+    "taskDefRef": "tasks/01KPN206WZ5FM4WHBC3XE0KM4G/task.json"
+  },
+  "checksum": "84c40c0d36605449c19138bd5da21730e3261d46fd94bfa8ac11ba7e4c377498"
+}

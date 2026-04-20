@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:25:56.371Z",
+  "data": {
+    "effectId": "01KPN3BXG1FVDRXZ981FX84QVM",
+    "invocationKey": "portfolio-3d-core:S000008:build-gate",
+    "invocationHash": "e3434aad9d0dd32dbeab6ac662a221c74360be17615cb07fe5cbfff82ac47423",
+    "stepId": "S000008",
+    "taskId": "build-gate",
+    "kind": "agent",
+    "label": "Run build + typecheck",
+    "taskDefRef": "tasks/01KPN3BXG1FVDRXZ981FX84QVM/task.json"
+  },
+  "checksum": "78abc94c449b8b9f2561bba0068c0ea2bdc8f5cb88c7c5ed5e710002aae00994"
+}

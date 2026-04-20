@@ -1,0 +1,19 @@
+{
+  "heroHeadlineFixed": true,
+  "heroLayoutVerticalStack": true,
+  "countUpAnimation": true,
+  "laptopBevel": true,
+  "laptopMenuBar": true,
+  "trafficLights": true,
+  "apple_ish_logo": true,
+  "powerLed": true,
+  "dedicatedLaptopLights": true,
+  "glyphs_tightened": true,
+  "typecheckOk": true,
+  "buildOk": true,
+  "visualAssessment": "Hero (iter6): SYSTEM fits on one line and // BOOT fits on one line — no orphaned characters. The giant amber 01 sits ABOVE the stacked headline, not beside it, as a clean vertical stack (eyebrow → 01 → SYSTEM / // BOOT → subtitle → CTA). Blue drop-shadow glow behind the white headline reads well. The 3D scene is visible on the right but at the hero dock pose (SceneDock [2.6,-0.2,0] rotY -0.12) the laptop front is partly off-frame; orbiting glyphs {}, </>, λ, [] plus the blue halo read clearly. About (iter6): stats captured mid-count-up showing 03 / 17 / +03 with the + prefix rendering correctly; amber scanline bars animate in under each big number; bigger 5xl/6xl figures feel more confident. Laptop is clearly visible on the right of the About frame with the bezel + menu bar reading, amber rim glow, and orbiting glyphs overlapping the silhouette.",
+  "warnings": [
+    "Hero screenshot at the dock pose (pos.x=2.6, rotY=-0.12) shows the laptop mostly off the right edge — the bezel/menu-bar detail is more visible in the About frame. The laptop upgrades (bezel, mac menu bar with traffic lights, aluminum physical material, amber power LED, rubber feet, hinge cylinder, logo cutout, key light rig, tightened 4-glyph orbit) are all wired but the hero pose is chosen by SceneDock and not changed here per scope.",
+    "Playwright default test timeout (120s) was insufficient for the 6-section sweep with added waits; raised suite timeout to 240s. Full spec now passes in ~3.7 min."
+  ]
+}

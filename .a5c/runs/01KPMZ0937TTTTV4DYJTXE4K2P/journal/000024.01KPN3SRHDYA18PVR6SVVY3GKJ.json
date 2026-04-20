@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:33:30.029Z",
+  "data": {
+    "effectId": "01KPN3SRGT9AQQN5SBG6Z3QYC8",
+    "invocationKey": "portfolio-3d-core:S000012:quality-score",
+    "invocationHash": "db4c9167d9d6c5ef6479a6c282141d55dd60fda3a391694f1053c9ad6e41d804",
+    "stepId": "S000012",
+    "taskId": "quality-score",
+    "kind": "agent",
+    "label": "Compute overall quality score",
+    "taskDefRef": "tasks/01KPN3SRGT9AQQN5SBG6Z3QYC8/task.json"
+  },
+  "checksum": "da99c4e4fd9784eec3988c71af39084c3ae4bcf6b711c45463154829ca60414c"
+}

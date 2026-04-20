@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:47:44.084Z",
+  "data": {
+    "effectId": "01KPN4KTJ0S139STVGR3KDJMR4",
+    "invocationKey": "portfolio-3d-core:S000019:final-report",
+    "invocationHash": "7b922db0c2669d205c348d14634817c73a8f9b45a601c931c11c182e88e6f3a4",
+    "stepId": "S000019",
+    "taskId": "final-report",
+    "kind": "agent",
+    "label": "Write final report",
+    "taskDefRef": "tasks/01KPN4KTJ0S139STVGR3KDJMR4/task.json"
+  },
+  "checksum": "12dda3477fb1fbad020c73cfdc29853fb3420d46e5d41b3fe8e6b69305290b16"
+}

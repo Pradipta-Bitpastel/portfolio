@@ -1,0 +1,18 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T08:16:26.524Z",
+  "data": {
+    "effectId": "01KPMZCNC8RZHRDT8ZBBQ99EHA",
+    "invocationKey": "portfolio-3d-core:S000002:__sdk.breakpoint",
+    "invocationHash": "8a5d5a2e40032dbc370f5339a7dfe2246fc41b5a044a75f9479390d39b34a64f",
+    "stepId": "S000002",
+    "taskId": "__sdk.breakpoint",
+    "kind": "breakpoint",
+    "label": "breakpoint",
+    "taskDefRef": "tasks/01KPMZCNC8RZHRDT8ZBBQ99EHA/task.json",
+    "labels": [
+      "breakpoint"
+    ]
+  },
+  "checksum": "2fd9a0f24cfd8589401e1cfd84b3d7824f727d65e2c62f00f24966c1562e9253"
+}

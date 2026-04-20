@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:43:23.902Z",
+  "data": {
+    "effectId": "01KPN4BWFJSZ6RCMVCSDM76MQQ",
+    "invocationKey": "portfolio-3d-core:S000017:visual-review",
+    "invocationHash": "37b34e8172bbbce74a234fedca9b7a4a1741c7122512099b4e58310db9ac4b4b",
+    "stepId": "S000017",
+    "taskId": "visual-review",
+    "kind": "agent",
+    "label": "Visual design review via Playwright screenshots",
+    "taskDefRef": "tasks/01KPN4BWFJSZ6RCMVCSDM76MQQ/task.json"
+  },
+  "checksum": "397cacc57d6dafddc871a755fbf179d39ada002c825bbfd999a6eb6f4331b367"
+}

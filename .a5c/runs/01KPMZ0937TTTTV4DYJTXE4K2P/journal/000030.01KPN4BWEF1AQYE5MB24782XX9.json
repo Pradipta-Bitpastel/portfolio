@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T09:43:23.855Z",
+  "data": {
+    "effectId": "01KPN4BWDP76RAD4RA33QWEK4D",
+    "invocationKey": "portfolio-3d-core:S000015:lighthouse",
+    "invocationHash": "aee7865b55e653e3c6fd98a2668c8929c7ce053988b9761ebc9224fa1946a725",
+    "stepId": "S000015",
+    "taskId": "lighthouse",
+    "kind": "agent",
+    "label": "Run Lighthouse audit",
+    "taskDefRef": "tasks/01KPN4BWDP76RAD4RA33QWEK4D/task.json"
+  },
+  "checksum": "4d78893dc678d02baa2647eec0a228a45ae93f8b15a25818fa94494851e80484"
+}

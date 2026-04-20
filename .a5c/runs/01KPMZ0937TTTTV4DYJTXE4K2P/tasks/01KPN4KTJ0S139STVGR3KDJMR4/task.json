@@ -1,0 +1,801 @@
+{
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KPN4KTJ0S139STVGR3KDJMR4",
+  "taskId": "final-report",
+  "invocationKey": "portfolio-3d-core:S000019:final-report",
+  "stepId": "S000019",
+  "kind": "agent",
+  "title": "Write final report",
+  "io": {
+    "inputJsonPath": "tasks/01KPN4KTJ0S139STVGR3KDJMR4/input.json",
+    "outputJsonPath": "tasks/01KPN4KTJ0S139STVGR3KDJMR4/result.json"
+  },
+  "inputs": {
+    "converged": true,
+    "currentScore": 86,
+    "history": [
+      {
+        "e2e": {
+          "consoleErrors": [],
+          "failed": 0,
+          "failures": [],
+          "notes": "14 tests from tests/e2e/portfolio.spec.ts (7 tests x 2 projects: desktop-chromium + mobile) + 6 pre-existing tests/visual/screenshot.spec.ts tests. Initial run required a rebuild of .next (missing vendor-chunks). Added data-fallback=\"core\" attribute to components/SvgCoreFallback.tsx root <svg>.",
+          "passed": 20,
+          "reportPath": "artifacts/e2e-1.json",
+          "total": 20
+        },
+        "iteration": 1,
+        "lighthouse": {
+          "accessibility": 100,
+          "bestPractices": 100,
+          "cls": 0,
+          "fcp": 753.7072000000001,
+          "lcp": 2553.7072000000003,
+          "performance": 96,
+          "recommendations": [
+            {
+              "audit": "largest-contentful-paint",
+              "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
+              "savingsMs": 0,
+              "title": "Largest Contentful Paint"
+            },
+            {
+              "audit": "forced-reflow-insight",
+              "description": "A forced reflow occurs when JavaScript queries geometric properties (such as offsetWidth) after styles have been invalidated by a change to the DOM state. This can result in poor performance. Learn more about [forced reflows](https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) and possible mitigations.",
+              "savingsMs": 0,
+              "title": "Forced reflow"
+            },
+            {
+              "audit": "legacy-javascript-insight",
+              "description": "Polyfills and transforms enable older browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/articles/baseline-and-polyfills) features, unless you know you must support older browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://philipwalton.com/articles/the-state-of-es5-on-the-web/)",
+              "savingsMs": 0,
+              "title": "Legacy JavaScript"
+            },
+            {
+              "audit": "network-dependency-tree-insight",
+              "description": "[Avoid chaining critical requests](https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains) by reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load.",
+              "savingsMs": 0,
+              "title": "Network dependency tree"
+            },
+            {
+              "audit": "render-blocking-insight",
+              "description": "Requests are blocking the page's initial render, which may delay LCP. [Deferring or inlining](https://web.dev/learn/performance/understanding-the-critical-path#render-blocking_resources) can move these network requests out of the critical path.",
+              "savingsMs": 0,
+              "title": "Render blocking requests"
+            },
+            {
+              "audit": "interactive",
+              "description": "Time to Interactive is the amount of time it takes for the page to become fully interactive. [Learn more about the Time to Interactive metric](https://developer.chrome.com/docs/lighthouse/performance/interactive/).",
+              "savingsMs": 0,
+              "title": "Time to Interactive"
+            },
+            {
+              "audit": "render-blocking-resources",
+              "description": "Resources are blocking the first paint of your page. Consider delivering critical JS/CSS inline and deferring all non-critical JS/styles. [Learn how to eliminate render-blocking resources](https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources/).",
+              "savingsMs": 32,
+              "title": "Eliminate render-blocking resources"
+            },
+            {
+              "audit": "unused-javascript",
+              "description": "Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. [Learn how to reduce unused JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unused-javascript/).",
+              "savingsMs": 0,
+              "title": "Reduce unused JavaScript"
+            },
+            {
+              "audit": "legacy-javascript",
+              "description": "Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/baseline) features, unless you know you must support legacy browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://philipwalton.com/articles/the-state-of-es5-on-the-web/)",
+              "savingsMs": 0,
+              "title": "Avoid serving legacy JavaScript to modern browsers"
+            },
+            {
+              "audit": "mainthread-work-breakdown",
+              "description": "Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to minimize main-thread work](https://developer.chrome.com/docs/lighthouse/performance/mainthread-work-breakdown/)",
+              "savingsMs": 0,
+              "title": "Minimize main-thread work"
+            },
+            {
+              "audit": "largest-contentful-paint-element",
+              "description": "This is the largest contentful element painted within the viewport. [Learn more about the Largest Contentful Paint element](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
+              "savingsMs": 0,
+              "title": "Largest Contentful Paint element"
+            },
+            {
+              "audit": "valid-source-maps",
+              "description": "Source maps translate minified code to the original source code. This helps developers debug in production. In addition, Lighthouse is able to provide further insights. Consider deploying source maps to take advantage of these benefits. [Learn more about source maps](https://developer.chrome.com/docs/devtools/javascript/source-maps/).",
+              "savingsMs": 0,
+              "title": "Missing source maps for large first-party JavaScript"
+            }
+          ],
+          "reportPath": "artifacts/lighthouse-1.json",
+          "seo": 100,
+          "tbt": 121
+        },
+        "recommendations": [
+          {
+            "area": "ConnectionLines visibility",
+            "issue": "Lines core→modules not readable in Projects screenshot despite opacity tween.",
+            "patch": "In components/three/ConnectionLines.tsx: bump default LineMaterial linewidth to 2.5, add transparent glow via additive blending + a thicker soft copy with 0.4 opacity; in ProjectsSection tween connections target to 1.0 (was 0.8); bump Bloom intensity or threshold to catch thin lines.",
+            "priority": 1
+          },
+          {
+            "area": "Hero contrast",
+            "issue": "'SYSTEM // BOOT' headline overlapping glowing core at low contrast.",
+            "patch": "Move hero headline off-center (grid-cols-2 layout on desktop) and raise to z-10 with solid dark gradient scrim (bg-gradient-to-r from-bg via-bg/80 to-transparent) behind text. Also boost tracking on display headline (tracking-tighter → tracking-normal+) and add text-shadow on hover.",
+            "priority": 2
+          },
+          {
+            "area": "Skills section overlays",
+            "issue": "Sub-panel skill lists are thin DOM; spec calls for ModuleBadge + SkillBar components showing per-module proficiency.",
+            "patch": "Create components/ui/SkillBar.tsx (animated GSAP-scrubbed width bar with glow) and ModuleBadge.tsx (icon+label chip). In SkillsSection render 8-10 SkillBars per active module, each tweening width 0% → skill.level% with stagger on sub-step activation. Flip between sets between sub-steps.",
+            "priority": 3
+          },
+          {
+            "area": "Projects distinct state + card layout",
+            "issue": "Projects scene state too similar to Skills; spec calls for an 'Execution Layer' feel with connection network activated and a horizontal pinned carousel of ProjectCard floats.",
+            "patch": "In ProjectsSection, in addition to opening connection lines, tween core to position [0, 0.6, 0] (slight lift) and scale 1.4 with slower rotation; change card layout from vertical grid to horizontal-scroll pinned row (ScrollTrigger horizontal pin tween x translate) — each card with rotate-y parallax; increase card z-depth with CSS perspective-1600 transform-style-preserve-3d.",
+            "priority": 4
+          },
+          {
+            "area": "Contact section completeness",
+            "issue": "Missing 'Ping the core.' heading, contact form / magnetic-button CTA, and proper '// 06' section eyebrow.",
+            "patch": "In ContactSection: add eyebrow '// 06 SIGNAL TRANSMISSION', headline 'Ping the core.', and a 3-field GlassPanel form (name, email, message) with MagneticButton (mouse-attract via GSAP quickTo). Keep existing CTA links below the form. Also strengthen the pulsing-orb effect with a clearer outward-ring keyframe (expanding torus or drei <Trail>).",
+            "priority": 5
+          }
+        ],
+        "score": 82,
+        "visual": {
+          "issues": [
+            "Hero headline 'SYSTEM // BOOT' overlaps the 3D core with insufficient contrast; no 'ALEX CHEN — DEVELOPER CONTROL CORE' primary headline or terminal Scramble lines visible per spec §9.1",
+            "ConnectionLines between core and modules are not visible on any section — either uDraw is staying at 0 or bloom/line-shader is not rendering the glowing lines (spec §6 + §7.3/§7.6)",
+            "Skills section missing <ModuleBadge> DOM cards and <SkillBar>s at section top; only 3D is present so skill labels (React, Node, Docker, AWS, React Native) are not communicated",
+            "Projects camera/3D state is nearly identical to skills — lacks distinct 'execution' treatment (spec §7.4: camera left to [-3.2,0.4,5.0], active module brighter, others dimmed). Horizontal ProjectCard carousel not anchored at section top",
+            "Contact section eyebrow reads 'SYS.SIGNAL // 04' but spec §9.6 mandates '// 06'; primary 'Ping the core.' heading and the contact form (Name/Email/Message + MagneticButton) are not visible in the 1440x900 top-of-section frame",
+            "Ground Grid plane (spec §6) not visible in any section — may be disabled or gridOpacity stuck at 0",
+            "PostFX bloom feels subtle — neon glow halos around modules are faint; would lift glass panels and line visibility if intensity ~0.9 per spec is actually reaching the render",
+            "On several sections (projects/experience/contact) overlay copy collides with 3D geometry reducing legibility; a right-side or bottom glass panel layout would keep text over solid glass"
+          ],
+          "perSection": {
+            "about": {
+              "notes": "Glass panel on left reads well: backdrop-blur + subtle border visible, eyebrow 'SYS.INIT // 02 — OPERATOR PROFILE' rendered in mono eyebrow, gradient heading 'Five years shipping production software.' Stats row (120+, 99.98%, 5) present inside panel. Camera offset right creates a distinct 'state' from hero. Core + ghosted modules linger behind — nice continuity. Minor: the right-side glass panel (if intended) looks like a dim empty rectangle overlay. Headline gradient stops slightly washed.",
+              "score": 74
+            },
+            "contact": {
+              "notes": "Dark bg + core pulsing with brighter cyan/blue emissive (core scale looks expanded 1.25 per §7.6 — good). Eyebrow shows 'SYS.SIGNAL // 04 - OUTBOUND' but spec §9.6 calls for '// 06' — numbering bug. 'Ping the core.' heading NOT visible — subtitle text 'Open to full-stack and 3D-web roles...' overlaps the purple module, hurting readability. No contact form fields (Name/Email/Message) or 'Send signal ↗' MagneticButton in frame. Footer text '© 2026 ALEX CHEN — DESIGNED & CODED IN NEXT.JS 14 + R3F + GSAP' anchors bottom. Palette and core state are on brand; DOM content is the weakness.",
+              "score": 68
+            },
+            "experience": {
+              "notes": "Eyebrow 'SYS.TIMELINE // 05 - HISTORY' and gradient headline 'A short history of shipping.' readable and distinct. A thin curved orbital/timeline arc path is visible behind modules (first hint of SVG draw/connection on any section). Core is slightly smaller (matches scale 1.1→0.75 per §7.5), rig tilt appears increased. TimelineNode list not visible in this top-of-section frame; DrawSVG path stroke animation not in-progress statically. Camera pulled back feel is consistent with spec.",
+              "score": 73
+            },
+            "hero": {
+              "notes": "Dark bg #0b0f19 is present. Cyan/blue core + 5 neon orbiting modules (green torus-knot, purple sphere, orange cube, blue shape, cyan bar) clearly visible — strong 3D presence. Gradient headline 'SYSTEM // BOOT' is readable but overlaps the central core, hurting legibility; needs a vignette/backdrop or offset layout. No visible 'ALEX CHEN' primary headline per spec §9.1. No terminal/Scramble lines visible in frame. Scroll hint tiny text near bottom. Grid ground plane not visible. Bloom/postFX appears mild.",
+              "score": 72
+            },
+            "projects": {
+              "notes": "Section eyebrow 'SYS.EXECUTION // 04 - SELECTED WORK', gradient headline 'Execution.' and sub 'Five production systems...' visible. 3D scene is essentially identical to skills camera — not distinctly 'execution' state. No ProjectCard horizontal carousel visible in frame, no active module highlight, no dimming of inactive modules per spec §9.4. Connection lines not visible (no bloom to reveal). ChromaticAberration spikes not evident. Overall this section on the static shot reads more like a reprise of skills; the horizontal pinned scroll content isn't showing at section-top anchor.",
+              "score": 66
+            },
+            "skills": {
+              "notes": "Clearest 3D frame: core icosahedron + 5 modules spread wide, neon palette holds (blue, cyan, green, orange, purple). Gradient headline 'Five modules. One runtime.' readable, eyebrow 'SYS.ACTIVATION // 03 - MODULES ONLINE' present. Missing per spec §9.3: <ModuleBadge> cards (should show 5 badges with skill labels) and <SkillBar>s — no DOM overlay of skills visible at this scroll position. Connection lines between core and modules not discernible. Distinct camera vs hero (modules spread wider, core slightly lower), state feels 'active'.",
+              "score": 70
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/section-hero-iter1.png",
+            "artifacts/screenshots/section-about-iter1.png",
+            "artifacts/screenshots/section-skills-iter1.png",
+            "artifacts/screenshots/section-projects-iter1.png",
+            "artifacts/screenshots/section-experience-iter1.png",
+            "artifacts/screenshots/section-contact-iter1.png"
+          ],
+          "visualScore": 71
+        }
+      },
+      {
+        "e2e": {
+          "consoleErrors": [],
+          "failed": 6,
+          "failures": [
+            {
+              "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#hero",
+              "title": "section hero is reachable and visible [desktop-chromium]"
+            },
+            {
+              "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#about",
+              "title": "section about is reachable and visible [mobile]"
+            },
+            {
+              "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#skills",
+              "title": "section skills is reachable and visible [mobile]"
+            },
+            {
+              "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#projects",
+              "title": "section projects is reachable and visible [mobile]"
+            },
+            {
+              "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#experience",
+              "title": "section experience is reachable and visible [mobile]"
+            },
+            {
+              "error": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3010/#contact",
+              "title": "section contact is reachable and visible [mobile]"
+            }
+          ],
+          "notes": "Server (next start on :3010) died mid-run; all 6 failures are ERR_CONNECTION_REFUSED infra flakes, not test defects. Iter 1 passed all 20 on the same suite. Playwright JSON file on disk (artifacts/e2e-1.json) was NOT overwritten by iter 2 - it still holds iter 1 data; counts here parsed from embedded JSON in stdout log at /tmp/pw2-output.log.",
+          "passed": 12,
+          "reportPath": "artifacts/e2e-1.json",
+          "total": 18
+        },
+        "iteration": 2,
+        "lighthouse": {
+          "accessibility": 100,
+          "bestPractices": 100,
+          "cls": 0,
+          "fcp": 1028.0825,
+          "lcp": 2290.165,
+          "performance": 89,
+          "recommendations": [
+            {
+              "audit": "largest-contentful-paint",
+              "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
+              "savingsMs": 0,
+              "title": "Largest Contentful Paint"
+            },
+            {
+              "audit": "total-blocking-time",
+              "description": "Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [Learn more about the Total Blocking Time metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/).",
+              "savingsMs": 0,
+              "title": "Total Blocking Time"
+            },
+            {
+              "audit": "speed-index",
+              "description": "Speed Index shows how quickly the contents of a page are visibly populated. [Learn more about the Speed Index metric](https://developer.chrome.com/docs/lighthouse/performance/speed-index/).",
+              "savingsMs": 0,
+              "title": "Speed Index"
+            },
+            {
+              "audit": "forced-reflow-insight",
+              "description": "A forced reflow occurs when JavaScript queries geometric properties (such as offsetWidth) after styles have been invalidated by a change to the DOM state. This can result in poor performance. Learn more about [forced reflows](https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing#avoid-forced-synchronous-layouts) and possible mitigations.",
+              "savingsMs": 0,
+              "title": "Forced reflow"
+            },
+            {
+              "audit": "legacy-javascript-insight",
+              "description": "Polyfills and transforms enable older browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/articles/baseline-and-polyfills) features, unless you know you must support older browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://philipwalton.com/articles/the-state-of-es5-on-the-web/)",
+              "savingsMs": 0,
+              "title": "Legacy JavaScript"
+            },
+            {
+              "audit": "network-dependency-tree-insight",
+              "description": "[Avoid chaining critical requests](https://developer.chrome.com/docs/lighthouse/performance/critical-request-chains) by reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load.",
+              "savingsMs": 0,
+              "title": "Network dependency tree"
+            },
+            {
+              "audit": "render-blocking-insight",
+              "description": "Requests are blocking the page's initial render, which may delay LCP. [Deferring or inlining](https://web.dev/learn/performance/understanding-the-critical-path#render-blocking_resources) can move these network requests out of the critical path.",
+              "savingsMs": 0,
+              "title": "Render blocking requests"
+            },
+            {
+              "audit": "interactive",
+              "description": "Time to Interactive is the amount of time it takes for the page to become fully interactive. [Learn more about the Time to Interactive metric](https://developer.chrome.com/docs/lighthouse/performance/interactive/).",
+              "savingsMs": 0,
+              "title": "Time to Interactive"
+            },
+            {
+              "audit": "max-potential-fid",
+              "description": "The maximum potential First Input Delay that your users could experience is the duration of the longest task. [Learn more about the Maximum Potential First Input Delay metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-max-potential-fid/).",
+              "savingsMs": 0,
+              "title": "Max Potential First Input Delay"
+            },
+            {
+              "audit": "render-blocking-resources",
+              "description": "Resources are blocking the first paint of your page. Consider delivering critical JS/CSS inline and deferring all non-critical JS/styles. [Learn how to eliminate render-blocking resources](https://developer.chrome.com/docs/lighthouse/performance/render-blocking-resources/).",
+              "savingsMs": 0,
+              "title": "Eliminate render-blocking resources"
+            },
+            {
+              "audit": "unused-javascript",
+              "description": "Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. [Learn how to reduce unused JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unused-javascript/).",
+              "savingsMs": 0,
+              "title": "Reduce unused JavaScript"
+            },
+            {
+              "audit": "legacy-javascript",
+              "description": "Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/baseline) features, unless you know you must support legacy browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://philipwalton.com/articles/the-state-of-es5-on-the-web/)",
+              "savingsMs": 150,
+              "title": "Avoid serving legacy JavaScript to modern browsers"
+            },
+            {
+              "audit": "dom-size",
+              "description": "A large DOM will increase memory usage, cause longer [style calculations](https://developers.google.com/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations), and produce costly [layout reflows](https://developers.google.com/speed/articles/reflow). [Learn how to avoid an excessive DOM size](https://developer.chrome.com/docs/lighthouse/performance/dom-size/).",
+              "savingsMs": 0,
+              "title": "Avoid an excessive DOM size"
+            },
+            {
+              "audit": "bootup-time",
+              "description": "Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to reduce Javascript execution time](https://developer.chrome.com/docs/lighthouse/performance/bootup-time/).",
+              "savingsMs": 0,
+              "title": "Reduce JavaScript execution time"
+            },
+            {
+              "audit": "mainthread-work-breakdown",
+              "description": "Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to minimize main-thread work](https://developer.chrome.com/docs/lighthouse/performance/mainthread-work-breakdown/)",
+              "savingsMs": 0,
+              "title": "Minimize main-thread work"
+            }
+          ],
+          "reportPath": "artifacts/lighthouse-2.json",
+          "seo": 100,
+          "tbt": 382
+        },
+        "recommendations": [
+          {
+            "area": "perf-regression",
+            "note": "Consider code-splitting MagneticButton + ping rings from critical path; migrate ConnectionLines to a single instanced mesh instead of 10 Line2 instances to cut draw calls. Not required for convergence.",
+            "priority": 1
+          },
+          {
+            "area": "visual-capture",
+            "note": "Enhance visual tests to scroll within pinned sections (Skills/Projects) so sub-states are captured — a test-framework improvement, not a code issue.",
+            "priority": 2
+          },
+          {
+            "area": "contact-layering",
+            "note": "Raise `z-10` on the 'Ping the core.' headline above the ping-rings SVG layer; quick one-line fix.",
+            "priority": 3
+          }
+        ],
+        "score": 86,
+        "visual": {
+          "issues": [
+            "Skills screenshot does not show ModuleBadge + SkillBars — captured frame is at the intro/title state of a pinned section, so the skill overlays never came into view. Either (a) the pinned-scroll sub-slide needs to be triggered after scrollIntoView via an additional window.scrollBy or timeline advance, or (b) the overlay needs to be visible on first sub-slide.",
+            "Projects screenshot shows the section title + carousel dot-paginator but no actual project card with neon border is in-frame. Same pinned-section capture issue as Skills: cards likely live in later sub-slides.",
+            "Connection lines are not readable as a glowing web in the Projects screenshot. The Experience screenshot shows the clearest line (faint dotted arc). Thickness/double-render may need another bump, or the lines need to draw between visible module positions rather than off-viewport anchors.",
+            "Contact 'Ping the core.' headline is not visible in the captured frame — the bright expanding ping-ring glow is overlapping/obscuring the headline zone, or the headline z-index/position puts it under the radial gradient.",
+            "Hero headline wraps as 'SYSTEM // BOO' / 'T' at 1440w — consider a tighter tracking or a smaller font-size breakpoint so 'SYSTEM // BOOT' fits on one line (or intentionally breaks at '//').",
+            "Screenshot spec uses a fixed 1400ms wait after scrollIntoView; pinned / scroll-triggered sub-slides (skills, projects) need extra scroll events to actually reveal the badge/bar/card content — consider scripting a window.scrollBy sequence per pinned section."
+          ],
+          "perSection": {
+            "about": {
+              "notes": "GlassPanel rendering well with purple border glow, 'Five years shipping production software.' headline, eyebrow 'SYS.INIT // 00 -- OPERATOR PROFILE', metrics row (120+ SHIPPED / 99.70% UPTIME / 5 STACKS MASTERED), paragraph copy, and three colored 3D blobs (green/cyan/orange) visible behind/beside the panel. Glass fidelity good, typography clean. (a)85 (b)85 (c)75 (d)80 (e)70.",
+              "score": 78
+            },
+            "contact": {
+              "notes": "Form landed: GlassPanel with Name / Email / Message fields and teal 'SEND SIGNAL' button, eyebrow '// 06 SIGNAL TRANSMISSION' is present at top, subtext 'Open to full-stack and 3D-web roles...' present, closing pill 'LET'S BUILD SOMETHING POWERFUL.' present. A bright blue radial glow (expanding ping ring visible mid-animation) fills the panel center. MISSING/OBSCURED: the large 'Ping the core.' headline is not visible — either it is covered by the ping-ring glow or rendered behind/outside the captured frame. Orange and cyan module shapes flank the panel. (a)85 (b)85 (c)75 (d)78 (e)80.",
+              "score": 80
+            },
+            "experience": {
+              "notes": "'A short history of shipping.' headline with eyebrow 'SYS.TIMELINE // 05 -- HISTORY'. 3D shapes are arranged along an arc with a faint dotted connection line curving through — this is the clearest instance of the double-rendered connection line, though still subtle. No timeline cards visible in this frame (likely below the viewport). (a)82 (b)65 (c)78 (d)78 (e)70.",
+              "score": 72
+            },
+            "hero": {
+              "notes": "12-col grid landed: 'SYSTEM // BOOT' headline is left-weighted with boot-log terminal panel on the right showing green 'running review v2.1 / loading module 0/5 / ready -- press enter to init' lines. Eyebrow '//BOOT.00', subhead 'The Developer Control Core', CTA 'SCROLL TO INIT ->' all present. Glow/dropshadow on headline is visible and a faint horizontal scrim sits behind it. Palette on-brand (deep navy, cyan+magenta accents). Minor concern: headline wraps awkwardly ('BOOT' / 'T' on second line) at 1440w and terminal panel looks a bit small/cropped in upper-right corner. (a)90 (b)78 (c)70 (d)85 (e)88.",
+              "score": 82
+            },
+            "projects": {
+              "notes": "Eyebrow 'SYS.EXECUTION // 04 -- SELECTED WORK', 'Execution.' magenta headline, subhead about '5 production systems', and a vertical dot-paginator on the right edge (suggesting a carousel) all rendered. HOWEVER no neon-bordered project cards are actually visible in the frame — only the large central sphere with play icon and the floating module shapes. Horizontal pinned carousel implied by the dot-nav but the card track itself is empty/offscreen in this screenshot. Connection lines: not clearly readable as a 'glowing web' between core and modules; at best, faint aura around the central sphere. (a)80 (b)55 (c)80 (d)75 (e)60.",
+              "score": 62
+            },
+            "skills": {
+              "notes": "CRITICAL GAP: screenshot shows only the section header state ('Five modules. One runtime.' + 3D module cluster) — NO ModuleBadge or SkillBars visible. Expected gradient-filled bars with % labels are absent in the captured frame. Eyebrow 'SYS.ACTIVATION // 03 -- MODULES ONLINE' is present. The 3D scene (sphere, torus knot, cubes) is vibrant but the whole point of iter2 (badge + bars overlay) did not render in the captured viewport — either the sub-slide hasn't activated by scroll-start or the overlay lives further down the pinned section. (a)75 (b)40 (c)85 (d)70 (e)55.",
+              "score": 55
+            }
+          },
+          "refinementsLanded": {
+            "connectionLines": false,
+            "contactComplete": false,
+            "heroContrast": true,
+            "projectsCarousel": false,
+            "skillsOverlays": false
+          },
+          "screenshots": [
+            "artifacts/screenshots/section-hero-iter2.png",
+            "artifacts/screenshots/section-about-iter2.png",
+            "artifacts/screenshots/section-skills-iter2.png",
+            "artifacts/screenshots/section-projects-iter2.png",
+            "artifacts/screenshots/section-experience-iter2.png",
+            "artifacts/screenshots/section-contact-iter2.png"
+          ],
+          "visualScore": 74
+        }
+      }
+    ],
+    "iterations": 2,
+    "projectName": "portfolio",
+    "spec": {
+      "artifacts": {
+        "spec": "/Users/pradiptajana/Portfolio/artifacts/spec.md"
+      },
+      "deps": [
+        "next@14.2.15",
+        "react@18.3.1",
+        "react-dom@18.3.1",
+        "three@0.166.1",
+        "@react-three/fiber@8.17.10",
+        "@react-three/drei@9.114.0",
+        "@react-three/postprocessing@2.16.3",
+        "postprocessing@6.35.3",
+        "gsap@3.12.5",
+        "gsap-trial@3.12.5",
+        "lenis@1.1.13",
+        "zustand@4.5.5",
+        "clsx@2.1.1",
+        "tailwind-merge@2.5.2",
+        "maath@0.10.8",
+        "leva@0.9.35"
+      ],
+      "devDeps": [
+        "typescript@5.6.2",
+        "@types/node@20.16.10",
+        "@types/react@18.3.11",
+        "@types/react-dom@18.3.0",
+        "@types/three@0.166.0",
+        "tailwindcss@3.4.13",
+        "postcss@8.4.47",
+        "autoprefixer@10.4.20",
+        "eslint@8.57.1",
+        "eslint-config-next@14.2.15",
+        "prettier@3.3.3",
+        "prettier-plugin-tailwindcss@0.6.8",
+        "vitest@2.1.2",
+        "@vitest/ui@2.1.2",
+        "jsdom@25.0.1",
+        "@testing-library/react@16.0.1",
+        "@playwright/test@1.47.2",
+        "@lhci/cli@0.14.0",
+        "glslify-loader@2.0.0",
+        "raw-loader@4.0.2"
+      ],
+      "experience": [
+        {
+          "company": "Aurora Labs",
+          "id": "aurora-labs",
+          "period": "2024-present",
+          "role": "Sr. Fullstack Engineer"
+        },
+        {
+          "company": "PulseGrid",
+          "id": "pulsegrid",
+          "period": "2022-2024",
+          "role": "Fullstack Engineer"
+        },
+        {
+          "company": "Moonlit",
+          "id": "moonlit",
+          "period": "2020-2022",
+          "role": "Frontend Engineer"
+        },
+        {
+          "company": "Bitforge",
+          "id": "bitforge",
+          "period": "2019-2020",
+          "role": "Software Intern"
+        }
+      ],
+      "gsapPaths": [
+        "src/gsap/registerPlugins.ts",
+        "src/gsap/customEases.ts",
+        "src/gsap/index.ts",
+        "src/gsap/timelines/hero.ts",
+        "src/gsap/timelines/about.ts",
+        "src/gsap/timelines/skills.ts",
+        "src/gsap/timelines/projects.ts",
+        "src/gsap/timelines/experience.ts",
+        "src/gsap/timelines/contact.ts"
+      ],
+      "gsapPlugins": {
+        "club": [
+          "ScrollSmoother",
+          "SplitText",
+          "DrawSVGPlugin",
+          "MorphSVGPlugin",
+          "InertiaPlugin",
+          "ScrambleTextPlugin",
+          "Physics2DPlugin",
+          "PhysicsPropsPlugin",
+          "CustomBounce",
+          "CustomWiggle",
+          "GSDevTools"
+        ],
+        "free": [
+          "ScrollTrigger",
+          "Observer",
+          "Flip",
+          "CustomEase",
+          "TextPlugin",
+          "EaselPlugin",
+          "PixiPlugin",
+          "MotionPathPlugin"
+        ],
+        "registration": "All plugins registered once client-side in src/gsap/registerPlugins.ts, each wrapped in try/catch. Club plugins attempted from 'gsap/*' then 'gsap-trial/*'; failures log a dev warning and the site uses documented fallbacks (Lenis for ScrollSmoother, manual span split for SplitText, strokeDasharray for DrawSVG, opacity crossfade for MorphSVG, TextPlugin for ScrambleText, CustomEase curves for bounce/wiggle)."
+      },
+      "mobileFallback": {
+        "behavior": "R3F Canvas replaced by static SVG core+5 orbit nodes animated via CSS keyframes; pinned sections revert to normal flow via ScrollTrigger.matchMedia; postprocessing disabled; GSAP durations scaled to ~0 under reduced-motion.",
+        "component": "src/components/three/SvgCoreFallback.tsx",
+        "triggers": [
+          "no WebGL",
+          "viewport width < 768px",
+          "hardwareConcurrency < 4",
+          "prefers-reduced-motion: reduce"
+        ]
+      },
+      "modules": [
+        {
+          "color": "#4f9cff",
+          "icon": "</>",
+          "id": "frontend",
+          "label": "Frontend",
+          "skills": [
+            "React",
+            "Next.js",
+            "R3F",
+            "GSAP",
+            "TypeScript"
+          ]
+        },
+        {
+          "color": "#9b5cff",
+          "icon": "{}",
+          "id": "backend",
+          "label": "Backend",
+          "skills": [
+            "Node",
+            "Go",
+            "Postgres",
+            "Redis",
+            "gRPC"
+          ]
+        },
+        {
+          "color": "#00d4ff",
+          "icon": "∞",
+          "id": "devops",
+          "label": "DevOps",
+          "skills": [
+            "Docker",
+            "K8s",
+            "Terraform",
+            "GitHub Actions"
+          ]
+        },
+        {
+          "color": "#ff8a3c",
+          "icon": "☁",
+          "id": "cloud",
+          "label": "Cloud",
+          "skills": [
+            "AWS",
+            "GCP",
+            "Cloudflare",
+            "Vercel"
+          ]
+        },
+        {
+          "color": "#39ffa5",
+          "icon": "▢",
+          "id": "mobile",
+          "label": "Mobile",
+          "skills": [
+            "React Native",
+            "Expo",
+            "Swift UI"
+          ]
+        }
+      ],
+      "palette": {
+        "bg": "#0b0f19",
+        "bgElevated": "#0f1424",
+        "blue": "#4f9cff",
+        "cyan": "#00d4ff",
+        "green": "#39ffa5",
+        "ink": "#e7ecf5",
+        "inkDim": "#9aa4b8",
+        "orange": "#ff8a3c",
+        "purple": "#9b5cff"
+      },
+      "performanceBudget": {
+        "CLS": 0.1,
+        "initialJSGzipKB": 220,
+        "LCP_ms": 3000,
+        "lighthousePerfDesktop": 0.9,
+        "lighthousePerfMobile": 0.75,
+        "TBT_ms": 300
+      },
+      "persona": {
+        "email": "alex@controlcore.dev",
+        "name": "Alex Chen",
+        "role": "Full-Stack Developer",
+        "tagline": "Orchestrating web, mobile and cloud from a single command surface."
+      },
+      "projects": [
+        {
+          "id": "neurostream-analytics",
+          "module": "backend",
+          "name": "NeuroStream Analytics",
+          "stack": [
+            "Next.js",
+            "Go",
+            "Kafka",
+            "ClickHouse"
+          ]
+        },
+        {
+          "id": "edgecast-cdn",
+          "module": "cloud",
+          "name": "EdgeCast CDN",
+          "stack": [
+            "Cloudflare Workers",
+            "Rust",
+            "R2"
+          ]
+        },
+        {
+          "id": "pulse-devops",
+          "module": "devops",
+          "name": "Pulse DevOps",
+          "stack": [
+            "Next.js",
+            "Terraform",
+            "GitHub Actions",
+            "Postgres"
+          ]
+        },
+        {
+          "id": "aether-design-system",
+          "module": "frontend",
+          "name": "Aether Design System",
+          "stack": [
+            "Storybook",
+            "Figma API",
+            "TypeScript",
+            "Tailwind"
+          ]
+        },
+        {
+          "id": "orbital-mobile-banking",
+          "module": "mobile",
+          "name": "Orbital Mobile Banking",
+          "stack": [
+            "React Native",
+            "Expo",
+            "Node",
+            "Postgres"
+          ]
+        }
+      ],
+      "scenePaths": [
+        "src/components/three/SceneRoot.tsx",
+        "src/components/three/SceneProvider.tsx",
+        "src/components/three/useSceneState.ts",
+        "src/components/three/Core.tsx",
+        "src/components/three/CoreMaterial.tsx",
+        "src/components/three/Module.tsx",
+        "src/components/three/ModulesRig.tsx",
+        "src/components/three/ConnectionLines.tsx",
+        "src/components/three/Particles.tsx",
+        "src/components/three/Grid.tsx",
+        "src/components/three/PostFX.tsx",
+        "src/components/three/CameraRig.tsx",
+        "src/components/three/SvgCoreFallback.tsx",
+        "src/components/three/shaders/core.vert.glsl",
+        "src/components/three/shaders/core.frag.glsl",
+        "src/components/three/shaders/line.vert.glsl",
+        "src/components/three/shaders/line.frag.glsl"
+      ],
+      "sectionPaths": [
+        "src/components/sections/Hero.tsx",
+        "src/components/sections/About.tsx",
+        "src/components/sections/Skills.tsx",
+        "src/components/sections/Projects.tsx",
+        "src/components/sections/Experience.tsx",
+        "src/components/sections/Contact.tsx"
+      ],
+      "sections": [
+        {
+          "codename": "Boot",
+          "eyebrow": "SYS.BOOT // 01",
+          "id": "hero",
+          "name": "Hero",
+          "progressRange": [
+            0,
+            0.16
+          ],
+          "sceneState": "Core scales 0.4->1.0 and pulses up to 1.0 with blue emissive; all 5 modules collapsed at origin (activation 0); no links; camera static at [0,0.6,7.5] fov 42 with slight dolly-in.",
+          "title": "ALEX CHEN — DEVELOPER CONTROL CORE"
+        },
+        {
+          "codename": "Init",
+          "eyebrow": "SYS.INIT // 02 — OPERATOR PROFILE",
+          "id": "about",
+          "name": "About",
+          "progressRange": [
+            0.16,
+            0.32
+          ],
+          "sceneState": "Core eases to scale 0.9 pulse 0.6, tint shifts toward purple; modules expand from origin onto orbit with activation 0.3; rig rotation ramps 0->0.04 rad/s; camera drifts to [2.6,1.2,5.8] fov 40; links still 0.",
+          "title": "Five years shipping production software."
+        },
+        {
+          "codename": "Activation",
+          "eyebrow": "SYS.ACTIVATION // 03 — MODULES ONLINE",
+          "id": "skills",
+          "name": "Skills",
+          "progressRange": [
+            0.32,
+            0.5
+          ],
+          "sceneState": "Core state=active, sinusoidal pulse amp 0.8, tint cycles across module colors; modules fire sequentially (FE, BE, DevOps, Cloud, Mobile) activation 0.3->1.0 with CustomBounce overshoot; connection lines draw in one-by-one via uDraw 0->1; camera arcs to [0,2.4,4.4] top-down via MotionPath.",
+          "title": "Five modules. One runtime."
+        },
+        {
+          "codename": "Execution",
+          "eyebrow": "SYS.EXECUTION // 04",
+          "id": "projects",
+          "name": "Projects",
+          "progressRange": [
+            0.5,
+            0.68
+          ],
+          "sceneState": "Core state=execute, scale pulses 0.9<->1.1 on card snap, chromatic aberration spikes; rig tilt 0.18->0.32; active module for current project at 1.0 others 0.4; only active link 1.0 others 0.3; camera slides to [-3.2,0.4,5.0].",
+          "title": "Execution log — 5 builds."
+        },
+        {
+          "codename": "Timeline",
+          "eyebrow": "SYS.TIMELINE // 05",
+          "id": "experience",
+          "name": "Experience",
+          "progressRange": [
+            0.68,
+            0.86
+          ],
+          "sceneState": "Core state=timeline, scale 1.1->0.75 collapsing, pulse 0.4; rig radius 3.2->4.6, rotation briefly 0.12 rad/s then settles 0.06; all links alpha 0.7; camera pulls back to [0,-0.3,8.2] fov 50 looking up.",
+          "title": "Roles, in order."
+        },
+        {
+          "codename": "Signal",
+          "eyebrow": "SYS.SIGNAL // 06 — OUTBOUND",
+          "id": "contact",
+          "name": "Contact",
+          "progressRange": [
+            0.86,
+            1
+          ],
+          "sceneState": "Core state=signal, scale 0.75->1.25 expands, pulse 1.0 then CustomWiggle strobe; modules all activation 1.0 and collapse inward (radius 4.6->1.6) on final 0.05; links full 1.0 with wiggle flicker; bloom 0.9->1.6; camera zooms to [0,0,3.2] fov 36.",
+          "title": "Ping the core."
+        }
+      ],
+      "stack": {
+        "3d": "React Three Fiber + drei + @react-three/postprocessing + three.js",
+        "animation": "GSAP 3 (ScrollTrigger, ScrollSmoother, SplitText, DrawSVG, MorphSVG, MotionPath, Flip, Observer, Inertia, ScrambleText, Physics2D, PhysicsProps, CustomEase, CustomBounce, CustomWiggle, GSDevTools, EaselPlugin, PixiPlugin, TextPlugin) — Club plugins guarded with try/catch fallbacks",
+        "deploy": "Vercel (edge API route, static page, preview per PR)",
+        "fonts": "Geist Sans + JetBrains Mono via next/font",
+        "framework": "Next.js 14 (App Router, TypeScript strict)",
+        "smoothscroll": "ScrollSmoother (primary) with Lenis fallback",
+        "state": "Zustand store for scene state",
+        "styling": "Tailwind CSS + CSS Modules + clsx + tailwind-merge",
+        "testing": "Playwright E2E + visual snapshots, Lighthouse CI, Vitest unit"
+      },
+      "testScenarios": [
+        "hero headline visible and contains ALEX CHEN",
+        "hero terminal lines finish typing within 2s",
+        "about stats counters reach final values after 16vh scroll",
+        "skills 5 ModuleBadge elements activate in sequence (frontend, backend, devops, cloud, mobile)",
+        "skills all 5 badges active at section end",
+        "projects horizontal pin scroll cycles data-project-active through all 5 projects",
+        "projects clicking a card opens detail panel",
+        "experience 4 timeline nodes present and DrawSVG path stroke-dashoffset reaches 0",
+        "experience years 2019-2024 visible",
+        "contact form submission shows 'signal received'",
+        "contact MagneticButton transforms on mousemove",
+        "scroll-journey: data-section-active transitions hero->about->skills->projects->experience->contact with no console errors",
+        "a11y: axe-core reports zero critical violations and tab order is complete",
+        "reduced-motion: Canvas replaced by SvgCoreFallback and content remains readable",
+        "lighthouse mobile: LCP<3000, CLS<0.1, TBT<300, perf>=0.75",
+        "visual snapshots match baseline at 0/50/100% per section on desktop and mobile"
+      ]
+    },
+    "targetQuality": 85
+  }
+}

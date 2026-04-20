@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-20T08:09:51.596Z",
+  "data": {
+    "effectId": "01KPMZ0KPG1H9N768EJ7EGWW69",
+    "invocationKey": "portfolio-3d-core:S000001:architect-spec",
+    "invocationHash": "15707d36adb0fd24f79a64e74a23fb56f3c3042aa9289ecc09312ee48952c33a",
+    "stepId": "S000001",
+    "taskId": "architect-spec",
+    "kind": "agent",
+    "label": "Architect portfolio spec",
+    "taskDefRef": "tasks/01KPMZ0KPG1H9N768EJ7EGWW69/task.json"
+  },
+  "checksum": "083b0cfe9e74971c917fc2a633b465244e11d643ffdbd0a64383b91ac476dd50"
+}

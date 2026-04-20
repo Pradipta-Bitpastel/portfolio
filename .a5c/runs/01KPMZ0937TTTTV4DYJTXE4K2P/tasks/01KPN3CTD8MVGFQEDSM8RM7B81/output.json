@@ -1,0 +1,9 @@
+{
+  "passed": 20,
+  "failed": 0,
+  "total": 20,
+  "failures": [],
+  "consoleErrors": [],
+  "reportPath": "artifacts/e2e-1.json",
+  "notes": "14 tests from tests/e2e/portfolio.spec.ts (7 tests x 2 projects: desktop-chromium + mobile) + 6 pre-existing tests/visual/screenshot.spec.ts tests. Initial run required a rebuild of .next (missing vendor-chunks). Added data-fallback=\"core\" attribute to components/SvgCoreFallback.tsx root <svg>."
+}

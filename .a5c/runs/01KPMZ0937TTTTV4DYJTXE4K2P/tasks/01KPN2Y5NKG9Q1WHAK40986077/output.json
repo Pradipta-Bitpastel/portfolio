@@ -1,0 +1,34 @@
+{
+  "filesCreated": [
+    "vercel.json",
+    "public/robots.txt",
+    "app/sitemap.ts",
+    "app/opengraph-image.tsx",
+    "app/icon.tsx",
+    ".env.example"
+  ],
+  "filesModified": [
+    "components/SvgCoreFallback.tsx",
+    "components/three/SceneContainer.tsx",
+    "app/globals.css",
+    "app/layout.tsx",
+    "content/profile.ts",
+    "content/projects.ts",
+    "content/skills.ts",
+    "README.md"
+  ],
+  "typecheckOk": true,
+  "buildOk": true,
+  "routeSizes": {
+    "/": "187 kB (First Load JS 320 kB)",
+    "sitemap.xml": "0 B (dynamic; 208 B rendered)",
+    "opengraph-image": "0 B (dynamic edge; 229902 B PNG rendered)",
+    "icon": "0 B (dynamic edge; 1378 B PNG rendered)",
+    "sharedFirstLoadJS": "87.8 kB"
+  },
+  "warnings": [
+    "`next build` reports: 'Using edge runtime on a page currently disables static generation for that page' — expected for /opengraph-image and /icon which use `runtime = \"edge\"`.",
+    "content/experience.ts left unchanged — already had 4 entries with 3 highlight bullets each, matching spec.",
+    "Main-bundle First Load JS for '/' is 320 kB which exceeds the 220 kB spec budget; three.js / R3F are now lazy-loaded via `next/dynamic({ ssr:false })` in SceneContainer so they are split into a client-only chunk, but the page-level route report still bakes some in. Further splitting belongs to a later phase."
+  ]
+}
