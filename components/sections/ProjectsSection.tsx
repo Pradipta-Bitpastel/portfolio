@@ -557,7 +557,7 @@ function ProjectsSectionImpl() {
               ref={dotsRef}
               className="pointer-events-auto flex items-center gap-3"
             >
-              {projects.map((p, i) => (
+              {projects.map((p) => (
                 <button
                   key={p.id}
                   type="button"

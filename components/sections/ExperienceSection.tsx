@@ -566,7 +566,7 @@ function ExperienceSectionImpl() {
                       )}
                       <span>{e.period}</span>
                       {i === 0 && (
-                        <span className="text-[9px] opacity-70">// ACTIVE</span>
+                        <span className="text-[9px] opacity-70">{"// ACTIVE"}</span>
                       )}
                     </div>
                     <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim/70">
