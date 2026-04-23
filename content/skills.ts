@@ -23,81 +23,83 @@ export const skills: ModuleSkills = {
     tagline: "Interface layer — surfaces people actually touch.",
     items: [
       "React 18",
-      "Next.js 14 (App Router)",
-      "React Three Fiber",
-      "drei / postprocessing",
-      "GSAP 3 + ScrollTrigger",
-      "TypeScript (strict)",
+      "Next.js (App Router)",
+      "JavaScript (ES2022+)",
+      "jQuery",
       "Tailwind CSS",
-      "CSS Modules",
-      "Zustand",
-      "Radix / shadcn"
+      "Material UI",
+      "SASS / CSS3",
+      "AdminLTE",
+      "Redux Toolkit",
+      "React Query"
     ]
   },
   backend: {
     label: "Backend",
     accent: "#ff8a3c",
-    tagline: "Durable services and APIs under load.",
+    tagline: "APIs, integrations and server-side glue.",
     items: [
+      "PHP",
+      "Django (deployment + env setup)",
       "Node.js",
-      "Go",
-      "PostgreSQL",
-      "Redis",
-      "gRPC",
-      "tRPC",
-      "GraphQL",
-      "Kafka",
-      "ClickHouse",
-      "OpenAPI / Zod"
+      "REST APIs",
+      "OpenAI API",
+      "Gemini API",
+      "MySQL",
+      "WordPress (theme + plugin layer)",
+      "Auth flows",
+      "Webhooks"
     ]
   },
   devops: {
     label: "DevOps",
     accent: "#39ffa5",
-    tagline: "Reproducible infra and safe delivery.",
+    tagline: "Safe delivery, from first push to production.",
     items: [
-      "Docker",
-      "Kubernetes",
-      "Terraform",
+      "Git / GitHub",
+      "CI/CD pipeline setup",
       "GitHub Actions",
-      "Pulumi",
-      "Prometheus / Grafana",
-      "OpenTelemetry",
-      "ArgoCD",
-      "Helm",
-      "Renovate"
+      "Linux server admin",
+      "Windows Server",
+      "Nginx / Apache",
+      "SSL / Let's Encrypt",
+      "Domain + DNS routing",
+      "Environment config",
+      "Release workflows"
     ]
   },
   cloud: {
     label: "Cloud",
     accent: "#9b5cff",
-    tagline: "Multi-cloud with a preference for the edge.",
+    tagline: "VM-up to go-live on Azure and GCP.",
     items: [
-      "AWS (ECS, Lambda, RDS, S3)",
-      "GCP (Cloud Run, Pub/Sub)",
-      "Cloudflare Workers",
-      "Cloudflare R2 / D1",
-      "Vercel Edge Functions",
-      "Fly.io",
-      "Fastly Compute",
-      "Supabase",
-      "Neon / Turso"
+      "Microsoft Azure",
+      "Google Cloud Platform",
+      "VM instance setup",
+      "Next.js deployment",
+      "Django deployment",
+      "Domain + SSL management",
+      "Object storage",
+      "Firewall + port config",
+      "Database provisioning",
+      "Monitoring basics"
     ]
   },
   mobile: {
     label: "Mobile",
     accent: "#00d4ff",
-    tagline: "Native-feeling apps on a single codebase.",
+    tagline: "Cross-platform apps with Expo — Android + iOS.",
     items: [
       "React Native",
-      "Expo (EAS)",
-      "Reanimated 3",
-      "Swift UI (basics)",
-      "Jetpack Compose (basics)",
+      "Expo (EAS build + submit)",
+      "React Navigation",
+      "Expo Router",
+      "Async Storage",
+      "Reanimated",
       "Push notifications",
-      "Deep links / Universal links",
-      "Biometric auth",
-      "Offline-first sync"
+      "Deep links",
+      "App store release flow",
+      "Platform APIs (Android + iOS)"
     ]
   }
 };

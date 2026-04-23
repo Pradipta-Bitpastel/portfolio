@@ -190,9 +190,9 @@ function ContactSectionImpl() {
   };
 
   const termLinks = [
-    { label: "github.com/alexchen", href: profile.socials.github },
-    { label: "linkedin/in/alexchen", href: profile.socials.linkedin },
-    { label: "x.com/alexchen", href: profile.socials.x }
+    { label: "github.com/Pradipta-Bitpastel", href: profile.socials.github },
+    { label: "linkedin.com/in/pradipta-kumar-jana", href: profile.socials.linkedin },
+    { label: "pradiptajana.co@gmail.com", href: `mailto:${profile.socials.email}` }
   ];
 
   return (
@@ -237,8 +237,8 @@ function ContactSectionImpl() {
         <h2
           ref={headlineRef}
           id="contact-heading"
-          className="font-display text-6xl leading-[0.88] tracking-[-0.035em] text-ink md:text-[8rem]"
-          style={{ fontWeight: 800 }}
+          className="font-display leading-[0.88] tracking-[-0.035em] text-ink"
+          style={{ fontWeight: 800, fontSize: "clamp(2.75rem,10vw,9rem)" }}
         >
           PING // THE_CORE
         </h2>
@@ -282,7 +282,7 @@ function ContactSectionImpl() {
                 type="text"
                 name="name"
                 autoComplete="name"
-                className="border-b border-[#FF7A1A]/40 bg-transparent px-0 py-2 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
+                className="border-b border-[#FF7A1A]/40 bg-transparent px-0 py-3 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -294,7 +294,7 @@ function ContactSectionImpl() {
                 type="email"
                 name="email"
                 autoComplete="email"
-                className="border-b border-[#FF7A1A]/40 bg-transparent px-0 py-2 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
+                className="border-b border-[#FF7A1A]/40 bg-transparent px-0 py-3 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
               />
             </label>
             <label className="flex flex-col gap-1">
@@ -305,13 +305,13 @@ function ContactSectionImpl() {
                 required
                 name="message"
                 rows={4}
-                className="resize-none border-b border-[#FF7A1A]/40 bg-transparent px-0 py-2 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
+                className="resize-none border-b border-[#FF7A1A]/40 bg-transparent px-0 py-3 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
               />
             </label>
             <div className="pt-2">
               <MagneticButton
                 type="submit"
-                className="inline-flex items-center gap-2 bg-[#FF7A1A] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.28em] text-black transition hover:bg-[#ff8f3f]"
+                className="inline-flex min-h-[48px] items-center gap-2 bg-[#FF7A1A] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.28em] text-black transition hover:bg-[#ff8f3f]"
               >
                 SEND SIGNAL
                 <span aria-hidden>→</span>

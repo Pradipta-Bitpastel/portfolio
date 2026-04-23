@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { sceneStore, type ModuleId } from "@/lib/sceneStore";
+import { readPerfTier } from "@/lib/usePerfTier";
 
 /**
  * Glowing links from the Core (origin) to each orbiting module.
@@ -46,6 +47,11 @@ function ModuleLink({ id }: { id: ModuleId }) {
   const tmpVec = useRef(new THREE.Vector3());
   const bufferOuter = useRef(new Float32Array(6));
   const bufferInner = useRef(new Float32Array(6));
+  const frame = useRef(0);
+  // On low-tier, update the line buffers every 3rd frame instead of
+  // every frame. Modules rotate slowly (the rig spins at 0.04 rad/sec),
+  // so the visual lag is imperceptible but GPU buffer uploads drop ~67%.
+  const stride = readPerfTier() === "low" ? 3 : 1;
 
   // Initial zero-length line at origin so the geometry exists.
   const initialPoints: [number, number, number][] = [
@@ -56,6 +62,8 @@ function ModuleLink({ id }: { id: ModuleId }) {
   const color = MODULE_COLOR[id];
 
   useFrame(() => {
+    frame.current++;
+    if (frame.current % stride !== 0) return;
     const outer = outerRef.current;
     const inner = innerRef.current;
     const moduleGroup = sceneStore.modules[id].ref;

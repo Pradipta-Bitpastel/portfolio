@@ -190,14 +190,34 @@ function SkillsSectionImpl() {
         await registerAll();
         if (cancelled) return;
 
-        // Pin inner container for full 500vh.
+        // Only run the pinned carousel on lg+. On smaller screens the
+        // panels render as a static vertical stack.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ST = (gsap as any).core?.globals?.()?.ScrollTrigger;
+        if (!ST || !ST.matchMedia || typeof window === "undefined" ||
+            !window.matchMedia("(min-width: 1024px)").matches) {
+          return;
+        }
+
+        // Pin inner container for the full section height (800vh).
+        // Snap to each panel boundary (5 panels → progress points
+        // 0, 0.2, 0.4, 0.6, 0.8, 1.0) so a big scroll flick settles
+        // on the nearest panel instead of shooting past. Duration is
+        // clamped so quick taps feel responsive and long flicks don't
+        // animate for seconds.
         gsap.timeline({
           scrollTrigger: {
             trigger: rootRef.current!,
             start: "top top",
             end: "bottom bottom",
             pin: pinRef.current!,
-            pinSpacing: false
+            pinSpacing: false,
+            snap: {
+              snapTo: [0, 0.2, 0.4, 0.6, 0.8, 1],
+              duration: { min: 0.25, max: 0.55 },
+              delay: 0.08,
+              ease: "power2.inOut"
+            }
           }
         });
 
@@ -340,12 +360,56 @@ function SkillsSectionImpl() {
       ref={rootRef}
       ariaLabelledBy="skills-heading"
       bare
-      className="!px-0 !py-0"
-      style={{ height: "500vh" }}
+      className="!px-0 !py-0 lg:!h-[800vh]"
     >
+      {/* Mobile / tablet: simple vertical stack, no pin */}
+      <div className="flex flex-col gap-8 px-[clamp(16px,5vw,96px)] py-[clamp(32px,5vh,120px)] lg:hidden">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
+          <span className="text-[#FF7A1A]">SYS.ACTIVATE // 03</span>
+          <span className="opacity-40">—</span>
+          <span>MODULES ONLINE</span>
+        </div>
+        <h2 id="skills-heading-mobile" className="sr-only">Skills</h2>
+        {accents.map((m, i) => (
+          <div
+            key={m.id}
+            className="w-full border border-white/10 bg-[#05080f]/90 backdrop-blur"
+          >
+            <div
+              className="flex items-center justify-between border-b border-white/10 px-5 py-2"
+              style={{ backgroundColor: `${m.accent}12` }}
+            >
+              <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
+                <span style={{ color: m.accent }}>MOD.{String(i + 1).padStart(2, "0")}</span>
+                <span className="opacity-40">{"//"}</span>
+                <span className="text-ink">{m.id.toUpperCase()}</span>
+              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#FF7A1A]">ACTIVE</div>
+            </div>
+            <div className="p-5">
+              <h3
+                className="font-display text-4xl leading-[0.9] tracking-[-0.03em] sm:text-5xl"
+                style={{ color: m.accent, fontWeight: 800 }}
+              >
+                {m.label}
+              </h3>
+              <p className="mt-2 font-mono text-xs leading-relaxed text-ink-dim">{m.tagline}</p>
+              <ul className="mt-5 flex flex-col gap-3">
+                {m.items.map((s, idx) => (
+                  <li key={s}>
+                    <SkillBar name={s} level={levelFor(idx)} color={m.accent} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* lg+: pinned sub-slide carousel */}
       <div
         ref={pinRef}
-        className="sticky top-0 flex h-screen w-full items-center overflow-hidden px-[clamp(48px,6vw,96px)] py-[clamp(56px,7vh,120px)]"
+        className="sticky top-0 hidden h-screen w-full items-center overflow-hidden px-[clamp(48px,6vw,96px)] py-[clamp(56px,7vh,120px)] lg:flex"
       >
         {/* Giant "03" top-left, amber — anchored inside the frame */}
         <div

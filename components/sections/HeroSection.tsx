@@ -286,9 +286,13 @@ function HeroSectionImpl() {
         className="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-[#0b0f19] via-[#0b0f19]/85 to-transparent md:block"
       />
 
-      {/* Main grid — vertical stack layout, no giant number beside headline. */}
+      {/* Main grid — vertical stack layout, no giant number beside headline.
+          z-20 so the content + CTA button paint ABOVE the CORE.BOOT
+          terminal card (z-10 at the section root). Previously both
+          were z-10 and the later-in-DOM terminal won the paint order,
+          covering the SCROLL TO INIT button. */}
       <div
-        className="relative z-10 grid w-full grid-cols-1 items-start gap-6 md:grid-cols-12"
+        className="relative z-20 grid w-full grid-cols-1 items-start gap-6 md:grid-cols-12"
       >
         {/* LEFT: text column, vertical stack. min-w-0 allows children to shrink without overflow. */}
         <div className="flex min-w-0 flex-col items-start gap-6 md:col-span-7">
@@ -305,7 +309,7 @@ function HeroSectionImpl() {
             aria-hidden
             className="select-none font-display font-black leading-none tracking-tight text-[color:#FF7A1A]"
             style={{
-              fontSize: "clamp(5rem, 11vw, 10rem)",
+              fontSize: "clamp(3.5rem, 11vw, 10rem)",
               letterSpacing: "-0.02em"
             }}
           >
@@ -322,35 +326,35 @@ function HeroSectionImpl() {
             )}
             style={{
               fontWeight: 800,
-              fontSize: "clamp(3rem, 7.5vw, 7.5rem)"
+              fontSize: "clamp(1.25rem, 6vw, 2.5rem)"
             }}
           >
             <span
               ref={headlineLine1Ref}
               className="block whitespace-nowrap"
             >
-              SYSTEM
+              SYSTEM  {"// BOOT"}
             </span>
-            <span
+            {/* <span
               ref={headlineLine2Ref}
               className="block whitespace-nowrap text-ink-dim"
             >
               {"// BOOT"}
-            </span>
+            </span> */}
           </h1>
 
-          <p className="max-w-[56ch] font-mono text-base leading-relaxed text-ink-dim md:text-lg">
+          <p className="max-w-[56ch] font-mono text-sm leading-relaxed text-ink-dim md:text-lg">
             A full-stack engineer orchestrating web, mobile and cloud
             from a single command surface.
           </p>
 
-          <a
+          {/* <a
             href="#about"
-            className="mt-2 inline-flex items-center gap-3 self-start border border-[#FF7A1A]/60 bg-[#FF7A1A]/10 px-5 py-3 font-mono text-xs uppercase tracking-[0.3em] text-[#FF7A1A] transition-colors hover:bg-[#FF7A1A] hover:text-black"
+            className="relative z-20 mt-2 inline-flex items-center gap-3 self-start border border-[#FF7A1A]/60 bg-[#FF7A1A]/10 px-5 py-3 font-mono text-xs uppercase tracking-[0.3em] text-[#FF7A1A] transition-colors hover:bg-[#FF7A1A] hover:text-black"
           >
             SCROLL TO INIT
             <span aria-hidden>→</span>
-          </a>
+          </a> */}
         </div>
 
         {/* RIGHT: reserved for the 3D laptop (docked by SceneDock). */}
@@ -360,7 +364,7 @@ function HeroSectionImpl() {
       {/* Boot-log terminal panel, bottom-left — pinned inside the
           section padding so it stays clear of the bottom HUD label. */}
       <div
-        className="pointer-events-none absolute bottom-[clamp(56px,7vh,120px)] left-[clamp(48px,6vw,96px)] z-10 hidden w-[min(22rem,30vw)] md:block"
+        className="pointer-events-none absolute bottom-[clamp(56px,7vh,120px)] z-10 hidden w-[min(22rem,30vw)] md:block"
       >
         <div
           className="border border-white/15 bg-[#05080f]/90 p-3 font-mono text-[11px] text-ink-dim backdrop-blur"

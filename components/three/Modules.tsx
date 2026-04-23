@@ -68,16 +68,43 @@ function ModuleOrbit({ id, angle, yOffset, phase, children, spin = [0.2, 0.3, 0.
   useEffect(() => {
     sceneStore.modules[id].ref = groupRef.current;
     sceneStore.modules[id].mesh = meshRef.current;
+    // Seed the scroll-choreographed pose target so SceneDock has a
+    // starting value to tween toward on first scrub.
+    if (groupRef.current) {
+      groupRef.current.userData.poseTarget = {
+        x: basePos.x,
+        y: basePos.y,
+        z: basePos.z,
+        scale: MODULE_SCALE
+      };
+    }
     return () => {
       sceneStore.modules[id].ref = null;
       sceneStore.modules[id].mesh = null;
     };
-  }, [id]);
+  }, [id, basePos]);
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
-    if (groupRef.current) {
-      groupRef.current.position.y = basePos.y + Math.sin(t + phase) * 0.1;
+    const g = groupRef.current;
+    if (g) {
+      // Read the scroll-choreographed target (SceneDock writes into
+      // this each scroll tick). Lerp the group position toward it,
+      // then add a small vertical bob so the orbit never feels rigid.
+      const tgt = g.userData.poseTarget as
+        | { x: number; y: number; z: number; scale: number }
+        | undefined;
+      if (tgt) {
+        g.position.x += (tgt.x - g.position.x) * 0.12;
+        g.position.y += (tgt.y + Math.sin(t + phase) * 0.08 - g.position.y) * 0.12;
+        g.position.z += (tgt.z - g.position.z) * 0.12;
+        const s = tgt.scale;
+        g.scale.x += (s - g.scale.x) * 0.12;
+        g.scale.y += (s - g.scale.y) * 0.12;
+        g.scale.z += (s - g.scale.z) * 0.12;
+      } else {
+        g.position.y = basePos.y + Math.sin(t + phase) * 0.1;
+      }
     }
     if (innerRef.current) {
       innerRef.current.rotation.x += spin[0] * delta;
@@ -428,8 +455,13 @@ export function Modules() {
   const rigRef = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
+    // Rig drift is kept very slow — the scroll-choreographed pose
+    // targets now dictate where each module sits per section. A
+    // faster spin would rotate the "vertical skills totem" and the
+    // "projects runway" away from their designed axes. This slow
+    // drift still adds a subtle living feel without breaking geometry.
     if (rigRef.current) {
-      rigRef.current.rotation.y += 0.04 * delta;
+      rigRef.current.rotation.y += 0.008 * delta;
     }
   });
 

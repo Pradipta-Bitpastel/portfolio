@@ -70,9 +70,28 @@ export function SectionHUD() {
 
   const total = SECTIONS.length;
   return (
+    <>
+      {/* Mobile: compact horizontal strip near the top, below HUD top labels */}
+      <div
+        aria-label="Section progress"
+        className="pointer-events-none fixed left-4 right-4 top-10 z-50 flex select-none items-center gap-2 font-mono uppercase md:hidden"
+      >
+        <span className="text-[9px] tracking-[0.28em] text-ink-dim">[</span>
+        <span className="text-[9px] tracking-[0.28em] text-[#FF7A1A]">{active.num}</span>
+        <span className="text-[9px] tracking-[0.28em] text-ink-dim opacity-40">/</span>
+        <span className="text-[9px] tracking-[0.28em] text-ink-dim">{String(total).padStart(2, "0")}</span>
+        <span className="text-[9px] tracking-[0.28em] text-ink-dim">]</span>
+        <span className="text-[10px] font-bold tracking-[0.06em] text-[#FF7A1A]">{active.label}</span>
+        <div className="relative ml-2 h-[2px] flex-1 overflow-hidden bg-white/10">
+          <div
+            className="absolute left-0 top-0 h-full bg-[#FF7A1A] transition-[width] duration-150"
+            style={{ width: `${Math.round(progress * 100)}%` }}
+          />
+        </div>
+      </div>
     <aside
       aria-label="Section progress"
-      className="pointer-events-none fixed top-1/2 z-50 flex -translate-y-1/2 select-none flex-col gap-3 font-mono uppercase"
+      className="pointer-events-none fixed top-1/2 z-50 hidden -translate-y-1/2 select-none flex-col gap-3 font-mono uppercase md:flex"
       style={{ left: 32 }}
     >
       <div className="flex items-center gap-2 text-[10px] tracking-[0.32em] text-ink-dim">
@@ -116,6 +135,7 @@ export function SectionHUD() {
         })}
       </div>
     </aside>
+    </>
   );
 }
 

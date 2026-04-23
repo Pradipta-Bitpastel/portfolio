@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { sceneStore } from "@/lib/sceneStore";
+import { readPerfTier } from "@/lib/usePerfTier";
 
 /**
  * Camera rig. Provides:
@@ -17,13 +18,23 @@ import { sceneStore } from "@/lib/sceneStore";
  * stays composited with the orbit behavior.
  */
 
-const BASE_POS = new THREE.Vector3(0, 0, 8);
-const PARALLAX_STRENGTH = 0.3;
-const LERP_FACTOR = 0.06;
+const PARALLAX_STRENGTH_X = 0.45;
+const PARALLAX_STRENGTH_Y = 0.30;
+const PARALLAX_LERP = 0.08;
 
+/**
+ * Final camera position each frame is:
+ *   basePos (GSAP scroll-driven)
+ *   + cinematicOffset (per-boundary push-in tween)
+ *   + parallaxOffset (mouse, lerped)
+ *
+ * That way scroll choreography, the cinematic cut-beat, and mouse
+ * parallax compose instead of clobbering each other.
+ */
 export function CameraController() {
   const camRef = useRef<THREE.PerspectiveCamera>(null);
-  const targetOffset = useRef({ x: 0, y: 0 });
+  const parallaxTarget = useRef({ x: 0, y: 0 });
+  const parallaxCurrent = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (camRef.current) {
@@ -34,40 +45,59 @@ export function CameraController() {
     };
   }, []);
 
-  // Track the mouse-derived target offset. Window listener, passive.
+  const low = readPerfTier() === "low";
+
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (low) return;
     const onMove = (e: MouseEvent) => {
-      const nx = (e.clientX / window.innerWidth) * 2 - 1;   // -1..1
-      const ny = (e.clientY / window.innerHeight) * 2 - 1;  // -1..1
-      targetOffset.current.x = nx;
-      // Invert Y so moving mouse up looks up
-      targetOffset.current.y = -ny;
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      parallaxTarget.current.x = nx;
+      parallaxTarget.current.y = -ny;
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
-  }, []);
+  }, [low]);
 
   useFrame(() => {
     const cam = camRef.current;
     if (!cam) return;
 
-    if (!sceneStore.camera.gsapControlled) {
-      const desiredX = BASE_POS.x + targetOffset.current.x * PARALLAX_STRENGTH;
-      const desiredY = BASE_POS.y + targetOffset.current.y * PARALLAX_STRENGTH;
-      cam.position.x += (desiredX - cam.position.x) * LERP_FACTOR;
-      cam.position.y += (desiredY - cam.position.y) * LERP_FACTOR;
-      // Leave Z where the timeline or the default placed it.
+    // Lerp parallax current → target so the camera glides with the
+    // cursor rather than snapping.
+    if (!low) {
+      parallaxCurrent.current.x +=
+        (parallaxTarget.current.x - parallaxCurrent.current.x) * PARALLAX_LERP;
+      parallaxCurrent.current.y +=
+        (parallaxTarget.current.y - parallaxCurrent.current.y) * PARALLAX_LERP;
     }
 
+    const base = sceneStore.camera.basePos;
+    const cin = sceneStore.camera.cinematicOffset;
+    const px = low ? 0 : parallaxCurrent.current.x * PARALLAX_STRENGTH_X;
+    const py = low ? 0 : parallaxCurrent.current.y * PARALLAX_STRENGTH_Y;
+
+    cam.position.set(base.x + cin.x + px, base.y + cin.y + py, base.z + cin.z);
     cam.lookAt(sceneStore.camera.target);
+
+    // FOV composites scroll-driven baseFov with the boundary pulse.
+    const fov = sceneStore.camera.baseFov + sceneStore.camera.fovPulse;
+    if (Math.abs(cam.fov - fov) > 0.001) {
+      cam.fov = fov;
+      cam.updateProjectionMatrix();
+    }
   });
 
   return (
     <PerspectiveCamera
       ref={camRef}
       makeDefault
-      position={[BASE_POS.x, BASE_POS.y, BASE_POS.z]}
+      position={[
+        sceneStore.camera.basePos.x,
+        sceneStore.camera.basePos.y,
+        sceneStore.camera.basePos.z
+      ]}
       fov={45}
       near={0.1}
       far={100}

@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, registerAll } from "@/lib/gsap";
+import { readPerfTier } from "@/lib/usePerfTier";
 
 type SmoothScrollProviderProps = {
   children: ReactNode;
@@ -56,11 +57,21 @@ export function SmoothScrollProvider({
           const ScrollSmoother = (gsap as any).core?.globals?.()
             ?.ScrollSmoother;
           if (ScrollSmoother && typeof ScrollSmoother.create === "function") {
+            const low = readPerfTier() === "low";
             smootherRef.current = ScrollSmoother.create({
               wrapper: "#smooth-wrapper",
               content: "#smooth-content",
-              smooth: 2.5,
-              effects: true,
+              // "smooth" is the number of seconds ScrollSmoother takes
+              // to catch up to the browser's real scroll position. On
+              // high-tier: 1.2s silky feel. On low-tier: 0.5s so scroll
+              // stays responsive without piling up interpolation work
+              // every frame.
+              smooth: low ? 0.5 : 1.2,
+              smoothTouch: low ? 0 : 0.1,
+              // `effects: true` parses data-speed/data-lag attrs on every
+              // element during refresh — not free on large DOMs. Off for
+              // low-tier since we don't use those attrs anywhere.
+              effects: !low,
               normalizeScroll: true
             });
             return;
@@ -75,11 +86,15 @@ export function SmoothScrollProvider({
         }
       }
 
-      // 2) Fallback: Lenis + gsap.ticker bridge.
+      // 2) Fallback: Lenis + gsap.ticker bridge. On low-tier use a
+      //    faster lerp (closer to native) so scroll input feels
+      //    responsive and doesn't accumulate frame-rate-sensitive
+      //    interpolation work.
+      const low = readPerfTier() === "low";
       try {
         const lenis = new Lenis({
           smoothWheel: true,
-          lerp: 0.08
+          lerp: low ? 0.15 : 0.08
         });
         lenisRef.current = lenis;
 

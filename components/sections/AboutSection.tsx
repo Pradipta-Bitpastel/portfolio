@@ -7,6 +7,7 @@ import { gsap, registerAll, hasPlugin } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
 import { profile } from "@/content/profile";
 import { SectionFrame } from "@/components/ui/SectionFrame";
+import { KineticTitle } from "@/components/ui/KineticTitle";
 
 /**
  * About / "SYS.INIT // 02". Asymmetric layout: text left, 3D right
@@ -76,13 +77,15 @@ function AboutSectionImpl() {
         }
 
         if (lines && lines.length > 0) {
+          // Dropped the animated filter:blur() — compositing a blur
+          // every frame across each line is expensive on integrated
+          // GPUs. y + opacity alone reads the same visually.
           gsap.fromTo(
             lines,
-            { y: 40, opacity: 0, filter: "blur(10px)" },
+            { y: 40, opacity: 0 },
             {
               y: 0,
               opacity: 1,
-              filter: "blur(0px)",
               duration: 0.8,
               stagger: 0.1,
               ease: "power3.out",
@@ -241,26 +244,25 @@ function AboutSectionImpl() {
 
       <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 md:grid-cols-12">
         <div className="flex flex-col items-start gap-8 md:col-span-7 md:col-start-1">
-          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
             <span className="text-[#FF7A1A]">SYS.INIT // 02</span>
             <span className="opacity-40">—</span>
             <span>OPERATOR // ONLINE</span>
-            <span className="opacity-40">—</span>
-            <span>LAT 37.77°N / LON −122.42°W</span>
+            <span className="hidden opacity-40 md:inline">—</span>
+            <span className="hidden md:inline">LAT 37.77°N / LON −122.42°W</span>
           </div>
 
-          <h2
+          <KineticTitle
             id="about-heading"
-            className="font-display text-5xl leading-[0.9] tracking-[-0.03em] text-ink md:text-7xl"
-            style={{ fontWeight: 800 }}
-          >
-            <span className="block">IDENTITY</span>
-            <span className="block text-ink-dim">.INIT</span>
-          </h2>
+            text="IDENTITY"
+            subtitle=".INIT"
+            triggerId="about"
+            titleClassName="text-5xl md:text-7xl"
+          />
 
           <p
             ref={bioRef}
-            className="max-w-[44ch] whitespace-pre-line font-mono text-base leading-relaxed text-ink md:text-lg"
+            className="max-w-[44ch] whitespace-pre-line font-mono text-sm leading-relaxed text-ink md:text-lg"
           >
             {BIO_LINES.join("\n")}
           </p>
@@ -272,12 +274,12 @@ function AboutSectionImpl() {
           {/* 3-column stats row */}
           <div
             ref={statsRef}
-            className="mt-4 grid w-full max-w-xl grid-cols-3 gap-4"
+            className="mt-4 grid w-full max-w-xl grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4"
           >
             {[
-              { label: "YEARS_IN_FIELD", target: 8, pad: 2, prefix: "", initial: "00" },
-              { label: "SHIPPED", target: 47, pad: 2, prefix: "", initial: "00" },
-              { label: "TIMEZONES", target: 9, pad: 2, prefix: "+", initial: "+00" }
+              { label: "YEARS_DEV", target: 3, pad: 2, prefix: "", initial: "00" },
+              { label: "STACKS", target: 5, pad: 2, prefix: "", initial: "00" },
+              { label: "CLOUDS", target: 2, pad: 2, prefix: "", initial: "00" }
             ].map((s) => (
               <div
                 key={s.label}

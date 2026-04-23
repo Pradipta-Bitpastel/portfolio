@@ -31,9 +31,32 @@ export const sceneStore = {
     ref: null as THREE.PerspectiveCamera | null,
     target: new THREE.Vector3(0, 0, 0),
     /**
-     * When a GSAP timeline is actively driving the camera, the
-     * CameraController must NOT lerp toward the mouse-parallax
-     * target. Toggle this flag from tween onStart/onComplete.
+     * Scroll-driven base position. SceneDock tweens THIS, not the
+     * camera's real position — the CameraController composites
+     * `basePos + parallax` every frame so scroll choreography and
+     * mouse parallax + boundary nudge coexist.
+     */
+    basePos: new THREE.Vector3(0, 0, 8),
+    /**
+     * Additive offset driven by SectionOrchestrator's section-cross
+     * cinematic beat (push-in + settle). Tweens independently of
+     * scroll; gets added on top of `basePos`.
+     */
+    cinematicOffset: new THREE.Vector3(0, 0, 0),
+    /**
+     * Scroll-driven base FOV. SceneDock tweens this each segment;
+     * CameraController composites it with `fovPulse` every frame.
+     */
+    baseFov: 45,
+    /**
+     * Additive FOV pulse. SectionOrchestrator tweens this on each
+     * section cross for a quick "lens zoom" punch. baseFov + fovPulse
+     * is what gets flushed to camera.fov each frame.
+     */
+    fovPulse: 0,
+    /**
+     * Retained for back-compat; no longer gates parallax. Parallax
+     * now ALWAYS composites on top of the GSAP-driven base.
      */
     gsapControlled: false,
   },

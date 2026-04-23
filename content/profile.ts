@@ -1,6 +1,5 @@
 /**
  * Owner persona, used across Hero/About/Contact copy.
- * Placeholder data — replace with real values for deployment.
  *
  * Field shape is load-bearing: sections import `profile.stats`,
  * `profile.roles`, `profile.socials`, `profile.summary`, etc.
@@ -27,27 +26,27 @@ export interface Profile {
 }
 
 export const profile: Profile = {
-  name: "Alex Chen",
-  role: "Full-Stack Developer",
-  location: "Remote — EU / US timezones",
+  name: "Pradipta Kumar Jana",
+  role: "Senior Software Engineer",
+  location: "Sonarpur, Kolkata — IN",
   tagline:
-    "A full-stack engineer orchestrating web, mobile and cloud from a single command surface.",
+    "A web developer shipping Next.js, React Native and cloud-deployed apps from a single command surface.",
   summary:
-    "I build scalable, production-ready systems that span the full stack — fast, reliable products across web, mobile and cloud. I care about product surface, system integrity, and a good-looking console.",
+    "I build and ship production web and mobile apps across the full stack — Next.js, React, React Native (Expo), Django and WordPress — and own the deploy path on Azure and GCP end-to-end: VM setup, domains, SSL and CI/CD.",
   bio:
-    "Five years of shipping production software across startups and platform teams. I lead rewrites that nobody wants to touch, bring realtime data into interfaces that actually feel alive, and turn messy deploy pipelines into something a product team can self-serve. My favourite problems sit where UX meets systems: hot paths, data flow, animations that respect the 60fps budget.",
+    "3+ years of shipping production software at Bitpastel Solution and Proclivity Digitech. I lead frontend work on Next.js + React projects, integrate AI features with OpenAI and Gemini APIs, and run the cloud infra behind them — VM instances, SSL, domain routing, and CI/CD pipelines on Azure and GCP. Currently extending the same stack to mobile with React Native + Expo for both Android and iOS.",
   stats: [
-    { label: "deploys / month", value: "120+" },
-    { label: "uptime", value: "99.98%" },
-    { label: "stacks mastered", value: "5" },
-    { label: "OSS contributions", value: "24" }
+    { label: "years_dev", value: "3+" },
+    { label: "stacks", value: "5" },
+    { label: "clouds", value: "2" },
+    { label: "platforms", value: "web · mobile · cloud" }
   ],
-  roles: ["Full-Stack", "3D / R3F", "Cloud-Native", "DevOps", "Mobile"],
+  roles: ["Frontend", "Full-Stack", "React Native", "Cloud / DevOps", "WordPress"],
   socials: {
-    github: "https://github.com/alexchen",
-    linkedin: "https://linkedin.com/in/alexchen",
-    x: "https://x.com/alexchen",
-    email: "alex@example.com"
+    github: "https://github.com/Pradipta-Bitpastel",
+    linkedin: "https://www.linkedin.com/in/pradipta-kumar-jana/",
+    x: "https://x.com/",
+    email: "pradiptajana.co@gmail.com"
   }
 };
 

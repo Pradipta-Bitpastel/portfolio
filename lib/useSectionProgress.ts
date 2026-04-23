@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 /**
- * Returns the scroll progress (0..1) for a given section id.
+ * Returns the scroll progress (0..1) for a given section id, quantized
+ * to whole percentages so consumers (progress bar width, opacity) only
+ * re-render when the rounded value actually changes — not every
+ * scroll-pixel that ScrollTrigger ticks.
  *
- * Creates a single ScrollTrigger per call, scoped to `#${sectionId}`,
- * with `start: 'top bottom'` and `end: 'bottom top'` so progress
- * covers the entire window of the section being on screen.
- *
- * Uses `gsap.context` for clean teardown on unmount / id change.
+ * Cost-wise this takes the HUD progress bar from ~300 React re-renders
+ * per viewport-height scroll (one per scroll event) down to ~100
+ * (one per percentage). The visual result is identical.
  */
 export function useSectionProgress(sectionId: string): number {
   const [progress, setProgress] = useState(0);
@@ -23,13 +24,18 @@ export function useSectionProgress(sectionId: string): number {
         : null;
     if (!target) return;
 
+    let last = -1;
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: target,
         start: "top bottom",
         end: "bottom top",
         onUpdate: (self) => {
-          setProgress(self.progress);
+          const q = Math.round(self.progress * 100);
+          if (q !== last) {
+            last = q;
+            setProgress(q / 100);
+          }
         }
       });
     });

@@ -3,252 +3,65 @@
 import { memo, useRef } from "react";
 import * as THREE from "three";
 import { useGSAP } from "@gsap/react";
-import { gsap, registerAll, hasPlugin } from "@/lib/gsap";
+import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
-import { projects, type Project } from "@/content/projects";
+import { projects } from "@/content/projects";
 import { SectionFrame } from "@/components/ui/SectionFrame";
+import { KineticTitle } from "@/components/ui/KineticTitle";
+import { PROJECT_VISUALS } from "@/components/ui/ProjectVisuals";
 
 /**
- * Projects — "SYS.EXEC // 04". Framed cards (not glass). Amber
- * corner brackets, square-bracket stack chips, project numbers.
- * 3D dock top-center (handled by SceneDock). Horizontal pinned
- * carousel on lg+.
+ * Projects — "SYS.EXEC // 04" — pinned scroll-scrubbed feature
+ * rotator. One project at a time is "featured":
+ *
+ *   - LEFT pane: a large animated SVG visual unique to the project.
+ *     All 5 visuals are mounted at once and crossfaded via opacity +
+ *     scale as the user scrolls. Each one also rotates into view with
+ *     a brief hex-mask reveal.
+ *   - RIGHT pane: name, tagline, description, stack chips. Each
+ *     project's info block is its own absolutely-positioned layer so
+ *     they crossfade the same way.
+ *   - TOP HUD: section meta + kinetic title.
+ *   - BOTTOM HUD: progress bar, clickable nav dots, frame ticker.
+ *
+ * Scroll math: the section is pinned for (N-1) viewports of scroll —
+ * one viewport per "slide". `scrub: 1` smooths the active-index drive.
+ * ScrollTrigger's `progress` is the single source of truth; all
+ * tweens compose off it via a scrubbed timeline.
+ *
+ * The previous tilted-carousel implementation is gone. This one's
+ * explicitly pinned + scrub-driven, which gives a tighter link
+ * between scroll distance and state than the horizontal x-slide did.
  */
-
-function CornerBrackets({ color }: { color: string }) {
-  // Renders 4 bracket SVGs as absolutely-positioned decorations.
-  const size = 14;
-  const thickness = 1.5;
-  const brackets = [
-    { pos: "top-2 left-2", rotate: "rotate-0" },
-    { pos: "top-2 right-2", rotate: "rotate-90" },
-    { pos: "bottom-2 right-2", rotate: "rotate-180" },
-    { pos: "bottom-2 left-2", rotate: "-rotate-90" }
-  ];
-  return (
-    <>
-      {brackets.map((b, i) => (
-        <svg
-          key={i}
-          aria-hidden="true"
-          width={size}
-          height={size}
-          viewBox="0 0 14 14"
-          className={`absolute ${b.pos} ${b.rotate}`}
-          style={{ color }}
-        >
-          <path
-            d="M0 0 L6 0 M0 0 L0 6"
-            stroke="currentColor"
-            strokeWidth={thickness}
-            fill="none"
-          />
-        </svg>
-      ))}
-    </>
-  );
-}
-
-function ProjectCard({
-  project,
-  index
-}: {
-  project: Project;
-  index: number;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const card = cardRef.current;
-      if (!card) return;
-
-      gsap.fromTo(
-        card,
-        { rotateY: -12, y: 40, opacity: 0 },
-        {
-          rotateY: 0,
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 80%",
-            end: "top 50%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-
-      const onXY = (nx: number, ny: number) => {
-        const rect = card.getBoundingClientRect();
-        const cx = (nx - rect.left) / rect.width - 0.5;
-        const cy = (ny - rect.top) / rect.height - 0.5;
-        gsap.to(card, {
-          rotateY: cx * 10,
-          rotateX: -cy * 10,
-          duration: 0.6,
-          ease: "power2.out",
-          overwrite: "auto"
-        });
-      };
-      const onLeave = () => {
-        gsap.to(card, {
-          rotateX: 0,
-          rotateY: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          overwrite: "auto"
-        });
-      };
-
-      let cleanup = () => undefined as void;
-      const move = (e: PointerEvent) => onXY(e.clientX, e.clientY);
-      card.addEventListener("pointermove", move, { passive: true });
-      card.addEventListener("pointerleave", onLeave, { passive: true });
-      cleanup = () => {
-        card.removeEventListener("pointermove", move);
-        card.removeEventListener("pointerleave", onLeave);
-      };
-      return cleanup;
-    },
-    { scope: cardRef, dependencies: [] }
-  );
-
-  const num = String(index + 1).padStart(3, "0");
-
-  return (
-    <div
-      ref={cardRef}
-      data-project-id={project.id}
-      data-index={index}
-      className="project-card relative will-change-transform"
-      style={{
-        perspective: "1600px",
-        transformStyle: "preserve-3d"
-      }}
-    >
-      <div
-        className="relative overflow-hidden border border-white/15 bg-[#05080f]/85 p-8 backdrop-blur-sm transition-all duration-300"
-        style={{
-          borderColor: `${project.color}44`,
-          boxShadow: `0 0 40px ${project.color}22, inset 0 0 0 1px ${project.color}10`,
-          width: "520px",
-          height: "620px"
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.boxShadow =
-            `0 0 60px ${project.color}88, inset 0 0 0 1px ${project.color}44`;
-          (e.currentTarget as HTMLElement).style.borderColor =
-            `${project.color}cc`;
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.boxShadow =
-            `0 0 40px ${project.color}22, inset 0 0 0 1px ${project.color}10`;
-          (e.currentTarget as HTMLElement).style.borderColor =
-            `${project.color}44`;
-        }}
-      >
-        <CornerBrackets color="#FF7A1A" />
-
-        {/* Top bar: project number + color strip */}
-        <div className="mb-6 flex items-center justify-between">
-          <span
-            className="font-mono text-[10px] uppercase tracking-[0.32em]"
-            style={{ color: "#FF7A1A" }}
-          >
-            [ {num} ]
-          </span>
-          <span
-            className="h-[2px] w-24"
-            style={{ background: project.color }}
-          />
-        </div>
-
-        {/* Title */}
-        <h3
-          className="font-display text-4xl leading-[0.95] tracking-[-0.02em] text-ink"
-          style={{ fontWeight: 800 }}
-        >
-          {project.name}
-        </h3>
-
-        {/* Tagline */}
-        <p
-          className="mt-3 font-mono text-xs uppercase tracking-[0.2em]"
-          style={{ color: project.color }}
-        >
-          {project.tagline}
-        </p>
-
-        {/* Dashed divider */}
-        <div
-          className="my-6 h-px w-full"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0 6px, transparent 6px 12px)"
-          }}
-        />
-
-        {/* Description */}
-        <p className="font-mono text-[13px] leading-relaxed text-ink-dim line-clamp-5">
-          {project.description}
-        </p>
-
-        {/* Stack chips */}
-        <div className="mt-6 flex flex-wrap gap-2">
-          {project.stack.map((s) => (
-            <span
-              key={s}
-              className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim"
-              style={{
-                padding: "4px 10px",
-                border: `1px solid ${project.color}55`,
-                background: `${project.color}10`
-              }}
-            >
-              [ {s} ]
-            </span>
-          ))}
-        </div>
-
-        {/* Footer: id */}
-        <div className="absolute bottom-6 left-8 right-8 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.28em] text-ink-dim/70">
-          <span>{project.id}</span>
-          <span style={{ color: project.color }}>&#9654; VIEW</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ProjectsSectionImpl() {
   const rootRef = useRef<HTMLElement>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const counterRef = useRef<HTMLDivElement>(null);
+  const dotsRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      if (!rootRef.current) return;
+      if (!rootRef.current || !stageRef.current) return;
       let cancelled = false;
+      const mmHandlers: Array<() => void> = [];
 
       const boot = async () => {
         await registerAll();
         if (cancelled) return;
 
-        // Connection line opacity reveal (no core transform — SceneDock).
+        /* ---- 3D scene: amber connection line breath (scrub) ---- */
         const connGroup = sceneStore.connections.ref;
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: rootRef.current,
-            start: "top 60%",
-            end: "top 10%",
-            scrub: 1
-          }
-        });
-
         if (connGroup) {
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: rootRef.current,
+              start: "top 60%",
+              end: "top 10%",
+              scrub: 1
+            }
+          });
           const pulseTargets: Array<
             THREE.Material & { opacity?: number }
           > = [];
@@ -264,8 +77,8 @@ function ProjectsSectionImpl() {
               | undefined;
             if (mat && "opacity" in mat) {
               const isOuter =
-                (mat as unknown as { blending?: THREE.Blending }).blending ===
-                THREE.AdditiveBlending;
+                (mat as unknown as { blending?: THREE.Blending })
+                  .blending === THREE.AdditiveBlending;
               const target = isOuter ? 0.35 : 1.0;
               tl.fromTo(
                 mat,
@@ -276,7 +89,6 @@ function ProjectsSectionImpl() {
               pulseTargets.push(mat);
             }
           });
-
           if (pulseTargets.length > 0) {
             gsap.to(pulseTargets, {
               opacity: "+=0.15",
@@ -288,48 +100,217 @@ function ProjectsSectionImpl() {
             });
           }
         }
+
+        /* ---- Desktop pinned rotator ---- */
+        const mm = gsap.matchMedia();
+        mm.add("(min-width: 1024px)", () => {
+          const stage = stageRef.current!;
+          const visuals = stage.querySelectorAll<HTMLElement>(".proj-visual");
+          const infos = stage.querySelectorAll<HTMLElement>(".proj-info");
+          const dots = dotsRef.current?.querySelectorAll<HTMLElement>(
+            ".proj-dot"
+          );
+
+          if (visuals.length === 0 || infos.length === 0) return;
+
+          // Seed initial state: only the first visual + info are visible.
+          visuals.forEach((v, i) => {
+            gsap.set(v, {
+              opacity: i === 0 ? 1 : 0,
+              scale: i === 0 ? 1 : 0.9,
+              clipPath:
+                i === 0
+                  ? "polygon(0 0, 100% 0, 100% 100%, 0 100%)"
+                  : "polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)"
+            });
+          });
+          infos.forEach((inf, i) => {
+            gsap.set(inf, {
+              opacity: i === 0 ? 1 : 0,
+              x: i === 0 ? 0 : 40
+            });
+          });
+          dots?.forEach((d, i) => {
+            d.classList.toggle("is-active", i === 0);
+          });
+
+          const total = projects.length;
+          // Each slide gets ~2 viewports of scroll (was 1.5) so a
+          // scroll gesture comfortably lands on a project instead of
+          // flying through two at a time. + longer tail on the last
+          // slide for a real "dwell" before un-pinning.
+          const scrollDistance = (total - 1) * 200 + 100;
+
+          // Snap points — one per slide. Progress 0 = slide 1, 0.25 =
+          // slide 2, ..., 1.0 = slide 5. A big scroll flick settles
+          // onto the nearest slide instead of flying past.
+          const snapPoints = Array.from(
+            { length: total },
+            (_, i) => i / (total - 1)
+          );
+
+          const tl = gsap.timeline({
+            defaults: { ease: "power2.inOut" },
+            scrollTrigger: {
+              trigger: rootRef.current,
+              start: "top top",
+              end: `+=${scrollDistance}%`,
+              pin: stageRef.current,
+              scrub: 1.5,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              snap: {
+                snapTo: snapPoints,
+                duration: { min: 0.3, max: 0.7 },
+                delay: 0.15,
+                ease: "power2.inOut"
+              },
+              onUpdate: (self) => {
+                // Drive the integer "activeIdx" for dot highlighting
+                // + counter text. We snap to the nearest slide.
+                const raw = self.progress * (total - 1);
+                const idx = Math.round(raw);
+                dots?.forEach((d, i) => {
+                  d.classList.toggle("is-active", i === idx);
+                });
+                if (counterRef.current) {
+                  counterRef.current.textContent = `${String(
+                    idx + 1
+                  ).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
+                }
+              }
+            }
+          });
+
+          // Progress bar fills 0 → 100%.
+          if (progressRef.current) {
+            tl.fromTo(
+              progressRef.current,
+              { scaleX: 0 },
+              { scaleX: 1, ease: "none" },
+              0
+            );
+          }
+
+          // Build transition segments: from i to i+1.
+          const seg = 1 / (total - 1);
+          for (let i = 0; i < total - 1; i++) {
+            const at = i * seg;
+            const endAt = (i + 1) * seg;
+            const mid = (at + endAt) / 2;
+
+            // Outgoing visual: shrink + clip to a hex pinpoint + fade.
+            tl.to(
+              visuals[i],
+              {
+                opacity: 0,
+                scale: 0.88,
+                clipPath:
+                  "polygon(50% 0, 100% 50%, 50% 100%, 0 50%, 50% 50%)",
+                duration: seg * 0.55
+              },
+              at
+            );
+            // Incoming visual: grow from hex pinpoint + fade in.
+            tl.fromTo(
+              visuals[i + 1],
+              {
+                opacity: 0,
+                scale: 0.9,
+                clipPath:
+                  "polygon(50% 0, 100% 50%, 50% 100%, 0 50%, 50% 50%)"
+              },
+              {
+                opacity: 1,
+                scale: 1,
+                clipPath:
+                  "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
+                duration: seg * 0.6
+              },
+              mid - seg * 0.05
+            );
+            // Outgoing info slides out left.
+            tl.to(
+              infos[i],
+              {
+                opacity: 0,
+                x: -60,
+                duration: seg * 0.45
+              },
+              at
+            );
+            // Incoming info slides in from right.
+            tl.fromTo(
+              infos[i + 1],
+              { opacity: 0, x: 60 },
+              {
+                opacity: 1,
+                x: 0,
+                duration: seg * 0.5
+              },
+              mid
+            );
+          }
+
+          // Clickable dots — jump to that slide's scroll offset.
+          const stInst = tl.scrollTrigger;
+          dots?.forEach((d, i) => {
+            const onClick = () => {
+              if (!stInst) return;
+              const targetProgress = i / (total - 1);
+              const startPx = stInst.start;
+              const endPx = stInst.end;
+              const y = startPx + (endPx - startPx) * targetProgress;
+              // Lenis-smooth if present, else native.
+              window.scrollTo({ top: y, behavior: "smooth" });
+            };
+            d.addEventListener("click", onClick);
+            mmHandlers.push(() =>
+              d.removeEventListener("click", onClick)
+            );
+          });
+
+          return () => {
+            // gsap.matchMedia cleanup also kills the timeline.
+          };
+        });
+
+        /* ---- Mobile: grid fallback fade-in stagger ---- */
+        mm.add("(max-width: 1023px)", () => {
+          const cards = rootRef.current!.querySelectorAll<HTMLElement>(
+            ".proj-mobile-card"
+          );
+          gsap.fromTo(
+            cards,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.7,
+              stagger: 0.12,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: rootRef.current,
+                start: "top 70%"
+              }
+            }
+          );
+        });
+
+        try {
+          ScrollTrigger.refresh();
+        } catch {
+          /* ignore */
+        }
+
+        mmHandlers.push(() => mm.revert());
       };
 
       void boot();
 
-      // Pinned horizontal carousel on lg+ screens only.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const ST = (gsap as any).core?.globals?.()?.ScrollTrigger;
-      let mm: { revert: () => void } | null = null;
-      if (ST && typeof ST.matchMedia === "function") {
-        mm = ST.matchMedia({
-          "(min-width: 1024px)": () => {
-            const outer = carouselRef.current;
-            const track = trackRef.current;
-            if (!outer || !track) return;
-            const compute = () =>
-              Math.max(0, track.scrollWidth - outer.clientWidth);
-            gsap.to(track, {
-              x: () => -compute(),
-              ease: "none",
-              scrollTrigger: {
-                trigger: outer,
-                start: "top top",
-                end: () => `+=${compute() + 600}`,
-                pin: true,
-                scrub: 1,
-                invalidateOnRefresh: true
-              }
-            });
-          }
-        });
-      }
-
-      // Silence "unused" in minimal build paths.
-      void hasPlugin;
-
       return () => {
         cancelled = true;
-        try {
-          mm?.revert();
-        } catch {
-          /* ignore */
-        }
+        mmHandlers.forEach((h) => h());
       };
     },
     { scope: rootRef, dependencies: [] }
@@ -341,59 +322,347 @@ function ProjectsSectionImpl() {
       ref={rootRef}
       ariaLabelledBy="projects-heading"
       bare
-      style={{ minHeight: "240vh" }}
+      style={{ minHeight: "100vh" }}
     >
-      {/* Giant "04" top-left, amber — anchored inside the frame */}
+      {/* Giant "04" background */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.95] md:block lg:text-[14rem]"
+        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.08] md:block lg:text-[14rem]"
         style={{ color: "#FF7A1A", letterSpacing: "-0.02em" }}
       >
         04
       </div>
 
-      <div className="mx-auto mb-12 max-w-7xl pl-0 md:pl-56 lg:pl-72">
-        <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-          <span className="text-[#FF7A1A]">SYS.EXEC // 04</span>
-          <span className="opacity-40">—</span>
-          <span>BUILDING IN PRODUCTION</span>
-        </div>
-        <h2
-          id="projects-heading"
-          className="mt-3 font-display text-5xl leading-[0.9] tracking-[-0.03em] text-ink md:text-7xl"
-          style={{ fontWeight: 800 }}
-        >
-          <span className="block">EXECUTION</span>
-          <span className="block text-ink-dim">.LAYER</span>
-        </h2>
-      </div>
-
-      {/* Mobile + tablet: vertical grid fallback */}
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:hidden">
-        {projects.map((p, i) => (
-          <ProjectCard key={p.id} project={p} index={i} />
-        ))}
-      </div>
-
-      {/* lg+ : pinned horizontal carousel */}
+      {/* =========== Desktop: pinned rotator =========== */}
       <div
-        ref={carouselRef}
+        ref={stageRef}
         className="relative hidden h-screen w-full overflow-hidden lg:block"
       >
-        <div
-          ref={trackRef}
-          className="flex h-full items-center gap-8 pl-24 pr-24"
-          style={{ width: "max-content" }}
-        >
-          {projects.map((p, i) => (
-            <div
-              key={p.id}
-              className="shrink-0"
-            >
-              <ProjectCard project={p} index={i} />
+        {/* HUD top bar */}
+        <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 flex items-start justify-between px-12 pt-12">
+          <div>
+            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
+              <span className="text-[#FF7A1A]">SYS.EXEC // 04</span>
+              <span className="opacity-40">—</span>
+              <span>FEATURED PROJECTS</span>
             </div>
-          ))}
+            <KineticTitle
+              id="projects-heading"
+              text="EXECUTION"
+              subtitle=".LAYER"
+              triggerId="projects"
+              className="mt-2"
+              titleClassName="text-5xl md:text-6xl"
+            />
+          </div>
+          <div
+            ref={counterRef}
+            className="font-display text-5xl font-extrabold leading-none tracking-[-0.02em] text-[#FF7A1A]"
+            style={{
+              textShadow:
+                "0 0 14px rgba(255,122,26,0.65), 0 0 30px rgba(255,122,26,0.25)"
+            }}
+          >
+            01 / {String(projects.length).padStart(2, "0")}
+          </div>
         </div>
+
+        {/* Main stage
+            Layout: LEFT col-span-6 = info content; RIGHT col-span-6 =
+            BIG project-specific SVG visual (~500px square). Each
+            project has its own SVG diorama (NeuralNet / OrbitRings /
+            Pipeline / BarStack / ModuleGrid), shown one at a time and
+            hex-clip-crossfaded by the scroll timeline. The 3D laptop
+            is pushed into the background in the scene pose so the
+            SVG visual is the featured right-side subject. */}
+        <div className="absolute inset-x-0 top-[min(200px,24vh)] bottom-[120px] flex items-center">
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-12 gap-10 px-12">
+            {/* ───── INFO PANE (LEFT, col-span-6) ───── */}
+            <div className="relative col-span-6 flex min-h-[480px] items-center">
+              <div className="relative w-full">
+                {projects.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="proj-info absolute inset-0 flex flex-col justify-center"
+                    style={{
+                      pointerEvents: i === 0 ? "auto" : "none"
+                    }}
+                  >
+                    {/* Index + accent bar */}
+                    <div className="mb-4 flex items-center gap-4">
+                      <span
+                        className="font-mono text-[11px] uppercase tracking-[0.32em]"
+                        style={{ color: p.color }}
+                      >
+                        [ {String(i + 1).padStart(3, "0")} ]
+                      </span>
+                      <span
+                        className="h-[3px] flex-1 max-w-[240px]"
+                        style={{
+                          background: `linear-gradient(90deg, ${p.color} 0%, ${p.color}00 100%)`
+                        }}
+                      />
+                    </div>
+                    <h3
+                      className="font-display text-4xl leading-[0.95] tracking-[-0.02em] text-ink md:text-5xl lg:text-6xl"
+                      style={{ fontWeight: 800 }}
+                    >
+                      {p.name}
+                    </h3>
+                    <p
+                      className="mt-5 font-mono text-[12px] uppercase leading-relaxed tracking-[0.22em]"
+                      style={{ color: p.color }}
+                    >
+                      {p.tagline}
+                    </p>
+                    <div
+                      className="my-6 h-px w-full max-w-md"
+                      style={{
+                        backgroundImage:
+                          "repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0 6px, transparent 6px 12px)"
+                      }}
+                    />
+                    <p className="max-w-xl font-mono text-[13px] leading-relaxed text-ink-dim">
+                      {p.description}
+                    </p>
+                    <div className="mt-6 flex max-w-xl flex-wrap gap-2">
+                      {p.stack.map((s) => (
+                        <span
+                          key={s}
+                          className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim transition-colors"
+                          style={{
+                            padding: "5px 12px",
+                            border: `1px solid ${p.color}55`,
+                            background: `${p.color}10`,
+                            borderRadius: 0
+                          }}
+                        >
+                          [ {s} ]
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-8 flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.28em] text-ink-dim/70">
+                      <span>{p.id}</span>
+                      <span className="h-px flex-1 bg-white/10" />
+                      <span
+                        className="inline-flex items-center gap-2"
+                        style={{ color: p.color }}
+                      >
+                        <span>&#9654; VIEW CASE</span>
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ───── BIG SVG VISUAL PANE (RIGHT, col-span-6) ─────
+                Capped to min(460px, 50vh) square — slightly smaller
+                than before so the decorative -inset dashed ring and
+                corner brackets can live OUTSIDE the SVG area without
+                getting clipped by the stage's overflow-hidden or the
+                HudFrame's bottom matte.
+                `overflow-visible` ensures the dashed outer ring never
+                gets cropped even when it extends past the column. */}
+            <div
+              className="relative col-span-6 aspect-square w-full self-center justify-self-center"
+              style={{
+                maxWidth: "min(460px, 50vh)",
+                maxHeight: "min(460px, 50vh)",
+                overflow: "visible"
+              }}
+            >
+              {/* Outer dashed ring — static decorative. Reduced inset
+                  from 24px to 16px to stay clear of viewport edges. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-4 rounded-full"
+                style={{
+                  border: "1px dashed rgba(255,122,26,0.22)"
+                }}
+              />
+              {/* Corner brackets */}
+              {[
+                { top: -10, left: -10, rot: 0 },
+                { top: -10, right: -10, rot: 90 },
+                { bottom: -10, right: -10, rot: 180 },
+                { bottom: -10, left: -10, rot: 270 }
+              ].map((pos, bi) => (
+                <svg
+                  key={bi}
+                  aria-hidden
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  className="pointer-events-none absolute"
+                  style={{
+                    ...pos,
+                    transform: `rotate(${pos.rot}deg)`,
+                    color: "#FF7A1A"
+                  }}
+                >
+                  <path
+                    d="M0 0 L10 0 M0 0 L0 10"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    fill="none"
+                  />
+                </svg>
+              ))}
+
+              {/* Five SVGs stacked, one visible at a time */}
+              {projects.map((p) => {
+                const Visual = PROJECT_VISUALS[p.id];
+                return (
+                  <div
+                    key={p.id}
+                    data-id={p.id}
+                    className="proj-visual absolute inset-0 flex items-center justify-center"
+                  >
+                    {Visual && <Visual color={p.color} />}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* HUD bottom: progress bar + nav dots.
+            Moved UP to bottom-20 (80px) so it sits above HudFrame's
+            24px bottom matte comfortably, and made the bar thicker +
+            glowier so it's legible during the pinned rotator. */}
+        <div className="pointer-events-none absolute bottom-20 left-12 right-12 z-20">
+          <div className="flex items-end justify-between gap-8">
+            {/* Progress bar */}
+            <div className="flex flex-1 flex-col gap-3">
+              <div className="flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
+                <span className="text-[#FF7A1A]">SCROLL //</span>
+                <span>TRANSMISSION</span>
+              </div>
+              <div className="relative h-[4px] w-full bg-white/10">
+                <div
+                  ref={progressRef}
+                  className="absolute inset-y-0 left-0 w-full origin-left"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgba(255,215,160,1) 0%, #FF7A1A 100%)",
+                    boxShadow:
+                      "0 0 12px rgba(255,122,26,0.9), 0 0 20px rgba(255,122,26,0.5)"
+                  }}
+                />
+              </div>
+            </div>
+            {/* Nav dots */}
+            <div
+              ref={dotsRef}
+              className="pointer-events-auto flex items-center gap-3"
+            >
+              {projects.map((p, i) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  aria-label={`Jump to ${p.name}`}
+                  className="proj-dot group relative flex h-8 w-8 items-center justify-center"
+                  style={
+                    {
+                      "--dot-color": p.color
+                    } as React.CSSProperties
+                  }
+                >
+                  <span
+                    className="absolute inset-0 border border-white/15 transition-colors group-[.is-active]:border-[var(--dot-color)]"
+                    style={{ clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}
+                  />
+                  <span
+                    className="h-[6px] w-[6px] bg-white/30 transition-all group-[.is-active]:scale-150 group-[.is-active]:bg-[var(--dot-color)]"
+                    style={{ clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =========== Mobile / tablet: grid fallback =========== */}
+      <div className="lg:hidden">
+        <div className="mx-auto mb-10 max-w-7xl px-[clamp(16px,5vw,48px)]">
+          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
+            <span className="text-[#FF7A1A]">SYS.EXEC // 04</span>
+            <span className="opacity-40">—</span>
+            <span>FEATURED PROJECTS</span>
+          </div>
+          <KineticTitle
+            id="projects-heading-mobile"
+            text="EXECUTION"
+            subtitle=".LAYER"
+            triggerId="projects"
+            className="mt-3"
+            titleClassName="text-5xl md:text-6xl"
+          />
+        </div>
+
+        <ul className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-[clamp(16px,5vw,48px)] sm:grid-cols-2">
+          {projects.map((p, i) => {
+            const Visual = PROJECT_VISUALS[p.id];
+            return (
+              <li
+                key={p.id}
+                className="proj-mobile-card relative border bg-[#05080f]/70 p-6 backdrop-blur-sm"
+                style={{
+                  borderColor: `${p.color}44`,
+                  boxShadow: `0 0 30px ${p.color}22`
+                }}
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <span
+                    className="font-mono text-[10px] uppercase tracking-[0.32em]"
+                    style={{ color: p.color }}
+                  >
+                    [ {String(i + 1).padStart(3, "0")} ]
+                  </span>
+                  <span
+                    className="h-[2px] w-16"
+                    style={{ background: p.color }}
+                  />
+                </div>
+                <div className="mb-4 aspect-square w-full">
+                  {Visual && <Visual color={p.color} />}
+                </div>
+                <h3
+                  className="font-display text-2xl leading-tight tracking-[-0.02em] text-ink"
+                  style={{ fontWeight: 800 }}
+                >
+                  {p.name}
+                </h3>
+                <p
+                  className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em]"
+                  style={{ color: p.color }}
+                >
+                  {p.tagline}
+                </p>
+                <p className="mt-4 font-mono text-[12px] leading-relaxed text-ink-dim">
+                  {p.description}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {p.stack.slice(0, 5).map((s) => (
+                    <span
+                      key={s}
+                      className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-dim"
+                      style={{
+                        padding: "3px 8px",
+                        border: `1px solid ${p.color}55`,
+                        background: `${p.color}10`
+                      }}
+                    >
+                      [ {s} ]
+                    </span>
+                  ))}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </SectionFrame>
   );

@@ -49,8 +49,8 @@ body {
 @layer utilities {
   .glass {
     background: var(--glass);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
     border: 1px solid var(--glass-br);
     border-radius: var(--radius);
   }
@@ -147,6 +147,52 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Low-perf degradation: tablets/phones, coarse pointer, narrow
+   viewports, OR explicit reduced-motion. We aggressively strip
+   GPU-expensive effects (backdrop-filter blur, mix-blend-mode,
+   decorative filters) because they are the #1 source of jank on
+   integrated GPUs and older laptops.
+   Rationale: the translucent background is preserved via opaque
+   fallback colors so the sci-fi panel look stays intact — only the
+   blur cost is removed. */
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+  .glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(16, 20, 34, 0.78);
+  }
+  .noise::after {
+    display: none;
+  }
+  /* Any element using Tailwind's backdrop-blur utilities — kill the
+     blur. The underlying bg colors already carry enough contrast. */
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Drop shadows on large decorative layers — these pile up in the
+     compositor and are the tail of the jank on scroll. */
+  .drop-shadow-[0_0_30px_rgba\(79\,156\,255\,0\.35\)] {
+    filter: none !important;
+  }
+}
+
+/* Prefers-reduced-motion: same low-perf CSS path + explicit animation
+   suppression (the top-of-file block kills durations; this block kills
+   GPU-heavy visuals even when an author used `animation-delay: 0` as
+   a workaround). */
+@media (prefers-reduced-motion: reduce) {
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(16, 20, 34, 0.78);
   }
 }
 

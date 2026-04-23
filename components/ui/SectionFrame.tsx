@@ -44,7 +44,7 @@ export const SectionFrame = forwardRef<HTMLElement, SectionFrameProps>(
           "relative w-full overflow-hidden",
           // Inside-the-frame padding. 24px frame + 8px gap to labels +
           // 32px breathing room = ~64px target on desktop.
-          "px-[clamp(48px,6vw,96px)] py-[clamp(56px,7vh,120px)]",
+          "px-[clamp(16px,5vw,96px)] py-[clamp(32px,5vh,120px)]",
           !bare && "flex min-h-screen items-center",
           className
         )}

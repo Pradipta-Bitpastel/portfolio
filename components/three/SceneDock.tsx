@@ -1,60 +1,59 @@
 "use client";
 
 import { useEffect } from "react";
+import type * as THREE from "three";
 import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
+import {
+  SCENE_POSES,
+  SECTION_TO_POSE,
+  applyBrightness,
+  type ModuleId
+} from "@/lib/scenePoses";
+import { readPerfTier } from "@/lib/usePerfTier";
 
 /**
- * SceneDock — single master ScrollTrigger tweening the DevStation
- * (sceneStore.core.ref) + camera across 6 docked poses over the
- * full document. scrub: 1 maps scroll 0-1 to timeline progress.
+ * SceneDock — single master ScrollTrigger that choreographs the
+ * entire 3D scene across 6 section poses.
  *
- * Per-section files no longer own core transforms; they only drive
- * module emissive, connection opacity, ring visibility, and UI.
+ * What moves, per scroll-scrub tick:
+ *   1. Core (laptop) — position, rotation, scale
+ *   2. Camera — world position + FOV
+ *   3. Each module satellite — world-space position, scale, brightness
  *
- * | 01 Hero     |  [ 2.2,-0.1, 0.0]  rY:-0.12 rX:0.05  s:1.55  cam:[0,0.1,8]
- * | 02 About    |  [ 3.0, 0.3,-0.5]  rY:-0.40 rX:0.12  s:0.88  cam:[-0.4,0.3,6.5]
- * | 03 Skills   |  [-2.6, 0.1,-0.3]  rY: 0.42 rX:0.00  s:0.88  cam:[0.4,0.2,6.8]
- * | 04 Projects |  [ 0.0, 1.8,-1.5]  rY: 0.00 rX:0.30  s:0.72  cam:[0,2.4,9]
- * | 05 Exp      |  [ 2.4,-0.5, 0.2]  rY:-0.55 rX:0.00  s:0.85  cam:[-0.6,1.0,7.2]
- * | 06 Contact  |  [ 0.0, 0.0, 0.0]  rY: 0.00 rX:0.00  s:0.48  cam:[0,0,8.5]
+ * Module positions are written on an additive parent — we store the
+ * target position on each module's group.userData.poseTarget and a
+ * per-frame hook inside each ModuleOrbit lerps toward it. This lets
+ * the existing orbit bob/spin continue undisturbed; the pose tween
+ * dictates the CENTER of each module's drift.
  *
- * iter7: hero pose pulls in slightly (2.6 → 2.2) and scales up
- * (1.0 → 1.55) so the laptop is the dominant object on first paint.
+ * Perf-tier gating:
+ *   - high: full module choreography + per-frame brightness update
+ *   - low:  we still run the core/camera tween (they already existed)
+ *           but skip the per-module position tween so module refs
+ *           stay in their cheap orbital defaults.
  */
 
-type Pose = {
-  label: string;
-  pos: [number, number, number];
-  rotY: number;
-  rotX: number;
-  scale: number;
-  cam: [number, number, number];
-};
-
-const POSES: Pose[] = [
-  { label: "hero",     pos: [ 2.2, -0.1,  0.0], rotY: -0.12, rotX: 0.05, scale: 1.55, cam: [ 0.0, 0.1, 8.0] },
-  { label: "about",    pos: [ 3.0,  0.3, -0.5], rotY: -0.40, rotX: 0.12, scale: 0.88, cam: [-0.4, 0.3, 6.5] },
-  { label: "skills",   pos: [-2.6,  0.1, -0.3], rotY:  0.42, rotX: 0.00, scale: 0.88, cam: [ 0.4, 0.2, 6.8] },
-  { label: "projects", pos: [ 0.0,  1.8, -1.5], rotY:  0.00, rotX: 0.30, scale: 0.72, cam: [ 0.0, 2.4, 9.0] },
-  { label: "exp",      pos: [ 2.4, -0.5,  0.2], rotY: -0.55, rotX: 0.00, scale: 0.85, cam: [-0.6, 1.0, 7.2] },
-  { label: "contact",  pos: [ 0.0,  0.0,  0.0], rotY:  0.00, rotX: 0.00, scale: 0.48, cam: [ 0.0, 0.0, 8.5] }
+const MODULE_IDS: ModuleId[] = [
+  "frontend",
+  "backend",
+  "devops",
+  "cloud",
+  "mobile"
 ];
-
-const SECTION_IDS = ["hero", "about", "skills", "projects", "experience", "contact"] as const;
 
 export function SceneDock() {
   useEffect(() => {
     let cancelled = false;
-    let master: gsap.core.Timeline | null = null;
+    const timelines: gsap.core.Timeline[] = [];
     const killers: Array<() => void> = [];
+
+    const low = readPerfTier() === "low";
 
     const boot = async () => {
       await registerAll();
       if (cancelled) return;
 
-      // Wait for sceneStore refs to populate. Retry until core + cam
-      // exist (Canvas mounts async behind dynamic import).
       const waitForScene = () => {
         const core = sceneStore.core.ref;
         const cam = sceneStore.camera.ref;
@@ -70,100 +69,200 @@ export function SceneDock() {
           }
           if (waitForScene()) {
             clearInterval(poll);
-            buildMaster();
+            buildPerSection();
           }
         }, 120);
         killers.push(() => clearInterval(poll));
         return;
       }
 
-      buildMaster();
+      buildPerSection();
     };
 
-    const buildMaster = () => {
+    /**
+     * Build one ScrollTrigger+timeline PER SECTION (not a single master
+     * timeline). Each trigger is anchored to its section's DOM TOP,
+     * so it runs while that section's top crosses the viewport — once
+     * past the "end" position, the tween stays at its final state
+     * regardless of how far the user scrolls inside a pinned section.
+     *
+     * This is the critical fix: the Projects section is pinned for
+     * ~4 viewports of extra scroll, and a shared master timeline with
+     * equal-spaced labels would lerp the laptop AWAY from the projects
+     * pose as the user scrolled through the pin. With per-section
+     * triggers anchored to each section's top, the laptop reaches
+     * projects pose when the section enters view and HOLDS there for
+     * the entire pin — then transitions to the next pose only when
+     * the NEXT section's top enters view (after the pin ends).
+     */
+    const buildPerSection = () => {
       if (cancelled) return;
       const core = sceneStore.core.ref;
       const cam = sceneStore.camera.ref;
       if (!core || !cam) return;
 
-      // Seed to the hero pose so first paint lines up.
-      const first = POSES[0];
-      core.position.set(first.pos[0], first.pos[1], first.pos[2]);
-      core.rotation.set(first.rotX, first.rotY, 0);
-      core.scale.setScalar(first.scale);
+      // Seed everything to the hero pose so first paint lines up.
+      const first = SCENE_POSES[0];
+      core.position.set(...first.core.pos);
+      core.rotation.set(first.core.rotX, first.core.rotY, first.core.rotZ);
+      core.scale.setScalar(first.core.scale);
+      sceneStore.camera.basePos.set(...first.cam);
+      sceneStore.camera.baseFov = first.fov;
+      cam.fov = first.fov;
+      cam.updateProjectionMatrix();
 
-      // Compute start/end based on full doc height: from start of hero
-      // through the top of the last section.
-      const heroEl = document.getElementById(SECTION_IDS[0]);
-      const lastEl = document.getElementById(
-        SECTION_IDS[SECTION_IDS.length - 1]
-      );
-      if (!heroEl || !lastEl) return;
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: heroEl,
-          start: "top top",
-          endTrigger: lastEl,
-          end: "bottom bottom",
-          scrub: 1,
-          anticipatePin: 0,
-          onEnter: () => {
-            sceneStore.camera.gsapControlled = true;
-          },
-          onEnterBack: () => {
-            sceneStore.camera.gsapControlled = true;
-          },
-          onLeave: () => {
-            sceneStore.camera.gsapControlled = false;
-          },
-          onLeaveBack: () => {
-            sceneStore.camera.gsapControlled = false;
-          }
+      // Seed module userData targets.
+      MODULE_IDS.forEach((id) => {
+        const group = sceneStore.modules[id].ref;
+        const mesh = sceneStore.modules[id].mesh;
+        const pose = first.modules[id];
+        if (group) {
+          group.userData.poseTarget = {
+            x: pose.pos[0],
+            y: pose.pos[1],
+            z: pose.pos[2],
+            scale: pose.scale
+          };
         }
+        applyBrightness(mesh, pose.brightness);
       });
 
-      // 6 labels at equal fractions across the master.
-      const step = 1 / (POSES.length - 1);
-      POSES.forEach((p, i) => {
-        const at = i * step;
-        tl.addLabel(p.label, at);
-        // At each label, snap-tween to this pose.
+      const segEase = "power2.inOut";
+
+      // Hero (i=0) is already seeded; no trigger needed for it. For
+      // i>=1, create a scrubbed timeline that tweens to that section's
+      // pose as its top crosses the viewport.
+      SCENE_POSES.forEach((pose, i) => {
+        if (i === 0) return; // hero already seeded
+        const sectionId = SECTION_TO_POSE[i]?.sectionId;
+        if (!sectionId) return;
+        const el = document.getElementById(sectionId);
+        if (!el) return;
+
+        // Trigger window tuned for "stay in pose, smoothly transition
+        // to next". The section must be clearly entering the viewport
+        // (top at 70% = ~30% entered) before the tween starts, and the
+        // tween completes when the section is near viewport top-edge
+        // (top at 15%). This widens the trigger range to 55% of the
+        // viewport so the tween itself reads slowly + smoothly, and
+        // leaves generous HOLDs between sections (no trigger active
+        // between "top 15% of A" and "top 70% of B").
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: el,
+            start: "top 70%",
+            end: "top 15%",
+            scrub: 1.5,
+            invalidateOnRefresh: true
+          }
+        });
+
+        // Core (laptop) position/rotation/scale.
         tl.to(
           core.position,
-          { x: p.pos[0], y: p.pos[1], z: p.pos[2], ease: "none" },
-          at
+          { x: pose.core.pos[0], y: pose.core.pos[1], z: pose.core.pos[2], ease: segEase },
+          0
         );
         tl.to(
           core.rotation,
-          { x: p.rotX, y: p.rotY, ease: "none" },
-          at
+          { x: pose.core.rotX, y: pose.core.rotY, z: pose.core.rotZ, ease: segEase },
+          0
         );
         tl.to(
           core.scale,
-          { x: p.scale, y: p.scale, z: p.scale, ease: "none" },
-          at
+          { x: pose.core.scale, y: pose.core.scale, z: pose.core.scale, ease: segEase },
+          0
         );
+
+        // Camera basePos + baseFov (CameraController composites with
+        // mouse parallax + cinematic boundary offset).
         tl.to(
-          cam.position,
-          { x: p.cam[0], y: p.cam[1], z: p.cam[2], ease: "none" },
-          at
+          sceneStore.camera.basePos,
+          { x: pose.cam[0], y: pose.cam[1], z: pose.cam[2], ease: segEase },
+          0
         );
-      });
+        tl.to(sceneStore.camera, { baseFov: pose.fov, ease: segEase }, 0);
 
-      master = tl;
-      killers.push(() => {
-        try {
-          tl.scrollTrigger?.kill();
-          tl.kill();
-        } catch {
-          /* ignore */
+        if (!low) {
+          MODULE_IDS.forEach((mid) => {
+            const group = sceneStore.modules[mid].ref;
+            const mesh = sceneStore.modules[mid].mesh;
+            const mpose = pose.modules[mid];
+            if (group) {
+              if (!group.userData.poseTarget) {
+                group.userData.poseTarget = {
+                  x: mpose.pos[0],
+                  y: mpose.pos[1],
+                  z: mpose.pos[2],
+                  scale: mpose.scale
+                };
+              }
+              const target = group.userData.poseTarget as {
+                x: number;
+                y: number;
+                z: number;
+                scale: number;
+              };
+              tl.to(
+                target,
+                {
+                  x: mpose.pos[0],
+                  y: mpose.pos[1],
+                  z: mpose.pos[2],
+                  scale: mpose.scale,
+                  ease: segEase
+                },
+                0
+              );
+            }
+            if (mesh) {
+              const mat = (Array.isArray(mesh.material)
+                ? mesh.material[0]
+                : mesh.material) as
+                | (THREE.Material & {
+                    emissiveIntensity?: number;
+                    opacity?: number;
+                    transparent?: boolean;
+                  })
+                | undefined;
+              if (mat) {
+                mat.transparent = true;
+                if (typeof mat.emissiveIntensity === "number") {
+                  tl.to(
+                    mat,
+                    {
+                      emissiveIntensity: 0.2 + mpose.brightness * 0.8,
+                      ease: segEase
+                    },
+                    0
+                  );
+                }
+                if (typeof mat.opacity === "number") {
+                  tl.to(
+                    mat,
+                    {
+                      opacity: 0.35 + mpose.brightness * 0.65,
+                      ease: segEase
+                    },
+                    0
+                  );
+                }
+              }
+            }
+          });
         }
+
+        timelines.push(tl);
+        killers.push(() => {
+          try {
+            tl.scrollTrigger?.kill();
+            tl.kill();
+          } catch {
+            /* ignore */
+          }
+        });
       });
 
-      // Nudge ScrollTrigger so pinned sections that may have been
-      // measured before the master tween was built recalc against the
-      // new layout.
       try {
         ScrollTrigger.refresh();
       } catch {
@@ -177,11 +276,13 @@ export function SceneDock() {
       cancelled = true;
       sceneStore.camera.gsapControlled = false;
       killers.forEach((k) => k());
-      try {
-        master?.kill();
-      } catch {
-        /* ignore */
-      }
+      timelines.forEach((t) => {
+        try {
+          t.kill();
+        } catch {
+          /* ignore */
+        }
+      });
     };
   }, []);
 

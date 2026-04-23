@@ -58,7 +58,7 @@ export function SectionNav() {
   return (
     <nav
       aria-label="Section navigation"
-      className="fixed top-1/2 z-50 -translate-y-1/2"
+      className="fixed top-1/2 z-50 hidden -translate-y-1/2 md:block"
       style={{ right: 32 }}
     >
       <ul className="flex flex-col items-center gap-4">

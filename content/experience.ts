@@ -1,5 +1,9 @@
 /**
- * 4 career milestones for the Timeline section.
+ * Career milestones for the Timeline section.
+ *
+ * NOTE: the 3D TimelineRing is tuned for ~4 milestones spaced on the
+ * ring. We have 2 real entries; the ring will just look lighter, which
+ * is fine — no layout code cares about the array length.
  */
 
 export interface ExperienceEntry {
@@ -11,43 +15,26 @@ export interface ExperienceEntry {
 
 export const experience: ReadonlyArray<ExperienceEntry> = [
   {
-    company: "Aurora Labs",
-    role: "Sr. Fullstack Engineer",
-    period: "2024 — present",
+    company: "Bitpastel Solution PVT LTD",
+    role: "Senior Software Engineer",
+    period: "Aug 2023 — Present",
     highlights: [
-      "Led the rewrite of the analytics dashboard, shipping a realtime streaming core.",
-      "Introduced an R3F-driven data-viz layer powering three internal products.",
-      "Owned the migration to edge runtime, cutting p95 latency by 62%."
+      "Led the frontend of multiple React and Next.js projects with responsive UI on Tailwind CSS and Material UI.",
+      "Wired Redux Toolkit and React Query for complex data flows and measurable performance wins.",
+      "Shipped AI-powered features by integrating OpenAI and Gemini APIs.",
+      "Managed cloud deployments on Azure and GCP: VM setup, server config, domain + SSL.",
+      "Built and maintained CI/CD pipelines from dev to production.",
+      "Currently building a cross-platform React Native (Expo) app for Android and iOS."
     ]
   },
   {
-    company: "PulseGrid",
-    role: "Fullstack Engineer",
-    period: "2022 — 2024",
+    company: "Proclivity Digitech",
+    role: "Junior Web Developer",
+    period: "Mar 2023 — Aug 2023",
     highlights: [
-      "Built the internal DevOps dashboard used by 12 product teams.",
-      "Shipped a self-serve deployment pipeline on Terraform + GitHub Actions.",
-      "Owned the design system that unified 4 independent front-ends."
-    ]
-  },
-  {
-    company: "Moonlit",
-    role: "Frontend Engineer",
-    period: "2020 — 2022",
-    highlights: [
-      "Delivered the flagship marketing site and design system foundation.",
-      "Introduced GSAP-based scroll choreography and a reusable motion library.",
-      "Mentored two juniors from first commit to production ownership."
-    ]
-  },
-  {
-    company: "Bitforge",
-    role: "Software Intern",
-    period: "2019 — 2020",
-    highlights: [
-      "Shipped two internal tools consumed daily by the support team.",
-      "First intern to merge to main in week one.",
-      "Earned a return full-time offer at the end of the program."
+      "Built responsive interfaces in HTML, CSS, JavaScript and jQuery with cross-browser parity.",
+      "Converted Figma designs into pixel-perfect, production-ready pages and components.",
+      "Shipped WordPress projects end-to-end: theme customisation, page layouts, plugin integration."
     ]
   }
 ];

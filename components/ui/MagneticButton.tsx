@@ -53,6 +53,17 @@ export const MagneticButton = forwardRef<
   useEffect(() => {
     const el = localRef.current;
     if (!el) return;
+    // Disable magnetic pull on touch / coarse pointer devices AND when
+    // the user prefers reduced motion — the effect is pure decoration,
+    // so it should vanish before it degrades either ergonomics or fps.
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia(
+        "(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)"
+      ).matches
+    ) {
+      return;
+    }
     const qx = gsap.quickTo(el, "x", { duration: 0.4, ease: "power3.out" });
     const qy = gsap.quickTo(el, "y", { duration: 0.4, ease: "power3.out" });
 

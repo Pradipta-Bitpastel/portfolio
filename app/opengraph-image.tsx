@@ -8,7 +8,7 @@ import { ImageResponse } from "next/og";
  */
 
 export const runtime = "edge";
-export const alt = "Alex Chen — Developer Control Core";
+export const alt = "Pradipta Kumar Jana — Developer Control Core";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -75,7 +75,7 @@ export default async function OpengraphImage() {
             display: "flex"
           }}
         >
-          Alex Chen
+          Pradipta Kumar Jana
         </div>
 
         {/* Subtitle */}

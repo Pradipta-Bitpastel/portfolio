@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { gsap } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
 import { useCursor, isCursorReduced } from "@/lib/useCursor";
+import { readPerfTier } from "@/lib/usePerfTier";
 
 /**
  * DevStation — premium MacBook-like laptop with orbiting glyphs.
@@ -314,21 +315,25 @@ function ScreenFace({
     redraw(cursorOnRef.current, variant);
   }, [variant, redraw]);
 
+  // Cache the tier once; the blink cadence won't change mid-session.
+  // Low-tier halves the redraw rate (cursor blinks ~once per second
+  // instead of twice), which roughly halves canvas-texture GPU uploads.
+  const blinkInterval = readPerfTier() === "low" ? 60 : 30;
+
   useFrame((state) => {
     frameRef.current++;
-    // Blink cursor every ~30 frames (~0.5s at 60fps).
-    if (frameRef.current % 30 === 0) {
+    if (frameRef.current % blinkInterval === 0) {
       cursorOnRef.current = !cursorOnRef.current;
       redraw(cursorOnRef.current, variant);
     }
-    // Subtle "breathing" glow on the emissive pass; the per-frame
-    // opacity is the breathing baseline plus the hover-driven ref so
-    // the gsap tween still wins even though useFrame writes every tick.
+    // Subtle "breathing" glow on the emissive pass. Amplitude kept
+    // small (±0.035 around 0.45) so the pulse reads as a gentle
+    // ambience, not a flash.
     const g = glowRef.current;
     if (g && g.material) {
       const mat = g.material as THREE.MeshBasicMaterial;
       const t = state.clock.elapsedTime;
-      const breath = 0.45 + Math.sin(t * 1.4) * 0.08;
+      const breath = 0.45 + Math.sin(t * 1.4) * 0.035;
       mat.opacity = Math.max(breath, glowOpacityRef.current);
     }
   });
@@ -339,7 +344,11 @@ function ScreenFace({
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
-      {/* Bezel (true black frame around the screen) */}
+      {/* Bezel (true black frame around the screen). Z spans
+          0.035 ± 0.005 (thickness 0.01), so the FRONT surface of the
+          bezel sits at z=0.040. The editor plane MUST land comfortably
+          above 0.040 or it will z-fight with the bezel's front face,
+          which presents as a per-frame flicker on the laptop screen. */}
       <RoundedBox
         args={[2.42, 1.52, 0.01]}
         radius={0.02}
@@ -353,19 +362,24 @@ function ScreenFace({
         />
       </RoundedBox>
 
-      {/* Main editor face — sits on top of the bezel */}
-      <mesh position={[0, 0, 0.047]}>
+      {/* Main editor face — 0.02u clear of the bezel's front face
+          (was 0.007, too tight — caused z-fighting flicker). */}
+      <mesh position={[0, 0, 0.06]}>
         <planeGeometry args={[2.3, 1.42]} />
         <meshBasicMaterial
           map={texture}
           toneMapped={false}
           transparent
           opacity={1}
+          depthWrite={true}
         />
       </mesh>
 
-      {/* Emissive glow pass — additive blend, slightly in front */}
-      <mesh ref={glowRef} position={[0, 0, 0.058]}>
+      {/* Emissive glow pass — 0.025u clear of the editor (was 0.011,
+          also tight). depthWrite:false keeps this additive overlay
+          out of the depth buffer so it never contends with the editor
+          plane below it. */}
+      <mesh ref={glowRef} position={[0, 0, 0.085]}>
         <planeGeometry args={[2.3, 1.42]} />
         <meshBasicMaterial
           map={texture}
@@ -499,6 +513,10 @@ function GlyphBillboard({
     return { texture: t };
   }, [glyph, color]);
 
+  // Low-tier: skip cursor parallax entirely (8 per-frame writes × 4
+  // glyphs = 32 property assignments dropped each tick). Orbit only.
+  const low = readPerfTier() === "low";
+
   useFrame((state) => {
     const g = groupRef.current;
     if (!g) return;
@@ -507,15 +525,12 @@ function GlyphBillboard({
     const baseZ = Math.sin(t) * radius;
     const baseY = height + Math.sin(t * 1.4) * 0.1;
 
-    // Cursor parallax — scales each glyph's offset slightly toward
-    // the cursor. Disabled when reduced-motion is set.
-    if (isCursorReduced()) {
+    if (low || isCursorReduced()) {
       g.position.set(baseX, baseY, baseZ);
     } else {
       g.position.x = baseX + cursor.x * 0.25;
       g.position.y = baseY + cursor.y * 0.18;
       g.position.z = baseZ;
-      // Tilt toward the cursor for a tiny parallax beat.
       g.rotation.y = cursor.x * 0.22;
       g.rotation.x = -cursor.y * 0.18;
     }
@@ -727,10 +742,12 @@ export function DevStation() {
             />
           </mesh>
 
-          {/* Hinged screen — rotate ~-75deg around X to open to ~105° */}
+          {/* Hinged screen — screen stands up from the hinge (Y+), then
+              tips ~18° back so the open angle reads as ~108° — the natural
+              "laptop sitting open on a desk" pose. */}
           <group
             position={[0, 0.06, -0.88]}
-            rotation={[-Math.PI * (75 / 180), 0, 0]}
+            rotation={[-Math.PI * (18 / 180), 0, 0]}
           >
             {/* Screen chassis slab (aluminum) */}
             <RoundedBox

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Oxanium, IBM_Plex_Mono } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { SceneContainer } from "@/components/three/SceneContainer";
 import { HudFrame } from "@/components/ui/HudFrame";
@@ -30,11 +30,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://portfolio.vercel.a
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Alex Chen — DEV.OS Control Room",
+  title: "Pradipta Kumar Jana — DEV.OS Control Room",
   description:
-    "Alex Chen — Full-Stack Developer. A sci-fi developer operating system: orbiting skill modules, docking 3D laptop rig, and HUD sections for About, Skills, Projects, Experience, and Contact.",
+    "Pradipta Kumar Jana — Senior Software Engineer. A sci-fi developer operating system: orbiting skill modules, docking 3D laptop rig, and HUD sections for About, Skills, Projects, Experience, and Contact.",
   openGraph: {
-    title: "Alex Chen — DEV.OS Control Room",
+    title: "Pradipta Kumar Jana — DEV.OS Control Room",
     description:
       "Full-stack developer orchestrating web, mobile and cloud from a single control surface.",
     type: "website",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Alex Chen — DEV.OS Control Room",
+    title: "Pradipta Kumar Jana — DEV.OS Control Room",
     description:
       "Full-stack developer orchestrating web, mobile and cloud from a single control surface."
   }
