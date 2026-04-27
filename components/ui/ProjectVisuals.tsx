@@ -490,7 +490,7 @@ function PipelineImpl({ color }: VisualProps) {
             rx={20 * c.s}
             ry={10 * c.s}
             fill={color}
-            opacity="0.12"
+            opacity="0.28"
           />
           <ellipse
             cx="-14"
@@ -498,7 +498,7 @@ function PipelineImpl({ color }: VisualProps) {
             rx={14 * c.s}
             ry={8 * c.s}
             fill={color}
-            opacity="0.12"
+            opacity="0.28"
           />
           <ellipse
             cx="14"
@@ -506,14 +506,14 @@ function PipelineImpl({ color }: VisualProps) {
             rx={14 * c.s}
             ry={8 * c.s}
             fill={color}
-            opacity="0.12"
+            opacity="0.28"
           />
           <path
             d={`M -20 0 Q 0 -${12 * c.s} 20 0`}
             fill="none"
             stroke={color}
-            strokeOpacity="0.6"
-            strokeWidth="1"
+            strokeOpacity="0.95"
+            strokeWidth="1.4"
           />
         </g>
       ))}
@@ -523,8 +523,8 @@ function PipelineImpl({ color }: VisualProps) {
         d="M 50 240 Q 90 240 130 180 Q 170 180 210 240 Q 250 240 290 180 Q 330 180 370 240"
         fill="none"
         stroke={color}
-        strokeOpacity="0.25"
-        strokeWidth="2"
+        strokeOpacity="0.55"
+        strokeWidth="2.2"
         strokeDasharray="4 3"
       />
       {/* Stages */}

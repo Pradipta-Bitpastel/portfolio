@@ -1,11 +1,19 @@
 "use client";
 
 import { memo, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useGSAP } from "@gsap/react";
 import { gsap, registerAll, hasPlugin } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
 import { cn } from "@/lib/cn";
 import { SectionFrame } from "@/components/ui/SectionFrame";
+
+// Lazy-load the WebGL warrior viewport so three.js stays out of the
+// SSR + first-paint bundles. Anything WebGL must be ssr:false.
+const HeroWarrior = dynamic(
+  () => import("@/components/three/HeroWarrior").then((m) => m.HeroWarrior),
+  { ssr: false, loading: () => null }
+);
 
 /**
  * Hero section — "SYS.BOOT // 01".
@@ -33,6 +41,13 @@ const BOOT_LOG_LINES: ReadonlyArray<string> = [
   "> signal locked — scroll to init."
 ];
 
+const ROLES: ReadonlyArray<string> = [
+  "FRONTEND DEVELOPER",
+  "FULL-STACK ENGINEER",
+  "3D WEB ARCHITECT",
+  "INTERFACE CRAFTSMAN"
+];
+
 type CharSpans = HTMLSpanElement[];
 
 function splitChars(el: HTMLElement): CharSpans {
@@ -57,6 +72,9 @@ function HeroSectionImpl() {
   const arrowRef = useRef<HTMLSpanElement>(null);
   const gridPathsRef = useRef<SVGSVGElement>(null);
   const bootLogRef = useRef<HTMLDivElement>(null);
+  const typewriterRef = useRef<HTMLSpanElement>(null);
+  const nameFirstRef = useRef<HTMLSpanElement>(null);
+  const nameLastRef = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
@@ -98,6 +116,57 @@ function HeroSectionImpl() {
         };
         revealLine(headlineLine1Ref.current, 0.15);
         revealLine(headlineLine2Ref.current, 0.45);
+
+        // ----- Name reveal: per-letter pop --------------------------
+        const revealName = (el: HTMLElement | null, delay: number) => {
+          if (!el) return;
+          const spans = splitChars(el);
+          gsap.set(spans, { y: 60, opacity: 0, rotateX: -40 });
+          gsap.to(spans, {
+            y: 0,
+            opacity: 1,
+            rotateX: 0,
+            duration: 0.85,
+            stagger: 0.05,
+            ease: "back.out(1.6)",
+            delay
+          });
+        };
+        revealName(nameFirstRef.current, 0.1);
+        revealName(nameLastRef.current, 0.35);
+
+        // ----- Role typewriter cycle --------------------------------
+        const typeEl = typewriterRef.current;
+        if (typeEl) {
+          const tl = gsap.timeline({ repeat: -1, delay: 1.2 });
+          ROLES.forEach((role) => {
+            const state = { i: 0 };
+            tl.to(state, {
+              i: role.length,
+              duration: role.length * 0.045,
+              ease: "none",
+              onUpdate: () => {
+                typeEl.textContent = role.slice(0, Math.floor(state.i));
+              },
+              onComplete: () => {
+                typeEl.textContent = role;
+              }
+            });
+            tl.to({}, { duration: 1.6 });
+            tl.to(state, {
+              i: 0,
+              duration: role.length * 0.022,
+              ease: "none",
+              onUpdate: () => {
+                typeEl.textContent = role.slice(0, Math.floor(state.i));
+              },
+              onComplete: () => {
+                typeEl.textContent = "";
+              }
+            });
+            tl.to({}, { duration: 0.25 });
+          });
+        }
 
         // ----- Eyebrow ScrambleText (or instant fallback) ----------
         const eyebrow = eyebrowRef.current;
@@ -304,44 +373,60 @@ function HeroSectionImpl() {
             {EYEBROW}
           </span>
 
-          {/* giant number — own row, above the headline */}
-          <div
-            aria-hidden
-            className="select-none font-display font-black leading-none tracking-tight text-[color:#FF7A1A]"
-            style={{
-              fontSize: "clamp(3.5rem, 11vw, 10rem)",
-              letterSpacing: "-0.02em"
-            }}
-          >
-            01
-          </div>
-
-          {/* headline — full-width block, nowrap per word to kill orphans */}
+          {/* name — giant display headline, two-tone */}
           <h1
             id="hero-heading"
             className={cn(
-              "font-display text-ink",
-              "leading-[0.86] tracking-[-0.02em]",
-              "drop-shadow-[0_0_30px_rgba(79,156,255,0.35)]"
+              "select-none font-display font-black leading-[0.84] tracking-tight",
+              "drop-shadow-[0_0_36px_rgba(255,122,26,0.28)]"
             )}
             style={{
-              fontWeight: 800,
-              fontSize: "clamp(1.25rem, 6vw, 2.5rem)"
+              fontSize: "clamp(2.75rem, 10vw, 9rem)",
+              letterSpacing: "-0.035em",
+              perspective: "800px"
             }}
           >
             <span
-              ref={headlineLine1Ref}
-              className="block whitespace-nowrap"
+              ref={nameFirstRef}
+              className="block whitespace-nowrap text-[color:#FF7A1A]"
             >
-              SYSTEM  {"// BOOT"}
+              PRADIPTA
             </span>
-            {/* <span
-              ref={headlineLine2Ref}
-              className="block whitespace-nowrap text-ink-dim"
+            <span
+              ref={nameLastRef}
+              className="block whitespace-nowrap text-ink"
             >
-              {"// BOOT"}
-            </span> */}
+              JANA
+            </span>
           </h1>
+
+          {/* typewriter role line — terminal prompt with cycling roles + caret */}
+          <div
+            className="flex items-center gap-2 font-mono uppercase tracking-[0.18em] text-ink"
+            style={{ fontSize: "clamp(0.95rem, 2.1vw, 1.55rem)" }}
+            aria-live="polite"
+          >
+            <span className="text-[#3FE8B4]">&gt;</span>
+            <span className="text-[#FF7A1A]/70">role</span>
+            <span className="text-ink-dim">::</span>
+            <span
+              ref={typewriterRef}
+              className="font-bold text-ink"
+            />
+            <span
+              aria-hidden
+              className="hero-caret inline-block h-[1.05em] w-[0.55ch] translate-y-[2px] bg-[#FF7A1A]"
+              style={{
+                boxShadow: "0 0 12px rgba(255,122,26,0.85)"
+              }}
+            />
+          </div>
+
+          {/* hidden headline refs preserved for any downstream usage */}
+          <span ref={headlineLine1Ref} className="sr-only" aria-hidden>
+            SYSTEM // BOOT
+          </span>
+          <span ref={headlineLine2Ref} className="sr-only" aria-hidden />
 
           <p className="max-w-[56ch] font-mono text-sm leading-relaxed text-ink-dim md:text-lg">
             A full-stack engineer orchestrating web, mobile and cloud
@@ -357,8 +442,13 @@ function HeroSectionImpl() {
           </a> */}
         </div>
 
-        {/* RIGHT: reserved for the 3D laptop (docked by SceneDock). */}
-        <div className="hidden md:col-span-5 md:block" aria-hidden />
+        {/* RIGHT: hero-local 3D warrior viewport. The global SceneDock
+            laptop continues to live in the fixed background Canvas
+            for other sections; this viewport overlays it in the hero
+            so the warrior is the centerpiece here. */}
+        <div className="relative z-10 hidden md:col-span-5 md:block">
+          <HeroWarrior />
+        </div>
       </div>
 
       {/* Boot-log terminal panel, bottom-left — pinned inside the
@@ -405,6 +495,16 @@ function HeroSectionImpl() {
           aria-hidden="true"
         />
       </div>
+
+      <style jsx>{`
+        @keyframes hero-caret-blink {
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
+        }
+        :global(.hero-caret) {
+          animation: hero-caret-blink 0.9s steps(1, end) infinite;
+        }
+      `}</style>
     </SectionFrame>
   );
 }

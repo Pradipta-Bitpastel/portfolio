@@ -114,9 +114,12 @@ function ProjectsSectionImpl() {
           if (visuals.length === 0 || infos.length === 0) return;
 
           // Seed initial state: only the first visual + info are visible.
+          // autoAlpha = opacity + visibility, so hidden slides are truly
+          // removed from compositing (no faint bleed-through behind the
+          // active slide during scrub).
           visuals.forEach((v, i) => {
             gsap.set(v, {
-              opacity: i === 0 ? 1 : 0,
+              autoAlpha: i === 0 ? 1 : 0,
               scale: i === 0 ? 1 : 0.9,
               clipPath:
                 i === 0
@@ -126,13 +129,21 @@ function ProjectsSectionImpl() {
           });
           infos.forEach((inf, i) => {
             gsap.set(inf, {
-              opacity: i === 0 ? 1 : 0,
+              autoAlpha: i === 0 ? 1 : 0,
               x: i === 0 ? 0 : 40
             });
           });
           dots?.forEach((d, i) => {
             d.classList.toggle("is-active", i === 0);
           });
+          // Seed progress bar at 0; driven via scrollTrigger.onUpdate
+          // below so it tracks scroll progress 1:1 with slide position.
+          if (progressRef.current) {
+            gsap.set(progressRef.current, {
+              scaleX: 0,
+              transformOrigin: "left center"
+            });
+          }
 
           const total = projects.length;
           // Each slide gets ~2 viewports of scroll (was 1.5) so a
@@ -178,19 +189,16 @@ function ProjectsSectionImpl() {
                     idx + 1
                   ).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
                 }
+                // Progress bar tracks scroll 1:1 — at slide N (of M),
+                // the bar reads (N-1)/(M-1). Driving it here instead
+                // of via a timeline tween avoids GSAP's default 0.5s
+                // duration filling the bar before the last slide.
+                if (progressRef.current) {
+                  gsap.set(progressRef.current, { scaleX: self.progress });
+                }
               }
             }
           });
-
-          // Progress bar fills 0 → 100%.
-          if (progressRef.current) {
-            tl.fromTo(
-              progressRef.current,
-              { scaleX: 0 },
-              { scaleX: 1, ease: "none" },
-              0
-            );
-          }
 
           // Build transition segments: from i to i+1.
           const seg = 1 / (total - 1);
@@ -203,7 +211,7 @@ function ProjectsSectionImpl() {
             tl.to(
               visuals[i],
               {
-                opacity: 0,
+                autoAlpha: 0,
                 scale: 0.88,
                 clipPath:
                   "polygon(50% 0, 100% 50%, 50% 100%, 0 50%, 50% 50%)",
@@ -215,13 +223,13 @@ function ProjectsSectionImpl() {
             tl.fromTo(
               visuals[i + 1],
               {
-                opacity: 0,
+                autoAlpha: 0,
                 scale: 0.9,
                 clipPath:
                   "polygon(50% 0, 100% 50%, 50% 100%, 0 50%, 50% 50%)"
               },
               {
-                opacity: 1,
+                autoAlpha: 1,
                 scale: 1,
                 clipPath:
                   "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
@@ -233,7 +241,7 @@ function ProjectsSectionImpl() {
             tl.to(
               infos[i],
               {
-                opacity: 0,
+                autoAlpha: 0,
                 x: -60,
                 duration: seg * 0.45
               },
@@ -242,9 +250,9 @@ function ProjectsSectionImpl() {
             // Incoming info slides in from right.
             tl.fromTo(
               infos[i + 1],
-              { opacity: 0, x: 60 },
+              { autoAlpha: 0, x: 60 },
               {
-                opacity: 1,
+                autoAlpha: 1,
                 x: 0,
                 duration: seg * 0.5
               },
@@ -472,13 +480,34 @@ function ProjectsSectionImpl() {
                 overflow: "visible"
               }}
             >
-              {/* Outer dashed ring — static decorative. Reduced inset
-                  from 24px to 16px to stay clear of viewport edges. */}
+              {/* Subtle pane backdrop — a very faint radial so the
+                  square boundary is visually obvious and the SVG
+                  content isn't swimming in a starfield. Reads as a
+                  "display panel" without dominating. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 50% 50%, rgba(255,122,26,0.06) 0%, rgba(255,122,26,0.02) 55%, rgba(255,122,26,0) 85%)"
+                }}
+              />
+              {/* 1px inset border — gives the pane a crisp visible
+                  rectangle so you can see where the SVG "ends" and
+                  the empty viewport begins. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  border: "1px solid rgba(255,122,26,0.28)"
+                }}
+              />
+              {/* Outer dashed ring — static decorative. */}
               <div
                 aria-hidden
                 className="pointer-events-none absolute -inset-4 rounded-full"
                 style={{
-                  border: "1px dashed rgba(255,122,26,0.22)"
+                  border: "1px dashed rgba(255,122,26,0.35)"
                 }}
               />
               {/* Corner brackets */}
@@ -528,10 +557,11 @@ function ProjectsSectionImpl() {
         </div>
 
         {/* HUD bottom: progress bar + nav dots.
-            Moved UP to bottom-20 (80px) so it sits above HudFrame's
-            24px bottom matte comfortably, and made the bar thicker +
-            glowier so it's legible during the pinned rotator. */}
-        <div className="pointer-events-none absolute bottom-20 left-12 right-12 z-20">
+            Pushed UP to bottom-32 (128px) so it clears the global
+            HudFrame's bottom-left LAT/LON + bottom-right SID labels
+            (anchored at bottom-8). Anything closer made the orange
+            progress bar visually crowd the LAT/LON line. */}
+        <div className="pointer-events-none absolute bottom-32 left-12 right-12 z-20">
           <div className="flex items-end justify-between gap-8">
             {/* Progress bar */}
             <div className="flex flex-1 flex-col gap-3">
