@@ -943,9 +943,9 @@ function HeroWarriorImpl() {
       {/* top-left readout */}
       <div className="pointer-events-none absolute left-3 top-3 z-40 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.32em] text-ink-dim">
         <span className="text-[#FF7A1A]">WORKSTATION</span>
-        <span className="opacity-40">//</span>
+        <span className="opacity-40">{"//"}</span>
         <span>RIG-01</span>
-        <span className="opacity-40">//</span>
+        <span className="opacity-40">{"//"}</span>
         <span className="text-[#A78BFA]">GLB</span>
       </div>
 
