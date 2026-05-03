@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:45:15.208Z",
+  "data": {
+    "effectId": "01KQ7JZRNBW2SBK7YE15R1PMMH",
+    "invocationKey": "portfolio-perf-responsive:S000006:cross-browser-fixes",
+    "invocationHash": "da88437a365925b7949648771de63c0da0e69e2a32a5b42d5b6f17f29479e9dc",
+    "stepId": "S000006",
+    "taskId": "cross-browser-fixes",
+    "kind": "agent",
+    "label": "Cross-browser correctness — chromium / firefox / webkit",
+    "taskDefRef": "tasks/01KQ7JZRNBW2SBK7YE15R1PMMH/task.json"
+  },
+  "checksum": "3a7ab47651f151eca56961c74a955e4b64f5d35a93fccba8464b0882604a417e"
+}

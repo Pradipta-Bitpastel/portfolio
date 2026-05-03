@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7K9X4781NHPSR987M9D8W0",
+  "taskId": "build-gate",
+  "invocationKey": "portfolio-perf-responsive:S000007:build-gate",
+  "status": "ok",
+  "result": {
+    "buildOk": true,
+    "errors": [],
+    "stderrTail": "",
+    "stdoutTail": "Route (app)                              Size     First Load JS\n┌ ○ /                                    203 kB          342 kB\n├ ○ /_not-found                          873 B          88.5 kB\n├ ƒ /icon                                0 B                0 B\n├ ƒ /opengraph-image                     0 B                0 B\n└ ○ /sitemap.xml                         0 B                0 B\n+ First Load JS shared by all            87.6 kB",
+    "success": true,
+    "typecheckOk": true
+  },
+  "startedAt": "2026-04-27T13:51:30.447Z",
+  "finishedAt": "2026-04-27T13:51:30.447Z",
+  "value": {
+    "buildOk": true,
+    "errors": [],
+    "stderrTail": "",
+    "stdoutTail": "Route (app)                              Size     First Load JS\n┌ ○ /                                    203 kB          342 kB\n├ ○ /_not-found                          873 B          88.5 kB\n├ ƒ /icon                                0 B                0 B\n├ ƒ /opengraph-image                     0 B                0 B\n└ ○ /sitemap.xml                         0 B                0 B\n+ First Load JS shared by all            87.6 kB",
+    "success": true,
+    "typecheckOk": true
+  }
+}

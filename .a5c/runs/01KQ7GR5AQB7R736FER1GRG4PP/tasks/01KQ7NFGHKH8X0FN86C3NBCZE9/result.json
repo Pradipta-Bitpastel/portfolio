@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7NFGHKH8X0FN86C3NBCZE9",
+  "taskId": "lighthouse-desktop",
+  "invocationKey": "portfolio-perf-responsive:S000022:lighthouse-desktop",
+  "status": "ok",
+  "result": {
+    "accessibility": 100,
+    "bestPractices": 100,
+    "cls": 0.068,
+    "fcp": 263.76,
+    "lcp": 774.63,
+    "performance": 99,
+    "rawScoreFile": "artifacts/lh-desktop-2.json",
+    "recommendations": [
+      "Reduce unused JavaScript (~110ms savings on desktop)",
+      "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+      "Add valid source maps for large first-party JavaScript (currently missing)",
+      "Reduce total byte weight of network payloads (score 0.5)",
+      "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+    ],
+    "tbt": 0,
+    "totalBlockingTime": 0,
+    "tti": 774.63
+  },
+  "startedAt": "2026-04-27T16:11:26.829Z",
+  "finishedAt": "2026-04-27T16:11:26.829Z",
+  "value": {
+    "accessibility": 100,
+    "bestPractices": 100,
+    "cls": 0.068,
+    "fcp": 263.76,
+    "lcp": 774.63,
+    "performance": 99,
+    "rawScoreFile": "artifacts/lh-desktop-2.json",
+    "recommendations": [
+      "Reduce unused JavaScript (~110ms savings on desktop)",
+      "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+      "Add valid source maps for large first-party JavaScript (currently missing)",
+      "Reduce total byte weight of network payloads (score 0.5)",
+      "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+    ],
+    "tbt": 0,
+    "totalBlockingTime": 0,
+    "tti": 774.63
+  }
+}

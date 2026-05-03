@@ -1,0 +1,930 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "filesChanged"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "audit": {
+          "bundleSize": {
+            "biggestChunks": [
+              {
+                "kb": 8716,
+                "name": "_app-pages-browser_components_three__Scene_tsx.js (raw)"
+              },
+              {
+                "kb": 5993,
+                "name": "app/page.js (raw)"
+              },
+              {
+                "kb": 5893,
+                "name": "main-app.js (raw)"
+              },
+              {
+                "kb": 5312,
+                "name": "_app-pages-browser_components_three_HeroWarrior_tsx.js (raw)"
+              },
+              {
+                "kb": 3569,
+                "name": "vendor three.js (raw)"
+              },
+              {
+                "kb": 2281,
+                "name": "vendor gsap.js (raw)"
+              },
+              {
+                "kb": 459,
+                "name": "_app-pages-browser_node_modules_gsap_GSDevTools_js.js"
+              },
+              {
+                "kb": 240,
+                "name": "_app-pages-browser_node_modules_gsap_MorphSVGPlugin_js.js"
+              },
+              {
+                "kb": 215,
+                "name": "_app-pages-browser_node_modules_gsap_MotionPathPlugin_js.js"
+              },
+              {
+                "kb": 53,
+                "name": "shared chunks/fd9d1056"
+              },
+              {
+                "kb": 32,
+                "name": "shared chunks/117"
+              }
+            ],
+            "firstLoadKB": 336
+          },
+          "gsapStats": {
+            "pinUsage": 2,
+            "scrollTriggerCount": 9,
+            "scrubUsage": 12
+          },
+          "issues": [
+            {
+              "category": "BUNDLE-SIZE",
+              "file": "public/models/elven-warrior.glb",
+              "line": 0,
+              "recommendation": "Run the GLB through gltf-transform / gltfpack with Draco or Meshopt compression (typical 80-95% reduction), strip unused textures/animations, downsize textures to 1k, and lazy-load it only on hero in-view. Target <2 MB.",
+              "severity": "critical",
+              "summary": "22 MB GLB model loaded for the hero scene (HeroWarrior preloads /models/pc.glb but the elven-warrior.glb sits in /public; the directory totals 26 MB). On Vercel free tier with cold edge cache this is an enormous bandwidth tax that drowns the rest of the render budget."
+            },
+            {
+              "category": "BUNDLE-SIZE",
+              "file": "app/page.js (built chunk)",
+              "line": 0,
+              "recommendation": "Stop calling registerAll() everywhere — only import the plugins you actually use (ScrollTrigger, TextPlugin, ScrambleTextPlugin, CustomEase). Drop GSDevTools entirely in production builds. Tree-shake drei imports (e.g. import only RoundedBox/Float/Bounds rather than top-level). Code-split HeroWarrior and SceneContainer behind an in-view IntersectionObserver.",
+              "severity": "high",
+              "summary": "First Load JS for / is 336 KB and the dev/sourcemap chunks for _Scene.tsx (~8.9 MB raw), HeroWarrior.tsx (~5.4 MB raw), main-app (~6 MB raw) include drei, postprocessing, and full GSAP plugin set. registerAll() in lib/gsap.ts dynamically imports 17 GSAP plugins (incl. GSDevTools 469 KB, MorphSVGPlugin 245 KB, MotionPathPlugin 220 KB) on every visit."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/Scene.tsx",
+              "line": 93,
+              "recommendation": "Drop postprocessing to a single Bloom pass on high-tier only and disable on any device with hardwareConcurrency<=4 or deviceMemory<=4 (current low-tier check only catches <4 cores). Consider dropping postprocessing entirely and using emissive materials + CSS bloom overlay.",
+              "severity": "critical",
+              "summary": "EffectComposer with Bloom + ChromaticAberration + Vignette runs full-screen on the global Canvas every frame. Postprocessing is the single biggest GPU cost on integrated/Windows GPUs."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/HeroWarrior.tsx",
+              "line": 871,
+              "recommendation": "Move the warrior into the global Canvas as a hero-only group, OR keep one Canvas and toggle scenes via state. Disable directional shadows entirely (shadow maps ~4 MB GPU memory each). Drop Environment preset 'city' (downloads HDR ~1-2 MB). Remove ContactShadows in favor of a baked plane.",
+              "severity": "critical",
+              "summary": "The hero ships a SECOND R3F Canvas (in addition to the global one in SceneContainer). Both run useFrame loops, both register OrbitControls + Environment preset 'city' + ContactShadows + Bloom + Vignette + shadow maps (1024x1024 directional shadows) simultaneously. Two WebGL contexts on one page is the root cause of Windows/Firefox crashes and lag on Vercel free tier."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/Lights.tsx",
+              "line": 45,
+              "recommendation": "Drop Environment preset entirely on low-tier (it's an HDR fetch + IBL convolution); replace warehouse with a 6-color cubemap or just ambient+key. Reduce Sparkles count to 20 or remove. Consolidate point lights — 3 max scene-wide; rest should be baked into materials.",
+              "severity": "high",
+              "summary": "Global scene also loads <Environment preset='warehouse'/> HDR + drei <Sparkles count=60/> on top of a 17-light scene (3 rim point lights + ambient + directional + the cursor light + 5 from DevStation + 5 from HeroWarrior). Each Sparkle particle is a draw call."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/Core.tsx",
+              "line": 188,
+              "recommendation": "Drop ico detail to 2 and 1 respectively; halve PARTICLE_COUNT to 48; merge Lightning useFrame into Core's loop; drop the wireframe pass on low-tier. Also note: meshPhysicalMaterial w/ iridescence + clearcoat is 3-4x cost of meshStandardMaterial — gate it behind tier==='high'.",
+              "severity": "high",
+              "summary": "icosahedronGeometry detail=3 produces 1280 triangles, plus another icosahedron det=2 (320 tris) wireframe, plus PARTICLE_COUNT=96 instanced cubes animated every frame, plus a 6-segment Lightning pulsing material. Three useFrame loops in this file alone (ParticleShell, Lightning, Core)."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/Modules.tsx",
+              "line": 318,
+              "recommendation": "Lower all sphere segments to 12. Replace RoundedBox smoothness=3 with smoothness=1. Skip Float wrapper on low-tier. Consolidate orbit + float into a single useFrame in the parent rig instead of 5 children.",
+              "severity": "high",
+              "summary": "5 module satellites use 24/20/18-segment spheres, RoundedBox with smoothness=3 (288 tris each), torus 12x48, 9 LED spheres each 8 segs. Plus drei <Float/> wraps each module — Float internally runs its own useFrame. With 5 modules + per-module orbit useFrame + Float = ~10 useFrame loops in Modules alone."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/GroundReflector.tsx",
+              "line": 30,
+              "recommendation": "Lower resolution to 256, blur to [50,25]. Move tier threshold from <4 to <=4 cores. Or replace with a static gradient floor on everything except hardwareConcurrency>=8 + deviceMemory>=8.",
+              "severity": "high",
+              "summary": "MeshReflectorMaterial does a render-to-texture every frame at resolution=512 + blur=[100,50] + depthScale — single most expensive material in scene. Already gated behind low-tier but still hits 4-core Windows machines that score 'high' (4 cores is 'high' in current usePerfTier)."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/DevStation.tsx",
+              "line": 251,
+              "recommendation": "Drop the screen redraw cadence to every 90 frames (1.5s) and skip entirely on low-tier — preserve a static texture. Or compose the editor as a plane with shader uniforms instead of canvas redraws.",
+              "severity": "medium",
+              "summary": "useCodeTexture creates a 1024x640 CanvasTexture and redraws it every 30 frames (every 60 on low-tier) via 2D canvas API. Also 4 GlyphBillboards each create their own 160x160 canvases. Each canvas redraw → texture.needsUpdate → GPU upload. On a 60fps loop that's 2 GPU uploads/sec just for the screen + 4 once-only for glyphs."
+            },
+            {
+              "category": "PERF-3D",
+              "file": "components/three/HeroWarrior.tsx",
+              "line": 232,
+              "recommendation": "Disable shadows entirely. Replace with a baked ContactShadows that runs once at mount (frames=1) instead of every frame, OR a static SVG/PNG shadow under the model.",
+              "severity": "medium",
+              "summary": "Directional light castShadow with 1024x1024 shadow map even when isLow=false. This forces a depth pre-pass per frame."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "components/sections/ProjectsSection.tsx",
+              "line": 169,
+              "recommendation": "Replace clipPath polygon morph with a simple opacity+scale crossfade (clipPath still runs through layout invalidation). Reduce scrub to 1. On low-tier matchMedia branch, render the static mobile grid instead of the pinned rotator. Currently 'lg+' = 1024px, which captures lots of low-spec laptops.",
+              "severity": "high",
+              "summary": "Pinned scrub timeline runs ~5 viewports of pinned scroll, with scrub:1.5, anticipatePin:1, snap, AND drives autoAlpha+scale+clipPath on 5 visuals + 5 infos + a 3D scene timeline simultaneously. clipPath polygon animation on a layer the size of the viewport is paint-killer on integrated GPUs."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "components/sections/SkillsSection.tsx",
+              "line": 363,
+              "recommendation": "Reduce to 500vh (5 panels × 100vh). Use a single master timeline with one scrub instead of one per panel. Skip the carousel entirely on tablets — currently only triggers on min-width:1024px which is borderline; bump to 1280px.",
+              "severity": "high",
+              "summary": "lg:!h-[800vh] = 8 viewports of pinned scroll for the skill carousel. Each panel has its own ScrollTrigger with scrub:1, plus a 5-panel onEnter/onLeave each spawning multiple GSAP tweens, plus a snap config. ScrollTriggers cost more if pinned across 800vh."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "components/sections/SectionOrchestrator.tsx",
+              "line": 45,
+              "recommendation": "Pick ONE boundary visual (either the iris OR the cinematic beat). Skip the chromatic pulse and module scale pulse on low-tier. Cache traversed connection materials at boot rather than walking the graph on every boundary.",
+              "severity": "medium",
+              "summary": "Cinematic boundary BEAT spawns 6+ overlapping gsap.fromTo() tweens on every section enter/exit (camera offset, fov pulse, chromatic, glow, connection mats traverse, 5 module scale pulses), AND IrisTransition fires its own multi-phase timeline at the same boundary. Compounded with SceneDock's scrubbed per-section timelines and the per-section beat callbacks."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "app/globals.css",
+              "line": 50,
+              "recommendation": "Remove the second mix-blend-mode atmosphere grain layer (Atmosphere.tsx lines 24-33). Gate backdrop-filter behind a 'supports backdrop-filter' check + hardwareConcurrency>=8.",
+              "severity": "medium",
+              "summary": "Global .glass utility uses backdrop-filter blur(12px) saturate(130%). Mobile/coarse-pointer media query strips it correctly, but DESKTOP Windows machines without compositor accel (Firefox on integrated) still pay the cost. Plus .noise overlay uses mix-blend-mode: overlay + SVG fractalNoise turbulence inline (Atmosphere.tsx duplicates this pattern with another mix-blend-mode: overlay layer)."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "components/ui/IrisTransition.tsx",
+              "line": 158,
+              "recommendation": "Replace the dual drop-shadow filter with a single glow box-shadow on a containing div. Disable iris entirely on low-tier (currently only collapses to a cross-fade — but allocation still happens).",
+              "severity": "medium",
+              "summary": "IrisTransition animates clip-path polygon every frame (onUpdate calls hexClip and setAttribute on a path), composited with drop-shadow filter (two layers, 14px and 30px blur). Triggers on every section boundary. drop-shadow + clip-path together cause large compositor invalidations."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "components/three/HeroWarrior.tsx",
+              "line": 312,
+              "recommendation": "Pause all loops via ScrollTrigger.create({onLeave: pause, onEnter: resume}) so they only run when hero is in viewport. Throttle CoordReadout to every 4th rAF tick. Drop the CSS scanline keyframe on low-tier.",
+              "severity": "medium",
+              "summary": "OrbitalBackdrop SVG inside hero runs 4 infinite GSAP rotate tweens on outer/mid/inner/sweep, plus 22 dot pulse tweens, plus a CSS scanline animation, plus tech chips run 4 infinite y-bob tweens, plus StatBars run 4 shimmer tweens, plus CoordReadout has a requestAnimationFrame loop updating DOM textContent every frame."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/sections/ProjectsSection.tsx",
+              "line": 386,
+              "recommendation": "Change pinned breakpoint from lg (1024px) to xl (1280px). Reduce visual maxWidth to 'min(380px, 42vh)'. Move progress bar to bottom-20 OR hide HudFrame LAT/LON when projects pinned.",
+              "severity": "high",
+              "summary": "Desktop pinned stage uses absolute inset-x-0 top-[min(200px,24vh)] bottom-[120px] + grid-cols-12 with col-span-6 each side. On 1024-1279px the project info copy + stack chips + 460px aspect-square visual collide. Also bottom-32 (128px) progress bar collides with HudFrame's bottom-8 LAT/LON labels at heights <820px."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/sections/HeroSection.tsx",
+              "line": 449,
+              "recommendation": "Hide HeroWarrior on <lg (1024px) instead of <md. Or reduce its h-[clamp(480px,72vh,820px)] to clamp(320px,50vh,560px) at md.",
+              "severity": "high",
+              "summary": "HeroWarrior is hidden on <md (768px) but shown on md+ as col-span-5. At 768-1023px this means the 720px-tall warrior takes 41% of width with the heading at clamp(2.75rem,10vw,9rem). At 768px width the headline 'PRADIPTA' becomes 76.8px = ~7 chars wide leaves the warrior with ~270px column to render an 820px-tall canvas."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/sections/AboutSection.tsx",
+              "line": 233,
+              "recommendation": "Change to text-[clamp(6rem,12vw,14rem)] so the number scales with viewport. Test at 768/1024/1280.",
+              "severity": "medium",
+              "summary": "Giant '02' background number is text-[10rem] at md and text-[14rem] at lg. At 768-1023px viewport that's a 160px font sized purely on the right; with letter-spacing it overflows into HudFrame's right padding. Same pattern in Skills (line 417), Experience (line 312), Contact (line 208)."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/sections/HeroSection.tsx",
+              "line": 457,
+              "recommendation": "Anchor explicitly with left-[clamp(48px,6vw,96px)]. Add hidden md:block lg:block — currently shows at md but the layout space isn't reserved.",
+              "severity": "medium",
+              "summary": "Boot-log terminal panel uses w-[min(22rem,30vw)] and is positioned absolute bottom-[clamp(56px,7vh,120px)] without a left/right anchor — relies on default static flow within the absolute container. At 768-900px it overlaps the typewriter row and the headline drop-shadow box."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/ui/SectionHUD.tsx",
+              "line": 76,
+              "recommendation": "Move the mobile strip to top-14 or bottom-12. Test at 375/414.",
+              "severity": "medium",
+              "summary": "Mobile horizontal strip is fixed top-10 left-4 right-4 — overlaps the HudFrame top label band at top-4 (DEV.OS v14.2.0 + UTC clock). On 375px viewport the mobile section nav, the DEV.OS chip, and the clock all stack into a 40px-tall band."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/sections/ContactSection.tsx",
+              "line": 215,
+              "recommendation": "Use viewBox+w-full max-w-md or scale via clamp.",
+              "severity": "medium",
+              "summary": "Ping rings SVG is hardcoded width=420 height=420, absolutely centered. On 375px viewport it's 12% wider than the screen and clips behind the form card."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/sections/ExperienceSection.tsx",
+              "line": 339,
+              "recommendation": "Add explicit min-w-0 + word-wrap to .exp-bullet, and clamp the period text to 9px tracking on small viewports.",
+              "severity": "medium",
+              "summary": "max-w-[46rem] (736px) timeline is the only thing on the page below md, but the rail rests at left-0 with a pl-[70px] entries list. On a 375px viewport the entry card shrinks to 305px - corner brackets and bracket SVG paths are positioned via percent so they read OK, but bullet rows can wrap in an awkward 12-char line."
+            },
+            {
+              "category": "BROWSER-COMPAT",
+              "file": "components/three/_Scene.tsx",
+              "line": 56,
+              "recommendation": "Use 'default' powerPreference everywhere. Detect WebGL context creation failure and render the SvgCoreFallback. Add a useGL diagnostic that logs renderer/vendor string.",
+              "severity": "high",
+              "summary": "gl={{ antialias: !isLow, powerPreference: 'high-performance' }} — Firefox on Windows with integrated GPU often refuses 'high-performance' and silently downgrades to a software renderer. Combined with two simultaneous WebGL contexts (HeroWarrior + global Scene), Firefox throws WEBGL_lose_context."
+            },
+            {
+              "category": "BROWSER-COMPAT",
+              "file": "components/three/HeroWarrior.tsx",
+              "line": 76,
+              "recommendation": "Clone materials before mutating: mesh.material = mat.clone(); then mutate the clone. Otherwise mat persists on the cached useGLTF result.",
+              "severity": "high",
+              "summary": "WarriorMesh.traverse mutates loaded GLTF materials in-place (mat.envMapIntensity, mat.emissiveIntensity). This breaks if the same scene is loaded twice (HMR or React strict mode in dev → mounted twice). React 18 strict mode in next.config has reactStrictMode:true so on dev the mount runs twice and mutations stack."
+            },
+            {
+              "category": "BROWSER-COMPAT",
+              "file": "components/ui/IrisTransition.tsx",
+              "line": 287,
+              "recommendation": "Drop the clip-path polygon animation on Safari (detect via UA or simply use opacity-only iris on low-tier). Replace with a CSS clip-path: circle() animation if shape effect is required.",
+              "severity": "medium",
+              "summary": "willChange: 'clip-path, opacity' + filter: 'drop-shadow(0 0 14px) drop-shadow(0 0 30px)' — Safari/WebKit handles clip-path polygon animation by re-rasterizing every frame; combined with double drop-shadow this triggers a known WebKit performance cliff (Safari 16/17 throttles to 30fps)."
+            },
+            {
+              "category": "BROWSER-COMPAT",
+              "file": "app/globals.css",
+              "line": 100,
+              "recommendation": "Drop the SVG turbulence noise — replace with a tiny PNG noise tile (1.5 KB) loaded once. Remove the second copy in Atmosphere.tsx.",
+              "severity": "medium",
+              "summary": "noise::after uses mix-blend-mode: overlay + an inline SVG with feTurbulence. Firefox renders feTurbulence on the CPU and Edge prior to v90 had memory leaks with mix-blend-mode + fixed positioning (Atmosphere.tsx repeats this)."
+            },
+            {
+              "category": "BROWSER-COMPAT",
+              "file": "components/three/Lights.tsx",
+              "line": 45,
+              "recommendation": "Self-host a minimal HDR (or use a 6-color CubeTexture instead). Or remove Environment entirely; the scene reads fine with three point lights.",
+              "severity": "medium",
+              "summary": "drei <Environment preset='warehouse'/> downloads from poly.haven CDN at runtime — a remote fetch that can fail behind corp firewalls or slow connections, causing Suspense to hang. HeroWarrior also loads preset='city' as a separate fetch."
+            },
+            {
+              "category": "BROWSER-COMPAT",
+              "file": "components/providers/SmoothScrollProvider.tsx",
+              "line": 95,
+              "recommendation": "Disable Lenis on iOS (UA detect) and on prefers-reduced-motion (already done). Also disable on Firefox where Lenis has documented conflicts.",
+              "severity": "medium",
+              "summary": "Lenis smooth scroll wrapper — known issue: Lenis on iOS Safari intercepts pinch zoom and on Firefox+macOS conflicts with the native momentum scroll. The current provider falls back to Lenis only if ScrollSmoother isn't loaded; ScrollSmoother is a paid Club plugin so most installs end up on Lenis."
+            },
+            {
+              "category": "PERF-DOM",
+              "file": "components/sections/HeroSection.tsx",
+              "line": 271,
+              "recommendation": "Wrap all hero loops in a ScrollTrigger.create({trigger:hero, onLeave: pauseAll, onEnter: resumeAll}). Most are CPU-cheap individually but they sum to ~30 simultaneous infinite tweens forever.",
+              "severity": "medium",
+              "summary": "Hero arrow + caret + typewriter + name reveal + headline reveal + boot-log typewriter + grid DrawSVG on lines + scroll-scrubbed core assemble all fire on hero mount. Plus inside HeroWarrior the SVG has 4 infinite tweens, the StatBars have 4 shimmer loops, CoordReadout runs rAF. None of these pause when hero leaves viewport."
+            },
+            {
+              "category": "RESPONSIVE",
+              "file": "components/three/HeroWarrior.tsx",
+              "line": 848,
+              "recommendation": "Constrain TechChips to inset-x-0 (no negative %). On md hide stat bars + coord readout (only show on lg+).",
+              "severity": "medium",
+              "summary": "Hero warrior wrapper uses h-[clamp(480px,72vh,820px)]. Inside, StatBars (right-3 top-1/2 w-[clamp(120px,14vw,170px)]) + CoordReadout (bottom-3 left-3) + corner brackets + tech chips at top:8% / bottom:14% etc. At md viewport width 768px, tech chips at left:-2% / right:-2% sit OUTSIDE the warrior column boundary and overlap the headline column at HeroSection col-span-7."
+            }
+          ],
+          "publicAssets": [
+            {
+              "path": "public/models/elven-warrior.glb",
+              "sizeKB": 22528
+            },
+            {
+              "path": "public/models/pc.glb",
+              "sizeKB": 4608
+            },
+            {
+              "path": "public/robots.txt",
+              "sizeKB": 4
+            },
+            {
+              "path": "public/.gitkeep",
+              "sizeKB": 0
+            }
+          ],
+          "responsiveStats": {
+            "fixedPxWidthHits": 14,
+            "missingResponsiveSections": [
+              "components/sections/ProjectsSection.tsx desktop rotator (lg+ only, breaks 1024-1279px)",
+              "components/sections/HeroSection.tsx HeroWarrior shown md+ but designed for lg+",
+              "components/sections/HeroSection.tsx boot-log panel absolute without anchor at md",
+              "components/ui/SectionHUD.tsx mobile strip overlaps top HUD labels at 375/414",
+              "components/sections/ContactSection.tsx ping rings SVG hardcoded 420x420 (overflows 375px)",
+              "components/three/HeroWarrior.tsx tech chips at -2% offset overlap headline column at md",
+              "components/sections/AboutSection.tsx + Skills + Experience + Contact giant section number text-[10rem]/[14rem] without clamp"
+            ]
+          },
+          "summary": "The biggest offender by far is the 22 MB elven-warrior.glb plus a SECOND R3F Canvas (HeroWarrior) running in addition to the global scene — two WebGL contexts, two postprocessing pipelines, two Environment HDRs, and shadow maps explain the Windows/Firefox crashes and Vercel free-tier lag. Bundle is bloated by registerAll() pulling 17 GSAP plugins (incl. GSDevTools 460 KB) and untree-shaken drei imports, pushing First Load JS to 336 KB while raw chunks reach 8.9 MB. Responsive failures cluster at the 768-1023px tablet/laptop band where the pinned Projects rotator and HeroWarrior assume lg+ space they don't actually have, and giant section numbers (text-[14rem]) overflow into HudFrame padding.",
+          "threeJSStats": {
+            "geometryDetail": [
+              {
+                "file": "components/three/Core.tsx:188",
+                "type": "icosahedronGeometry mid shell",
+                "value": "args=[0.9, 3] → ~1280 tris, meshPhysicalMaterial + iridescence + clearcoat"
+              },
+              {
+                "file": "components/three/Core.tsx:204",
+                "type": "sphereGeometry inner core",
+                "value": "args=[0.4, 32, 32] → 32x32 segs"
+              },
+              {
+                "file": "components/three/Core.tsx:230",
+                "type": "icosahedronGeometry wireframe",
+                "value": "args=[1.15, 2] → 320 tris"
+              },
+              {
+                "file": "components/three/Core.tsx:25",
+                "type": "instanced particle shell",
+                "value": "PARTICLE_COUNT=96 box instances, additive blending"
+              },
+              {
+                "file": "components/three/Modules.tsx:266",
+                "type": "torusGeometry devops primary",
+                "value": "args=[0.38, 0.07, 12, 48]"
+              },
+              {
+                "file": "components/three/Modules.tsx:278",
+                "type": "torusGeometry devops inner",
+                "value": "args=[0.28, 0.04, 10, 32]"
+              },
+              {
+                "file": "components/three/Modules.tsx:318",
+                "type": "sphereGeometry cloud primary",
+                "value": "args=[0.38, 24, 24]"
+              },
+              {
+                "file": "components/three/Modules.tsx:331",
+                "type": "sphereGeometry cloud puff a",
+                "value": "args=[0.26, 20, 20]"
+              },
+              {
+                "file": "components/three/Modules.tsx:343",
+                "type": "sphereGeometry cloud puff b",
+                "value": "args=[0.22, 18, 18]"
+              },
+              {
+                "file": "components/three/Modules.tsx:355",
+                "type": "sphereGeometry cloud puff c",
+                "value": "args=[0.24, 18, 18]"
+              },
+              {
+                "file": "components/three/Modules.tsx:368",
+                "type": "sphereGeometry cloud aura",
+                "value": "args=[0.7, 24, 24]"
+              },
+              {
+                "file": "components/three/Modules.tsx:380",
+                "type": "sphereGeometry cloud inner bright",
+                "value": "args=[0.15, 16, 16]"
+              },
+              {
+                "file": "components/three/Modules.tsx:240",
+                "type": "sphereGeometry backend LEDs (12x)",
+                "value": "args=[0.015, 8, 8]"
+              },
+              {
+                "file": "components/three/TimelineRing.tsx:48",
+                "type": "torusGeometry main ring",
+                "value": "args=[4.2, 0.04, 16, 128]"
+              },
+              {
+                "file": "components/three/TimelineRing.tsx:63",
+                "type": "sphereGeometry timeline nodes (4x)",
+                "value": "args=[0.12, 16, 16]"
+              },
+              {
+                "file": "components/three/DevStation.tsx",
+                "type": "instanced keyboard",
+                "value": "13x4=52 instanced boxes + RoundedBox smoothness=3 throughout"
+              },
+              {
+                "file": "components/three/HeroWarrior.tsx:124",
+                "type": "ringGeometry holo plinth",
+                "value": "args=[1.85, 1.95, 96] + 128-seg outer ring"
+              },
+              {
+                "file": "components/three/HeroWarrior.tsx",
+                "type": "drei <Environment preset='city'/> + ContactShadows + 1024x1024 directional shadow map",
+                "value": "remote HDR fetch + per-frame shadow render"
+              },
+              {
+                "file": "components/three/Lights.tsx:45",
+                "type": "drei <Environment preset='warehouse'/> + <Sparkles count=60/>",
+                "value": "remote HDR fetch + 60 particles"
+              },
+              {
+                "file": "components/three/GroundReflector.tsx:30",
+                "type": "MeshReflectorMaterial",
+                "value": "resolution=512, blur=[100,50] — render-to-texture every frame on high tier"
+              }
+            ],
+            "postProcessing": true,
+            "useFrameLoops": 16
+          }
+        },
+        "cwd": "/Users/pradiptajana/Portfolio"
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Read lib/gsap.ts. Verify only the plugins actually used by the codebase are registered. Remove any import that is unused. Plugins must be lazy / registered once / SSR-safe.",
+        "For each section component (HeroSection, AboutSection, SkillsSection, ProjectsSection, ExperienceSection, ContactSection): wrap all GSAP work in `gsap.context()`; clean up on unmount; if `prefersReducedMotion` OR low tier, replace ScrollTrigger scrub timelines with simple `from`/`to` reveals (or skip entirely).",
+        "Drop `scrub: true` on low tier (scrub is the most expensive scroll behavior). Replace with `toggleActions: \"play none none reverse\"`.",
+        "Make sure any `ScrollTrigger.refresh()` calls happen only after fonts + images load (use `document.fonts.ready` if available).",
+        "Disable Lenis / SmoothScrollProvider when reduced-motion is set, OR when on touch (Lenis on iOS/Android causes jank with native momentum scroll). Keep the existing fallback path.",
+        "For the SectionOrchestrator and SmoothScrollProvider: ensure no requestAnimationFrame loops keep running after unmount; add cleanup.",
+        "Reduce expensive backdrop-filter usage in components/ui/GlassPanel.tsx on low tier — use a solid semi-opaque background fallback when perfLow.",
+        "Run `npm run typecheck`.",
+        "Return JSON { filesChanged:[paths], typecheckOk:bool, optimizations:[strings] }"
+      ],
+      "outputFormat": "JSON",
+      "role": "GSAP + scroll-driven animation expert",
+      "task": "Reduce CPU cost of GSAP timelines on low-tier devices. Defer or simplify non-essential animations. Make sure all ScrollTriggers cleanup correctly."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7HT9S2QCVXXYG70WMA0CNB/input.json",
+    "outputJsonPath": "tasks/01KQ7HT9S2QCVXXYG70WMA0CNB/result.json"
+  },
+  "kind": "agent",
+  "title": "Optimize GSAP / animation cost on low-tier devices",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7HT9S2QCVXXYG70WMA0CNB",
+  "taskId": "animation-optimize",
+  "invocationKey": "portfolio-perf-responsive:S000004:animation-optimize",
+  "stepId": "S000004",
+  "inputs": {
+    "audit": {
+      "bundleSize": {
+        "biggestChunks": [
+          {
+            "kb": 8716,
+            "name": "_app-pages-browser_components_three__Scene_tsx.js (raw)"
+          },
+          {
+            "kb": 5993,
+            "name": "app/page.js (raw)"
+          },
+          {
+            "kb": 5893,
+            "name": "main-app.js (raw)"
+          },
+          {
+            "kb": 5312,
+            "name": "_app-pages-browser_components_three_HeroWarrior_tsx.js (raw)"
+          },
+          {
+            "kb": 3569,
+            "name": "vendor three.js (raw)"
+          },
+          {
+            "kb": 2281,
+            "name": "vendor gsap.js (raw)"
+          },
+          {
+            "kb": 459,
+            "name": "_app-pages-browser_node_modules_gsap_GSDevTools_js.js"
+          },
+          {
+            "kb": 240,
+            "name": "_app-pages-browser_node_modules_gsap_MorphSVGPlugin_js.js"
+          },
+          {
+            "kb": 215,
+            "name": "_app-pages-browser_node_modules_gsap_MotionPathPlugin_js.js"
+          },
+          {
+            "kb": 53,
+            "name": "shared chunks/fd9d1056"
+          },
+          {
+            "kb": 32,
+            "name": "shared chunks/117"
+          }
+        ],
+        "firstLoadKB": 336
+      },
+      "gsapStats": {
+        "pinUsage": 2,
+        "scrollTriggerCount": 9,
+        "scrubUsage": 12
+      },
+      "issues": [
+        {
+          "category": "BUNDLE-SIZE",
+          "file": "public/models/elven-warrior.glb",
+          "line": 0,
+          "recommendation": "Run the GLB through gltf-transform / gltfpack with Draco or Meshopt compression (typical 80-95% reduction), strip unused textures/animations, downsize textures to 1k, and lazy-load it only on hero in-view. Target <2 MB.",
+          "severity": "critical",
+          "summary": "22 MB GLB model loaded for the hero scene (HeroWarrior preloads /models/pc.glb but the elven-warrior.glb sits in /public; the directory totals 26 MB). On Vercel free tier with cold edge cache this is an enormous bandwidth tax that drowns the rest of the render budget."
+        },
+        {
+          "category": "BUNDLE-SIZE",
+          "file": "app/page.js (built chunk)",
+          "line": 0,
+          "recommendation": "Stop calling registerAll() everywhere — only import the plugins you actually use (ScrollTrigger, TextPlugin, ScrambleTextPlugin, CustomEase). Drop GSDevTools entirely in production builds. Tree-shake drei imports (e.g. import only RoundedBox/Float/Bounds rather than top-level). Code-split HeroWarrior and SceneContainer behind an in-view IntersectionObserver.",
+          "severity": "high",
+          "summary": "First Load JS for / is 336 KB and the dev/sourcemap chunks for _Scene.tsx (~8.9 MB raw), HeroWarrior.tsx (~5.4 MB raw), main-app (~6 MB raw) include drei, postprocessing, and full GSAP plugin set. registerAll() in lib/gsap.ts dynamically imports 17 GSAP plugins (incl. GSDevTools 469 KB, MorphSVGPlugin 245 KB, MotionPathPlugin 220 KB) on every visit."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/Scene.tsx",
+          "line": 93,
+          "recommendation": "Drop postprocessing to a single Bloom pass on high-tier only and disable on any device with hardwareConcurrency<=4 or deviceMemory<=4 (current low-tier check only catches <4 cores). Consider dropping postprocessing entirely and using emissive materials + CSS bloom overlay.",
+          "severity": "critical",
+          "summary": "EffectComposer with Bloom + ChromaticAberration + Vignette runs full-screen on the global Canvas every frame. Postprocessing is the single biggest GPU cost on integrated/Windows GPUs."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/HeroWarrior.tsx",
+          "line": 871,
+          "recommendation": "Move the warrior into the global Canvas as a hero-only group, OR keep one Canvas and toggle scenes via state. Disable directional shadows entirely (shadow maps ~4 MB GPU memory each). Drop Environment preset 'city' (downloads HDR ~1-2 MB). Remove ContactShadows in favor of a baked plane.",
+          "severity": "critical",
+          "summary": "The hero ships a SECOND R3F Canvas (in addition to the global one in SceneContainer). Both run useFrame loops, both register OrbitControls + Environment preset 'city' + ContactShadows + Bloom + Vignette + shadow maps (1024x1024 directional shadows) simultaneously. Two WebGL contexts on one page is the root cause of Windows/Firefox crashes and lag on Vercel free tier."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/Lights.tsx",
+          "line": 45,
+          "recommendation": "Drop Environment preset entirely on low-tier (it's an HDR fetch + IBL convolution); replace warehouse with a 6-color cubemap or just ambient+key. Reduce Sparkles count to 20 or remove. Consolidate point lights — 3 max scene-wide; rest should be baked into materials.",
+          "severity": "high",
+          "summary": "Global scene also loads <Environment preset='warehouse'/> HDR + drei <Sparkles count=60/> on top of a 17-light scene (3 rim point lights + ambient + directional + the cursor light + 5 from DevStation + 5 from HeroWarrior). Each Sparkle particle is a draw call."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/Core.tsx",
+          "line": 188,
+          "recommendation": "Drop ico detail to 2 and 1 respectively; halve PARTICLE_COUNT to 48; merge Lightning useFrame into Core's loop; drop the wireframe pass on low-tier. Also note: meshPhysicalMaterial w/ iridescence + clearcoat is 3-4x cost of meshStandardMaterial — gate it behind tier==='high'.",
+          "severity": "high",
+          "summary": "icosahedronGeometry detail=3 produces 1280 triangles, plus another icosahedron det=2 (320 tris) wireframe, plus PARTICLE_COUNT=96 instanced cubes animated every frame, plus a 6-segment Lightning pulsing material. Three useFrame loops in this file alone (ParticleShell, Lightning, Core)."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/Modules.tsx",
+          "line": 318,
+          "recommendation": "Lower all sphere segments to 12. Replace RoundedBox smoothness=3 with smoothness=1. Skip Float wrapper on low-tier. Consolidate orbit + float into a single useFrame in the parent rig instead of 5 children.",
+          "severity": "high",
+          "summary": "5 module satellites use 24/20/18-segment spheres, RoundedBox with smoothness=3 (288 tris each), torus 12x48, 9 LED spheres each 8 segs. Plus drei <Float/> wraps each module — Float internally runs its own useFrame. With 5 modules + per-module orbit useFrame + Float = ~10 useFrame loops in Modules alone."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/GroundReflector.tsx",
+          "line": 30,
+          "recommendation": "Lower resolution to 256, blur to [50,25]. Move tier threshold from <4 to <=4 cores. Or replace with a static gradient floor on everything except hardwareConcurrency>=8 + deviceMemory>=8.",
+          "severity": "high",
+          "summary": "MeshReflectorMaterial does a render-to-texture every frame at resolution=512 + blur=[100,50] + depthScale — single most expensive material in scene. Already gated behind low-tier but still hits 4-core Windows machines that score 'high' (4 cores is 'high' in current usePerfTier)."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/DevStation.tsx",
+          "line": 251,
+          "recommendation": "Drop the screen redraw cadence to every 90 frames (1.5s) and skip entirely on low-tier — preserve a static texture. Or compose the editor as a plane with shader uniforms instead of canvas redraws.",
+          "severity": "medium",
+          "summary": "useCodeTexture creates a 1024x640 CanvasTexture and redraws it every 30 frames (every 60 on low-tier) via 2D canvas API. Also 4 GlyphBillboards each create their own 160x160 canvases. Each canvas redraw → texture.needsUpdate → GPU upload. On a 60fps loop that's 2 GPU uploads/sec just for the screen + 4 once-only for glyphs."
+        },
+        {
+          "category": "PERF-3D",
+          "file": "components/three/HeroWarrior.tsx",
+          "line": 232,
+          "recommendation": "Disable shadows entirely. Replace with a baked ContactShadows that runs once at mount (frames=1) instead of every frame, OR a static SVG/PNG shadow under the model.",
+          "severity": "medium",
+          "summary": "Directional light castShadow with 1024x1024 shadow map even when isLow=false. This forces a depth pre-pass per frame."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "components/sections/ProjectsSection.tsx",
+          "line": 169,
+          "recommendation": "Replace clipPath polygon morph with a simple opacity+scale crossfade (clipPath still runs through layout invalidation). Reduce scrub to 1. On low-tier matchMedia branch, render the static mobile grid instead of the pinned rotator. Currently 'lg+' = 1024px, which captures lots of low-spec laptops.",
+          "severity": "high",
+          "summary": "Pinned scrub timeline runs ~5 viewports of pinned scroll, with scrub:1.5, anticipatePin:1, snap, AND drives autoAlpha+scale+clipPath on 5 visuals + 5 infos + a 3D scene timeline simultaneously. clipPath polygon animation on a layer the size of the viewport is paint-killer on integrated GPUs."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "components/sections/SkillsSection.tsx",
+          "line": 363,
+          "recommendation": "Reduce to 500vh (5 panels × 100vh). Use a single master timeline with one scrub instead of one per panel. Skip the carousel entirely on tablets — currently only triggers on min-width:1024px which is borderline; bump to 1280px.",
+          "severity": "high",
+          "summary": "lg:!h-[800vh] = 8 viewports of pinned scroll for the skill carousel. Each panel has its own ScrollTrigger with scrub:1, plus a 5-panel onEnter/onLeave each spawning multiple GSAP tweens, plus a snap config. ScrollTriggers cost more if pinned across 800vh."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "components/sections/SectionOrchestrator.tsx",
+          "line": 45,
+          "recommendation": "Pick ONE boundary visual (either the iris OR the cinematic beat). Skip the chromatic pulse and module scale pulse on low-tier. Cache traversed connection materials at boot rather than walking the graph on every boundary.",
+          "severity": "medium",
+          "summary": "Cinematic boundary BEAT spawns 6+ overlapping gsap.fromTo() tweens on every section enter/exit (camera offset, fov pulse, chromatic, glow, connection mats traverse, 5 module scale pulses), AND IrisTransition fires its own multi-phase timeline at the same boundary. Compounded with SceneDock's scrubbed per-section timelines and the per-section beat callbacks."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "app/globals.css",
+          "line": 50,
+          "recommendation": "Remove the second mix-blend-mode atmosphere grain layer (Atmosphere.tsx lines 24-33). Gate backdrop-filter behind a 'supports backdrop-filter' check + hardwareConcurrency>=8.",
+          "severity": "medium",
+          "summary": "Global .glass utility uses backdrop-filter blur(12px) saturate(130%). Mobile/coarse-pointer media query strips it correctly, but DESKTOP Windows machines without compositor accel (Firefox on integrated) still pay the cost. Plus .noise overlay uses mix-blend-mode: overlay + SVG fractalNoise turbulence inline (Atmosphere.tsx duplicates this pattern with another mix-blend-mode: overlay layer)."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "components/ui/IrisTransition.tsx",
+          "line": 158,
+          "recommendation": "Replace the dual drop-shadow filter with a single glow box-shadow on a containing div. Disable iris entirely on low-tier (currently only collapses to a cross-fade — but allocation still happens).",
+          "severity": "medium",
+          "summary": "IrisTransition animates clip-path polygon every frame (onUpdate calls hexClip and setAttribute on a path), composited with drop-shadow filter (two layers, 14px and 30px blur). Triggers on every section boundary. drop-shadow + clip-path together cause large compositor invalidations."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "components/three/HeroWarrior.tsx",
+          "line": 312,
+          "recommendation": "Pause all loops via ScrollTrigger.create({onLeave: pause, onEnter: resume}) so they only run when hero is in viewport. Throttle CoordReadout to every 4th rAF tick. Drop the CSS scanline keyframe on low-tier.",
+          "severity": "medium",
+          "summary": "OrbitalBackdrop SVG inside hero runs 4 infinite GSAP rotate tweens on outer/mid/inner/sweep, plus 22 dot pulse tweens, plus a CSS scanline animation, plus tech chips run 4 infinite y-bob tweens, plus StatBars run 4 shimmer tweens, plus CoordReadout has a requestAnimationFrame loop updating DOM textContent every frame."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/sections/ProjectsSection.tsx",
+          "line": 386,
+          "recommendation": "Change pinned breakpoint from lg (1024px) to xl (1280px). Reduce visual maxWidth to 'min(380px, 42vh)'. Move progress bar to bottom-20 OR hide HudFrame LAT/LON when projects pinned.",
+          "severity": "high",
+          "summary": "Desktop pinned stage uses absolute inset-x-0 top-[min(200px,24vh)] bottom-[120px] + grid-cols-12 with col-span-6 each side. On 1024-1279px the project info copy + stack chips + 460px aspect-square visual collide. Also bottom-32 (128px) progress bar collides with HudFrame's bottom-8 LAT/LON labels at heights <820px."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/sections/HeroSection.tsx",
+          "line": 449,
+          "recommendation": "Hide HeroWarrior on <lg (1024px) instead of <md. Or reduce its h-[clamp(480px,72vh,820px)] to clamp(320px,50vh,560px) at md.",
+          "severity": "high",
+          "summary": "HeroWarrior is hidden on <md (768px) but shown on md+ as col-span-5. At 768-1023px this means the 720px-tall warrior takes 41% of width with the heading at clamp(2.75rem,10vw,9rem). At 768px width the headline 'PRADIPTA' becomes 76.8px = ~7 chars wide leaves the warrior with ~270px column to render an 820px-tall canvas."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/sections/AboutSection.tsx",
+          "line": 233,
+          "recommendation": "Change to text-[clamp(6rem,12vw,14rem)] so the number scales with viewport. Test at 768/1024/1280.",
+          "severity": "medium",
+          "summary": "Giant '02' background number is text-[10rem] at md and text-[14rem] at lg. At 768-1023px viewport that's a 160px font sized purely on the right; with letter-spacing it overflows into HudFrame's right padding. Same pattern in Skills (line 417), Experience (line 312), Contact (line 208)."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/sections/HeroSection.tsx",
+          "line": 457,
+          "recommendation": "Anchor explicitly with left-[clamp(48px,6vw,96px)]. Add hidden md:block lg:block — currently shows at md but the layout space isn't reserved.",
+          "severity": "medium",
+          "summary": "Boot-log terminal panel uses w-[min(22rem,30vw)] and is positioned absolute bottom-[clamp(56px,7vh,120px)] without a left/right anchor — relies on default static flow within the absolute container. At 768-900px it overlaps the typewriter row and the headline drop-shadow box."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/ui/SectionHUD.tsx",
+          "line": 76,
+          "recommendation": "Move the mobile strip to top-14 or bottom-12. Test at 375/414.",
+          "severity": "medium",
+          "summary": "Mobile horizontal strip is fixed top-10 left-4 right-4 — overlaps the HudFrame top label band at top-4 (DEV.OS v14.2.0 + UTC clock). On 375px viewport the mobile section nav, the DEV.OS chip, and the clock all stack into a 40px-tall band."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/sections/ContactSection.tsx",
+          "line": 215,
+          "recommendation": "Use viewBox+w-full max-w-md or scale via clamp.",
+          "severity": "medium",
+          "summary": "Ping rings SVG is hardcoded width=420 height=420, absolutely centered. On 375px viewport it's 12% wider than the screen and clips behind the form card."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/sections/ExperienceSection.tsx",
+          "line": 339,
+          "recommendation": "Add explicit min-w-0 + word-wrap to .exp-bullet, and clamp the period text to 9px tracking on small viewports.",
+          "severity": "medium",
+          "summary": "max-w-[46rem] (736px) timeline is the only thing on the page below md, but the rail rests at left-0 with a pl-[70px] entries list. On a 375px viewport the entry card shrinks to 305px - corner brackets and bracket SVG paths are positioned via percent so they read OK, but bullet rows can wrap in an awkward 12-char line."
+        },
+        {
+          "category": "BROWSER-COMPAT",
+          "file": "components/three/_Scene.tsx",
+          "line": 56,
+          "recommendation": "Use 'default' powerPreference everywhere. Detect WebGL context creation failure and render the SvgCoreFallback. Add a useGL diagnostic that logs renderer/vendor string.",
+          "severity": "high",
+          "summary": "gl={{ antialias: !isLow, powerPreference: 'high-performance' }} — Firefox on Windows with integrated GPU often refuses 'high-performance' and silently downgrades to a software renderer. Combined with two simultaneous WebGL contexts (HeroWarrior + global Scene), Firefox throws WEBGL_lose_context."
+        },
+        {
+          "category": "BROWSER-COMPAT",
+          "file": "components/three/HeroWarrior.tsx",
+          "line": 76,
+          "recommendation": "Clone materials before mutating: mesh.material = mat.clone(); then mutate the clone. Otherwise mat persists on the cached useGLTF result.",
+          "severity": "high",
+          "summary": "WarriorMesh.traverse mutates loaded GLTF materials in-place (mat.envMapIntensity, mat.emissiveIntensity). This breaks if the same scene is loaded twice (HMR or React strict mode in dev → mounted twice). React 18 strict mode in next.config has reactStrictMode:true so on dev the mount runs twice and mutations stack."
+        },
+        {
+          "category": "BROWSER-COMPAT",
+          "file": "components/ui/IrisTransition.tsx",
+          "line": 287,
+          "recommendation": "Drop the clip-path polygon animation on Safari (detect via UA or simply use opacity-only iris on low-tier). Replace with a CSS clip-path: circle() animation if shape effect is required.",
+          "severity": "medium",
+          "summary": "willChange: 'clip-path, opacity' + filter: 'drop-shadow(0 0 14px) drop-shadow(0 0 30px)' — Safari/WebKit handles clip-path polygon animation by re-rasterizing every frame; combined with double drop-shadow this triggers a known WebKit performance cliff (Safari 16/17 throttles to 30fps)."
+        },
+        {
+          "category": "BROWSER-COMPAT",
+          "file": "app/globals.css",
+          "line": 100,
+          "recommendation": "Drop the SVG turbulence noise — replace with a tiny PNG noise tile (1.5 KB) loaded once. Remove the second copy in Atmosphere.tsx.",
+          "severity": "medium",
+          "summary": "noise::after uses mix-blend-mode: overlay + an inline SVG with feTurbulence. Firefox renders feTurbulence on the CPU and Edge prior to v90 had memory leaks with mix-blend-mode + fixed positioning (Atmosphere.tsx repeats this)."
+        },
+        {
+          "category": "BROWSER-COMPAT",
+          "file": "components/three/Lights.tsx",
+          "line": 45,
+          "recommendation": "Self-host a minimal HDR (or use a 6-color CubeTexture instead). Or remove Environment entirely; the scene reads fine with three point lights.",
+          "severity": "medium",
+          "summary": "drei <Environment preset='warehouse'/> downloads from poly.haven CDN at runtime — a remote fetch that can fail behind corp firewalls or slow connections, causing Suspense to hang. HeroWarrior also loads preset='city' as a separate fetch."
+        },
+        {
+          "category": "BROWSER-COMPAT",
+          "file": "components/providers/SmoothScrollProvider.tsx",
+          "line": 95,
+          "recommendation": "Disable Lenis on iOS (UA detect) and on prefers-reduced-motion (already done). Also disable on Firefox where Lenis has documented conflicts.",
+          "severity": "medium",
+          "summary": "Lenis smooth scroll wrapper — known issue: Lenis on iOS Safari intercepts pinch zoom and on Firefox+macOS conflicts with the native momentum scroll. The current provider falls back to Lenis only if ScrollSmoother isn't loaded; ScrollSmoother is a paid Club plugin so most installs end up on Lenis."
+        },
+        {
+          "category": "PERF-DOM",
+          "file": "components/sections/HeroSection.tsx",
+          "line": 271,
+          "recommendation": "Wrap all hero loops in a ScrollTrigger.create({trigger:hero, onLeave: pauseAll, onEnter: resumeAll}). Most are CPU-cheap individually but they sum to ~30 simultaneous infinite tweens forever.",
+          "severity": "medium",
+          "summary": "Hero arrow + caret + typewriter + name reveal + headline reveal + boot-log typewriter + grid DrawSVG on lines + scroll-scrubbed core assemble all fire on hero mount. Plus inside HeroWarrior the SVG has 4 infinite tweens, the StatBars have 4 shimmer loops, CoordReadout runs rAF. None of these pause when hero leaves viewport."
+        },
+        {
+          "category": "RESPONSIVE",
+          "file": "components/three/HeroWarrior.tsx",
+          "line": 848,
+          "recommendation": "Constrain TechChips to inset-x-0 (no negative %). On md hide stat bars + coord readout (only show on lg+).",
+          "severity": "medium",
+          "summary": "Hero warrior wrapper uses h-[clamp(480px,72vh,820px)]. Inside, StatBars (right-3 top-1/2 w-[clamp(120px,14vw,170px)]) + CoordReadout (bottom-3 left-3) + corner brackets + tech chips at top:8% / bottom:14% etc. At md viewport width 768px, tech chips at left:-2% / right:-2% sit OUTSIDE the warrior column boundary and overlap the headline column at HeroSection col-span-7."
+        }
+      ],
+      "publicAssets": [
+        {
+          "path": "public/models/elven-warrior.glb",
+          "sizeKB": 22528
+        },
+        {
+          "path": "public/models/pc.glb",
+          "sizeKB": 4608
+        },
+        {
+          "path": "public/robots.txt",
+          "sizeKB": 4
+        },
+        {
+          "path": "public/.gitkeep",
+          "sizeKB": 0
+        }
+      ],
+      "responsiveStats": {
+        "fixedPxWidthHits": 14,
+        "missingResponsiveSections": [
+          "components/sections/ProjectsSection.tsx desktop rotator (lg+ only, breaks 1024-1279px)",
+          "components/sections/HeroSection.tsx HeroWarrior shown md+ but designed for lg+",
+          "components/sections/HeroSection.tsx boot-log panel absolute without anchor at md",
+          "components/ui/SectionHUD.tsx mobile strip overlaps top HUD labels at 375/414",
+          "components/sections/ContactSection.tsx ping rings SVG hardcoded 420x420 (overflows 375px)",
+          "components/three/HeroWarrior.tsx tech chips at -2% offset overlap headline column at md",
+          "components/sections/AboutSection.tsx + Skills + Experience + Contact giant section number text-[10rem]/[14rem] without clamp"
+        ]
+      },
+      "summary": "The biggest offender by far is the 22 MB elven-warrior.glb plus a SECOND R3F Canvas (HeroWarrior) running in addition to the global scene — two WebGL contexts, two postprocessing pipelines, two Environment HDRs, and shadow maps explain the Windows/Firefox crashes and Vercel free-tier lag. Bundle is bloated by registerAll() pulling 17 GSAP plugins (incl. GSDevTools 460 KB) and untree-shaken drei imports, pushing First Load JS to 336 KB while raw chunks reach 8.9 MB. Responsive failures cluster at the 768-1023px tablet/laptop band where the pinned Projects rotator and HeroWarrior assume lg+ space they don't actually have, and giant section numbers (text-[14rem]) overflow into HudFrame padding.",
+      "threeJSStats": {
+        "geometryDetail": [
+          {
+            "file": "components/three/Core.tsx:188",
+            "type": "icosahedronGeometry mid shell",
+            "value": "args=[0.9, 3] → ~1280 tris, meshPhysicalMaterial + iridescence + clearcoat"
+          },
+          {
+            "file": "components/three/Core.tsx:204",
+            "type": "sphereGeometry inner core",
+            "value": "args=[0.4, 32, 32] → 32x32 segs"
+          },
+          {
+            "file": "components/three/Core.tsx:230",
+            "type": "icosahedronGeometry wireframe",
+            "value": "args=[1.15, 2] → 320 tris"
+          },
+          {
+            "file": "components/three/Core.tsx:25",
+            "type": "instanced particle shell",
+            "value": "PARTICLE_COUNT=96 box instances, additive blending"
+          },
+          {
+            "file": "components/three/Modules.tsx:266",
+            "type": "torusGeometry devops primary",
+            "value": "args=[0.38, 0.07, 12, 48]"
+          },
+          {
+            "file": "components/three/Modules.tsx:278",
+            "type": "torusGeometry devops inner",
+            "value": "args=[0.28, 0.04, 10, 32]"
+          },
+          {
+            "file": "components/three/Modules.tsx:318",
+            "type": "sphereGeometry cloud primary",
+            "value": "args=[0.38, 24, 24]"
+          },
+          {
+            "file": "components/three/Modules.tsx:331",
+            "type": "sphereGeometry cloud puff a",
+            "value": "args=[0.26, 20, 20]"
+          },
+          {
+            "file": "components/three/Modules.tsx:343",
+            "type": "sphereGeometry cloud puff b",
+            "value": "args=[0.22, 18, 18]"
+          },
+          {
+            "file": "components/three/Modules.tsx:355",
+            "type": "sphereGeometry cloud puff c",
+            "value": "args=[0.24, 18, 18]"
+          },
+          {
+            "file": "components/three/Modules.tsx:368",
+            "type": "sphereGeometry cloud aura",
+            "value": "args=[0.7, 24, 24]"
+          },
+          {
+            "file": "components/three/Modules.tsx:380",
+            "type": "sphereGeometry cloud inner bright",
+            "value": "args=[0.15, 16, 16]"
+          },
+          {
+            "file": "components/three/Modules.tsx:240",
+            "type": "sphereGeometry backend LEDs (12x)",
+            "value": "args=[0.015, 8, 8]"
+          },
+          {
+            "file": "components/three/TimelineRing.tsx:48",
+            "type": "torusGeometry main ring",
+            "value": "args=[4.2, 0.04, 16, 128]"
+          },
+          {
+            "file": "components/three/TimelineRing.tsx:63",
+            "type": "sphereGeometry timeline nodes (4x)",
+            "value": "args=[0.12, 16, 16]"
+          },
+          {
+            "file": "components/three/DevStation.tsx",
+            "type": "instanced keyboard",
+            "value": "13x4=52 instanced boxes + RoundedBox smoothness=3 throughout"
+          },
+          {
+            "file": "components/three/HeroWarrior.tsx:124",
+            "type": "ringGeometry holo plinth",
+            "value": "args=[1.85, 1.95, 96] + 128-seg outer ring"
+          },
+          {
+            "file": "components/three/HeroWarrior.tsx",
+            "type": "drei <Environment preset='city'/> + ContactShadows + 1024x1024 directional shadow map",
+            "value": "remote HDR fetch + per-frame shadow render"
+          },
+          {
+            "file": "components/three/Lights.tsx:45",
+            "type": "drei <Environment preset='warehouse'/> + <Sparkles count=60/>",
+            "value": "remote HDR fetch + 60 particles"
+          },
+          {
+            "file": "components/three/GroundReflector.tsx:30",
+            "type": "MeshReflectorMaterial",
+            "value": "resolution=512, blur=[100,50] — render-to-texture every frame on high tier"
+          }
+        ],
+        "postProcessing": true,
+        "useFrameLoops": 16
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "performance"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "iteration": 2
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Start `npm run start -- -p 3101` in the background; wait up to 30s for port 3101 to respond.",
+        "Run `npx lighthouse http://localhost:3101 --only-categories=performance,accessibility,best-practices --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=artifacts/lh-mobile-${args.iteration}.json --quiet --max-wait-for-load=60000` (default = mobile).",
+        "Kill the start server.",
+        "Return JSON same shape as desktop task."
+      ],
+      "outputFormat": "JSON",
+      "role": "Performance auditor",
+      "task": "Run Lighthouse against production build using MOBILE form factor."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7MMN2PQQBM58A5ZPR4XQ96/input.json",
+    "outputJsonPath": "tasks/01KQ7MMN2PQQBM58A5ZPR4XQ96/result.json"
+  },
+  "kind": "agent",
+  "title": "Run Lighthouse mobile audit",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7MMN2PQQBM58A5ZPR4XQ96",
+  "taskId": "lighthouse-mobile",
+  "invocationKey": "portfolio-perf-responsive:S000016:lighthouse-mobile",
+  "stepId": "S000016",
+  "inputs": {
+    "iteration": 2
+  }
+}

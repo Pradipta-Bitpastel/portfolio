@@ -54,6 +54,37 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${mono.variable}`}>
       <body className="bg-bg text-ink font-mono antialiased">
+        {/* Phase 5 cross-browser audit: a minimal no-JS notice. The
+            entire site is a client-side 3D + scroll experience, so a
+            user with JS disabled gets nothing usable — give them a
+            single line explaining why and a link to the email contact. */}
+        <noscript>
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 100,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "24px",
+              background: "#0b0f19",
+              color: "#e7ecf5",
+              fontFamily: "ui-monospace, monospace",
+              textAlign: "center"
+            }}
+          >
+            This portfolio requires JavaScript to render the 3D experience.
+            Please enable JavaScript and reload, or contact{" "}
+            <a
+              href="mailto:ayan@bitpastel.com"
+              style={{ color: "#4f9cff", marginLeft: "0.4em" }}
+            >
+              ayan@bitpastel.com
+            </a>
+            .
+          </div>
+        </noscript>
         {/* Canvas lives OUTSIDE the smooth-scroll wrapper so it is not
             translated by ScrollSmoother / Lenis — it stays pinned. */}
         <SceneContainer />

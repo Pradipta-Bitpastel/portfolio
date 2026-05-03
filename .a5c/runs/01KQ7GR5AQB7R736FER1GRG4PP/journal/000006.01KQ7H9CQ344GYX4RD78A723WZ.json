@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:15:33.475Z",
+  "data": {
+    "effectId": "01KQ7H9CPCETWJT6Y03Y33VBDM",
+    "invocationKey": "portfolio-perf-responsive:S000003:scene-optimize",
+    "invocationHash": "3dd09c22b87057df7c2285c0d018baf614f4aecf3196e3a503d3d2ec18b4230b",
+    "stepId": "S000003",
+    "taskId": "scene-optimize",
+    "kind": "agent",
+    "label": "Optimize 3D scene (geometry / postprocessing / frame loop)",
+    "taskDefRef": "tasks/01KQ7H9CPCETWJT6Y03Y33VBDM/task.json"
+  },
+  "checksum": "6d4fc1346485fc8df365771c3c27c98946bb804def5e1bb79c16cf9c71a1c545"
+}

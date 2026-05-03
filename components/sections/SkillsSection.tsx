@@ -3,11 +3,12 @@
 import { memo, useRef } from "react";
 import type * as THREE from "three";
 import { useGSAP } from "@gsap/react";
-import { gsap, registerAll } from "@/lib/gsap";
+import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
 import { sceneStore, type ModuleId } from "@/lib/sceneStore";
 import { SkillBar } from "@/components/ui/SkillBar";
 import { skills, MODULE_ORDER } from "@/content/skills";
 import { SectionFrame } from "@/components/ui/SectionFrame";
+import { useDeviceCapabilities } from "@/lib/usePerfTier";
 
 /**
  * Skills — "SYS.ACTIVATE // 03". Pinned, 5 sub-slides.
@@ -180,6 +181,8 @@ function SkillsSectionImpl() {
   const rootRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<Array<HTMLDivElement | null>>([]);
+  const caps = useDeviceCapabilities();
+  const isLowEnd = caps.isLowEnd;
 
   useGSAP(
     () => {
@@ -190,149 +193,117 @@ function SkillsSectionImpl() {
         await registerAll();
         if (cancelled) return;
 
-        // Only run the pinned carousel on lg+. On smaller screens the
-        // panels render as a static vertical stack.
+        // Low-end: skip the pinned carousel entirely. The mobile
+        // vertical-stack layout is already in the DOM and visible at
+        // narrow widths; we just don't pin or scrub anything.
+        if (isLowEnd) return;
+
+        // Only run the pinned carousel on xl+ (was lg/1024px). On
+        // smaller screens the panels render as a static vertical
+        // stack — bump matches the lg:!h-[500vh] / xl:flex pairs.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ST = (gsap as any).core?.globals?.()?.ScrollTrigger;
         if (!ST || !ST.matchMedia || typeof window === "undefined" ||
-            !window.matchMedia("(min-width: 1024px)").matches) {
+            !window.matchMedia("(min-width: 1280px)").matches) {
           return;
         }
 
-        // Pin inner container for the full section height (800vh).
-        // Snap to each panel boundary (5 panels → progress points
-        // 0, 0.2, 0.4, 0.6, 0.8, 1.0) so a big scroll flick settles
-        // on the nearest panel instead of shooting past. Duration is
-        // clamped so quick taps feel responsive and long flicks don't
-        // animate for seconds.
-        gsap.timeline({
+        // Single master timeline for the whole carousel.
+        // Was: 1 master pin trigger + N per-panel scrub triggers (5
+        // separate ScrollTrigger instances all running every scroll
+        // tick). Now: 1 trigger that drives every panel via fromTo +
+        // stagger inside one timeline, plus discrete onEnter callbacks
+        // for the sceneStore module activation.
+        const panels = panelsRef.current.filter(
+          (p): p is HTMLDivElement => !!p
+        );
+        const total = panels.length;
+        if (total === 0) return;
+        const step = 1 / total;
+
+        // Pre-seed: only first panel visible at progress 0.
+        panels.forEach((panel, i) => {
+          gsap.set(panel, { autoAlpha: i === 0 ? 1 : 0 });
+        });
+
+        const master = gsap.timeline({
           scrollTrigger: {
             trigger: rootRef.current!,
             start: "top top",
             end: "bottom bottom",
             pin: pinRef.current!,
             pinSpacing: false,
+            scrub: 1,
             snap: {
-              snapTo: [0, 0.2, 0.4, 0.6, 0.8, 1],
+              snapTo: Array.from({ length: total + 1 }, (_, i) => i / total),
               duration: { min: 0.25, max: 0.55 },
               delay: 0.08,
               ease: "power2.inOut"
+            },
+            onUpdate: (self) => {
+              // Drive the integer "active panel" for sceneStore module
+              // emissive boost. Cheap — runs once per scroll tick.
+              const idx = Math.min(
+                total - 1,
+                Math.floor(self.progress * total)
+              );
+              const panel = panels[idx];
+              const moduleId = panel?.dataset.moduleId as ModuleId | undefined;
+              if (moduleId && (master as unknown as { _lastIdx?: number })
+                ._lastIdx !== idx) {
+                (master as unknown as { _lastIdx?: number })._lastIdx = idx;
+                activate(moduleId);
+                // Animate the just-revealed panel's skill-fill bars.
+                const fills = panel.querySelectorAll<HTMLElement>(
+                  ".skillbar-fill"
+                );
+                fills.forEach((el, fIdx) => {
+                  const lvl = Number(el.dataset.level ?? 0);
+                  gsap.fromTo(
+                    el,
+                    { width: "0%" },
+                    {
+                      width: `${lvl}%`,
+                      duration: 0.8,
+                      ease: "power3.out",
+                      delay: fIdx * 0.06,
+                      overwrite: "auto"
+                    }
+                  );
+                });
+              }
             }
           }
         });
 
-        // One sub-ScrollTrigger per panel, fractioned.
-        const panels = panelsRef.current.filter(
-          (p): p is HTMLDivElement => !!p
-        );
-        const total = panels.length;
-        const step = 1 / total;
-
-        panels.forEach((panel, i) => {
-          const moduleId = panel.dataset.moduleId as ModuleId;
-          if (!moduleId) return;
-
-          const startFrac = i * step;
-          const endFrac = (i + 1) * step;
-
-          const items = panel.querySelectorAll<HTMLElement>(".skill-item");
-          const fills = panel.querySelectorAll<HTMLElement>(".skillbar-fill");
-
-          const resetFills = () => {
-            fills.forEach((el) => {
-              gsap.set(el, { width: "0%" });
-            });
-          };
-
-          const animateFills = () => {
-            fills.forEach((el, idx) => {
-              const lvl = Number(el.dataset.level ?? 0);
-              gsap.fromTo(
-                el,
-                { width: "0%" },
-                {
-                  width: `${lvl}%`,
-                  duration: 0.8,
-                  ease: "power3.out",
-                  delay: idx * 0.06,
-                  overwrite: "auto"
-                }
-              );
-            });
-          };
-
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: rootRef.current!,
-              start: () => `top+=${startFrac * 100}% top`,
-              end: () => `top+=${endFrac * 100}% top`,
-              scrub: 1,
-              onEnter: () => {
-                gsap.to(panel, {
-                  opacity: 1,
-                  duration: 0.5,
-                  ease: "power2.out",
-                  overwrite: "auto"
-                });
-                gsap.fromTo(
-                  items,
-                  { y: 16, opacity: 0 },
-                  {
-                    y: 0,
-                    opacity: 1,
-                    duration: 0.4,
-                    stagger: 0.04,
-                    ease: "power2.out",
-                    overwrite: "auto"
-                  }
-                );
-                animateFills();
-                activate(moduleId);
-              },
-              onEnterBack: () => {
-                gsap.to(panel, {
-                  opacity: 1,
-                  duration: 0.4,
-                  overwrite: "auto"
-                });
-                animateFills();
-                activate(moduleId);
-              },
-              onLeave: () => {
-                gsap.to(panel, {
-                  opacity: 0,
-                  duration: 0.3,
-                  overwrite: "auto"
-                });
-                resetFills();
-              },
-              onLeaveBack: () => {
-                gsap.to(panel, {
-                  opacity: 0,
-                  duration: 0.3,
-                  overwrite: "auto"
-                });
-                resetFills();
-              }
-            }
-          });
-        });
+        // Per-panel cross-fades sequenced inside the one master
+        // timeline. Each panel fades out as the next fades in.
+        for (let i = 0; i < total - 1; i++) {
+          const at = (i + 0.6) * step;
+          master.to(
+            panels[i],
+            { autoAlpha: 0, duration: step * 0.4, ease: "none" },
+            at
+          );
+          master.fromTo(
+            panels[i + 1],
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: step * 0.4, ease: "none" },
+            at
+          );
+        }
 
         // Reset on leave section.
-        gsap.context(() => {
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: rootRef.current!,
-              start: "top top",
-              end: "bottom bottom",
-              onLeave: () => {
-                resetAllModules();
-              },
-              onLeaveBack: () => {
-                resetAllModules();
-              }
-            }
-          });
+        ScrollTrigger.create({
+          trigger: rootRef.current!,
+          start: "top top",
+          end: "bottom bottom",
+          onLeave: () => {
+            resetAllModules();
+          },
+          onLeaveBack: () => {
+            resetAllModules();
+          }
         });
       };
 
@@ -343,7 +314,7 @@ function SkillsSectionImpl() {
         resetAllModules();
       };
     },
-    { scope: rootRef, dependencies: [] }
+    { scope: rootRef, dependencies: [isLowEnd] }
   );
 
   const accents: ModuleAccent[] = MODULE_ORDER.map((id) => ({
@@ -360,10 +331,10 @@ function SkillsSectionImpl() {
       ref={rootRef}
       ariaLabelledBy="skills-heading"
       bare
-      className="!px-0 !py-0 lg:!h-[800vh]"
+      className="!px-0 !py-0 xl:!h-[500vh]"
     >
       {/* Mobile / tablet: simple vertical stack, no pin */}
-      <div className="flex flex-col gap-8 px-[clamp(16px,5vw,96px)] py-[clamp(32px,5vh,120px)] lg:hidden">
+      <div className="flex flex-col gap-8 px-[clamp(16px,5vw,96px)] py-[clamp(32px,5vh,120px)] xl:hidden">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
           <span className="text-[#FF7A1A]">SYS.ACTIVATE // 03</span>
           <span className="opacity-40">—</span>
@@ -409,13 +380,17 @@ function SkillsSectionImpl() {
       {/* lg+: pinned sub-slide carousel */}
       <div
         ref={pinRef}
-        className="sticky top-0 hidden h-screen w-full items-center overflow-hidden px-[clamp(48px,6vw,96px)] py-[clamp(56px,7vh,120px)] lg:flex"
+        className="sticky top-0 hidden h-[100svh] w-full items-center overflow-hidden px-[clamp(48px,6vw,96px)] py-[clamp(56px,7vh,120px)] xl:flex"
       >
         {/* Giant "03" top-left, amber — anchored inside the frame */}
         <div
           aria-hidden
-          className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.95] md:block lg:text-[14rem]"
-          style={{ color: "#FF7A1A", letterSpacing: "-0.02em" }}
+          className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
+          style={{
+            color: "#FF7A1A",
+            letterSpacing: "-0.02em",
+            fontSize: "clamp(6rem,12vw,14rem)"
+          }}
         >
           03
         </div>

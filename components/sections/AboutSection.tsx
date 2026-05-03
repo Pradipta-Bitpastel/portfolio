@@ -230,8 +230,12 @@ function AboutSectionImpl() {
           inner padding so it never sits over the HUD label band. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute right-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.95] md:block lg:text-[14rem]"
-        style={{ color: "#FF7A1A", letterSpacing: "-0.02em" }}
+        className="pointer-events-none absolute right-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
+        style={{
+          color: "#FF7A1A",
+          letterSpacing: "-0.02em",
+          fontSize: "clamp(6rem,12vw,14rem)"
+        }}
       >
         02
       </div>

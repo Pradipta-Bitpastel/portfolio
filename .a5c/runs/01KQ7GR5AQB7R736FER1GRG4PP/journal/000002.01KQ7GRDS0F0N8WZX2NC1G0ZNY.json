@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:06:17.504Z",
+  "data": {
+    "effectId": "01KQ7GRDQV32GERGKSK1HH8M51",
+    "invocationKey": "portfolio-perf-responsive:S000001:audit",
+    "invocationHash": "b3806796a5488801d4927cc4147867c20f7246bfe9d30a56f2abfc29c4529140",
+    "stepId": "S000001",
+    "taskId": "audit",
+    "kind": "agent",
+    "label": "Audit current performance + responsive state",
+    "taskDefRef": "tasks/01KQ7GRDQV32GERGKSK1HH8M51/task.json"
+  },
+  "checksum": "bf493002c98dc3d2539a1310d20539db8c747005bc547832633457d4c50391f2"
+}

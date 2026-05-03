@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
-import { readPerfTier } from "@/lib/usePerfTier";
+import { readPerfTier, useDeviceCapabilities } from "@/lib/usePerfTier";
 
 /**
  * IrisTransition — fullscreen hexagonal iris wipe that fires at every
@@ -39,33 +39,6 @@ const SECTIONS: Entry[] = [
   { id: "contact",    codename: "SYS.TRANSMIT" }
 ];
 
-/**
- * Build a hex clip-path polygon string. `t` ∈ [0..1]: 1 = full
- * viewport (no clipping — iris fully open), 0 = zero-area hex at
- * center (iris fully closed).
- *
- * We keep the hex shape even when open so the edges of the wipe are
- * always six-sided; at t=1 the hex vertices sit just beyond the
- * viewport corners, so nothing visible is clipped.
- */
-function hexClip(t: number): string {
-  // t=1 → hex oversized to cover viewport (iris fully open).
-  // t=0 → hex collapses to a point (iris fully closed).
-  // Radius 1.5 at t=1 is 50% past the viewport half, so even on
-  // wide aspect ratios the six vertices sit outside the visible box.
-  const radius = 1.5 * t;
-  const cx = 50;
-  const cy = 50;
-  const points: string[] = [];
-  for (let i = 0; i < 6; i++) {
-    const a = (Math.PI / 3) * i - Math.PI / 2;
-    const x = cx + Math.cos(a) * radius * 100;
-    const y = cy + Math.sin(a) * radius * 100;
-    points.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
-  }
-  return `polygon(${points.join(", ")})`;
-}
-
 /** SVG path "d" for a hex outline. Used by the bright amber border
  *  that scales in lockstep with the clipped mask so the hex edge
  *  is always crisply visible as the iris closes. */
@@ -81,6 +54,7 @@ function hexPath(radius: number): string {
 }
 
 export function IrisTransition() {
+  const caps = useDeviceCapabilities();
   const maskRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<SVGSVGElement>(null);
   const edgePathRef = useRef<SVGPathElement>(null);
@@ -89,6 +63,12 @@ export function IrisTransition() {
   const busy = useRef(false);
 
   useEffect(() => {
+    // Low-end: skip the iris entirely. Stacking the iris on top of
+    // the cinematic boundary BEAT was a compositor cliff on integrated
+    // GPUs (clipPath polygon + dual drop-shadow filter). Returning
+    // here also short-circuits the ScrollTrigger setup below so we
+    // don't pay the wiring cost.
+    if (caps.isLowEnd) return;
     let cancelled = false;
     const triggers: ScrollTrigger[] = [];
     const low =
@@ -97,10 +77,12 @@ export function IrisTransition() {
         typeof window.matchMedia === "function" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-    // Seed the mask fully open (invisible).
+    // Seed the mask fully transparent. Was: clipPath polygon hex
+    // (replaced by an opacity-only fade — same visual effect with
+    // the bright animated edge hex still drawn over it, but no full
+    // re-rasterization on every frame).
     const mask = maskRef.current;
     if (mask) {
-      mask.style.clipPath = hexClip(1);
       mask.style.opacity = "0";
     }
 
@@ -141,15 +123,14 @@ export function IrisTransition() {
         return;
       }
 
-      // `t` drives both the dark-flood clipPath and the bright edge
-      // path's radius so the amber hex outline is pixel-locked to the
-      // mask's clipped edge during the whole close→hold→open cycle.
+      // High-tier path: opacity-only fade for the dark-flood mask
+      // (was a clipPath polygon morph + dual drop-shadow filter — both
+      // forced full re-rasterization every frame). The animated edge
+      // hex SVG path still gives the iris its identity; the mask
+      // simply fades up under it.
       const state = { t: 1 };
       const applyState = () => {
-        mask.style.clipPath = hexClip(state.t);
         if (edge) {
-          // Edge path lives in a viewBox -100..100 coord space (see the
-          // SVG below). Radius 100 matches clip radius 1.5 (fully open).
           const r = Math.max(0, state.t * 100);
           edge.setAttribute("d", hexPath(r));
         }
@@ -163,8 +144,13 @@ export function IrisTransition() {
         }
       });
 
-      // Phase 1 — close (full → pinpoint at center).
-      tl.set(mask, { opacity: 1 }, 0);
+      // Phase 1 — fade mask in + close hex edge to pinpoint.
+      tl.fromTo(
+        mask,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.32, ease: "power2.in" },
+        0
+      );
       if (edge) tl.set(edge, { opacity: 1 }, 0);
       tl.to(
         state,
@@ -216,13 +202,18 @@ export function IrisTransition() {
         tl.to({}, { duration: 0.12 });
       }
 
-      // Phase 3 — open (pinpoint → full).
+      // Phase 3 — open: fade mask back out + open hex edge.
+      tl.to(
+        mask,
+        { opacity: 0, duration: 0.36, ease: "power2.out" },
+        ">"
+      );
       tl.to(state, {
         t: 1,
         duration: 0.46,
         ease: "power3.out",
         onUpdate: applyState
-      });
+      }, "<");
       if (ring) {
         tl.to(ring, { opacity: 0, duration: 0.24, ease: "power2.out" }, "-=0.34");
       }
@@ -270,17 +261,23 @@ export function IrisTransition() {
         }
       });
     };
-  }, []);
+  }, [caps.isLowEnd]);
+
+  // Low-end: render nothing. No iris, no DOM, no compositor cost.
+  if (caps.isLowEnd) return null;
 
   return (
     <div
       aria-hidden
       className="pointer-events-none fixed inset-0 z-[65] flex items-center justify-center"
     >
-      {/* Dark flood — almost opaque near-black, clipped to an animated
-          hex that shrinks to a pinpoint then opens. The amber scanline
-          texture reads as the HUD "cut" texture; the drop-shadow glow
-          makes the hex clip edge visible as a warm amber bloom. */}
+      {/* Dark flood — full-viewport amber-scanline mask. We dropped
+          the dual drop-shadow filter (huge compositor cost) and
+          replaced the clipPath hex morph with an opacity-only fade.
+          The animated bright hex edge below still draws the iris
+          identity; this layer just darkens the frame. The wrapper's
+          inset box-shadow gives the warm amber bloom along the edge
+          for free (no per-frame filter recompute). */}
       <div
         ref={maskRef}
         className="absolute inset-0"
@@ -289,9 +286,9 @@ export function IrisTransition() {
             "repeating-linear-gradient(0deg, rgba(255,122,26,0.10) 0 2px, transparent 2px 4px), linear-gradient(180deg, rgba(255,122,26,0.0) 0%, rgba(255,122,26,0.16) 50%, rgba(255,122,26,0.0) 100%)",
           backgroundColor: "#05070B",
           opacity: 0,
-          willChange: "clip-path, opacity",
-          filter:
-            "drop-shadow(0 0 14px rgba(255,122,26,0.95)) drop-shadow(0 0 30px rgba(255,122,26,0.55))"
+          willChange: "opacity",
+          boxShadow:
+            "inset 0 0 80px rgba(255,122,26,0.45)"
         }}
       />
       {/* Dynamic amber edge — a hex stroke whose radius is driven in

@@ -1,0 +1,59 @@
+{
+  "converged": false,
+  "breakdown": {
+    "desktopPerf": 88,
+    "mobilePerf": 66,
+    "e2eRate": 0.667,
+    "visual": 45
+  },
+  "blockedBy": [
+    "lighthouse-mobile-perf-below-target",
+    "chromium-svg-circle-nan",
+    "visual-build-corruption-needs-rerun"
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "category": "BUNDLE-SIZE",
+      "file": "components/three/SceneContainer.tsx",
+      "action": "Mobile path is shipping the same JS as desktop (R3F + three + drei + postprocessing). Move the dynamic `import('./_Scene')` INSIDE the `!isMobile && !isLowEnd` branch so the Scene chunk is never even prefetched on mobile. Currently next/dynamic is hoisted at module scope. Use a useEffect-driven import OR a conditional dynamic component. Expected mobile-bundle drop: ~150KB."
+    },
+    {
+      "priority": 2,
+      "category": "BROWSER-COMPAT",
+      "file": "components/three/HeroWarrior.tsx",
+      "action": "Chromium throws repeated `<circle> attribute cx/cy: Unexpected end of attribute. Expected length, \"\".` errors — failing all 6 chromium E2E tests. Find SVG <circle> elements where cx/cy values can be empty/undefined/NaN during initial render. Likely OrbitalBackdrop or PingRings. Default coordinates to 0 when unset; never let GSAP write empty strings. grep `cx=` and `cy=` for templates that use undefined refs."
+    },
+    {
+      "priority": 3,
+      "category": "PERF-DOM",
+      "file": "lib/gsap.ts + components/sections/*",
+      "action": "Lighthouse mobile recommends 'reduce unused JavaScript ~154KB'. Check next.config.mjs and add `experimental: { optimizePackageImports: ['gsap', '@react-three/drei', '@react-three/fiber', 'three'] }` so Next prunes unused subpath exports. Also: explicitly import only the drei pieces actually used (e.g., `import { Float } from '@react-three/drei/web/Float'` rather than top-level)."
+    },
+    {
+      "priority": 4,
+      "category": "PERF-DOM",
+      "file": "components/three/HeroWarrior.tsx",
+      "action": "Lighthouse mobile TBT 1572ms is a major blocker. The HeroWarrior + DevStation paths even when gated by `tier==='high'` may still execute their imports during initial parse. Wrap the entire HeroWarrior + DevStation modules behind `dynamic(() => import(), { ssr: false })` from the section component, so they're code-split out of the main route bundle."
+    },
+    {
+      "priority": 5,
+      "category": "RESPONSIVE",
+      "file": "components/sections/ContactSection.tsx",
+      "action": "Visual regression flagged the contact-section title wrapping awkwardly ('ING // THE_CO RE') at 375px and partially obscured by section badge '06' at 768px. Reduce title font size with clamp + adjust the section number badge z-index/position so it doesn't overlap. Verify with re-screenshot."
+    },
+    {
+      "priority": 6,
+      "category": "TESTING",
+      "file": "playwright.config.ts + tests/visual/perf-responsive.spec.ts",
+      "action": "Visual regression overall score 45 is a FALSE NEGATIVE — caused by build corruption when 4 parallel agents ran `npm run start` against the same .next/ directory. Before the next iteration, do a clean `rm -rf .next && npm run build` and re-run visual regression in isolation (no parallel server starts). The actual layout is sound based on chromium-vs-firefox comparison."
+    },
+    {
+      "priority": 7,
+      "category": "PERF-DOM",
+      "file": "next.config.mjs",
+      "action": "Add Next.js compiler.removeConsole for production: `compiler: { removeConsole: { exclude: ['error', 'warn'] } }`. And add `swcMinify: true` (default in Next 14 but explicit). Also enable `productionBrowserSourceMaps: false` (default but verify) — sourcemaps in production add ~30% to served bundle."
+    }
+  ],
+  "summary": "Iteration 1 of convergence loop: desktop perf 88 (target 90, -2), mobile perf 66 (target 75, -9), E2E 12/18 (chromium SVG NaN errors), visual 45 (build corruption false-negative). Primary blocker is mobile bundle size — Three.js stack still ships even on mobile fallback path. Secondary: chromium SVG cx/cy NaN guard, code-split HeroWarrior + DevStation, fix contact title wrap, re-run visual after clean build."
+}

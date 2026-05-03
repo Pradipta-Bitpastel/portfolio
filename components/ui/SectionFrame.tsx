@@ -45,7 +45,10 @@ export const SectionFrame = forwardRef<HTMLElement, SectionFrameProps>(
           // Inside-the-frame padding. 24px frame + 8px gap to labels +
           // 32px breathing room = ~64px target on desktop.
           "px-[clamp(16px,5vw,96px)] py-[clamp(32px,5vh,120px)]",
-          !bare && "flex min-h-screen items-center",
+          // min-h-[100svh] (small viewport units) accounts for iOS
+          // Safari's collapsing address bar — using min-h-screen (100vh)
+          // here causes content to jump as the URL bar shows/hides.
+          !bare && "flex min-h-[100svh] items-center",
           className
         )}
         style={style}

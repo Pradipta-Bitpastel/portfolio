@@ -316,13 +316,16 @@ function ScreenFace({
   }, [variant, redraw]);
 
   // Cache the tier once; the blink cadence won't change mid-session.
-  // Low-tier halves the redraw rate (cursor blinks ~once per second
-  // instead of twice), which roughly halves canvas-texture GPU uploads.
-  const blinkInterval = readPerfTier() === "low" ? 60 : 30;
+  // Audit fix: was every 30 frames (high) / 60 frames (low). Now 90
+  // frames on high, and on low tier we skip the redraw entirely after
+  // the variant-effect paint — the cursor stays on, the texture is
+  // uploaded once. That's the biggest GPU-upload cut in this component.
+  const tierLow = readPerfTier() === "low";
+  const blinkInterval = 90;
 
   useFrame((state) => {
     frameRef.current++;
-    if (frameRef.current % blinkInterval === 0) {
+    if (!tierLow && frameRef.current % blinkInterval === 0) {
       cursorOnRef.current = !cursorOnRef.current;
       redraw(cursorOnRef.current, variant);
     }
@@ -553,6 +556,11 @@ function GlyphBillboard({
 }
 
 function OrbitingGlyphs() {
+  // Low tier: skip the 4 GlyphBillboards entirely. Each one creates a
+  // 160x160 canvas-backed texture + a useFrame loop with cursor
+  // parallax, and the model + DevStation already read as a "rig"
+  // without the orbit glyphs.
+  if (readPerfTier() === "low") return null;
   return (
     <group>
       {GLYPHS.map((g, i) => {

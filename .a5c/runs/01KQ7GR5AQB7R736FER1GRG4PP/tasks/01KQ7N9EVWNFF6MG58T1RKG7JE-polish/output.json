@@ -1,0 +1,14 @@
+{
+  "patches": [
+    {
+      "file": "components/SvgCoreFallback.tsx",
+      "reason": "Added useEffect-driven scroll progress hook that drives a --scf-scroll-fade CSS variable. New @media (max-width: 640px) rule applies opacity: var(--scf-scroll-fade) to .scf-svg so the orb fades from 1 → 0.15 as the visitor scrolls past 60% of the viewport on mobile. Desktop ignores the variable, keeping the orb persistent."
+    },
+    {
+      "file": "components/sections/HeroSection.tsx",
+      "reason": "Strengthened the mobile role-badge scrim from bg-bg/60 px-2 py-1 to bg-bg/80 px-3 py-1.5 so FRONTEND DEVELOPER stays readable above the SvgCoreFallback orb at 414x896."
+    }
+  ],
+  "buildOk": true,
+  "summary": "Mobile-only fade-out for SvgCoreFallback orb (driven by scrollY vs window height) so Projects, Experience, and Contact sections own their fold instead of competing with the orb. Bumped hero role-badge scrim opacity + padding for 414px readability. typecheck clean; production build succeeded."
+}

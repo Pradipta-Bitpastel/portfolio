@@ -1,0 +1,433 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "converged"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "e2e": {
+          "consoleErrors": [
+            "console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\".",
+            "console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\"."
+          ],
+          "failed": 6,
+          "failures": [
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport iphone-se 375x812 > loads, no overflow, no console errors",
+              "viewport": "375x812"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport iphone-11 414x896 > loads, no overflow, no console errors",
+              "viewport": "414x896"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport ipad 768x1024 > loads, no overflow, no console errors",
+              "viewport": "768x1024"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport ipad-land 1024x768 > loads, no overflow, no console errors",
+              "viewport": "1024x768"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport laptop 1280x800 > loads, no overflow, no console errors",
+              "viewport": "1280x800"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport desktop 1920x1080 > loads, no overflow, no console errors",
+              "viewport": "1920x1080"
+            }
+          ],
+          "passed": 12,
+          "projects": [
+            {
+              "failed": 6,
+              "name": "chromium",
+              "passed": 0
+            },
+            {
+              "failed": 0,
+              "name": "firefox",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "webkit",
+              "passed": 6
+            }
+          ],
+          "summary": "12 passed / 6 failed across 6 viewports x 3 browsers (chromium, firefox, webkit). Failures isolated to chromium only due to SVG <circle> cx/cy parse errors (empty/NaN coordinates).",
+          "total": 18
+        },
+        "lhDesktop": {
+          "accessibility": 100,
+          "bestPractices": 96,
+          "cls": 0.065838,
+          "fcp": 324.5182,
+          "lcp": 893.5546,
+          "performance": 88,
+          "rawScoreFile": "artifacts/lh-desktop-1.json",
+          "recommendations": [
+            "Reduce unused JavaScript ~100ms ~154KB",
+            "Avoid serving legacy JavaScript to modern browsers ~11KB",
+            "Minimize main-thread work",
+            "Avoid enormous network payloads",
+            "Avoid an excessive DOM size"
+          ],
+          "tbt": 258.2227,
+          "totalBlockingTime": 258.2227,
+          "tti": 1574.80963
+        },
+        "lhMobile": {
+          "accessibility": 96,
+          "bestPractices": 96,
+          "cls": 0.001112,
+          "fcp": 1549.20035,
+          "lcp": 3002.6010499999998,
+          "performance": 66,
+          "rawScoreFile": "artifacts/lh-mobile-1.json",
+          "recommendations": [
+            "Avoid enormous network payloads (saves ~2794397ms)",
+            "Minimize main-thread work (saves ~15127ms)",
+            "Reduce JavaScript execution time (saves ~4949ms)",
+            "Avoid an excessive DOM size (saves ~2500ms)",
+            "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+          ],
+          "tbt": 1572.4999999999995,
+          "totalBlockingTime": 1572.4999999999995,
+          "tti": 6057.321435
+        },
+        "targetDesktopPerf": 90,
+        "targetMobilePerf": 75,
+        "visual": {
+          "overallScore": 45,
+          "perViewport": {
+            "1024x768": {
+              "issues": [
+                "hero shows 'Application error: a client-side exception has occurred' - app crashes (major)",
+                "all other sections render as unstyled HTML fallback (no CSS, no canvas, no theme) (major)",
+                "missing ProjectVisuals canvas/svg core (major)",
+                "no HUD frame, no orange/dark theme applied (major)"
+              ],
+              "score": 15
+            },
+            "1280x800": {
+              "issues": [
+                "hero renders blank white canvas with only grid lines - main visual missing (major)",
+                "about/skills/projects/experience/contact all show unstyled HTML fallback (major)",
+                "no CSS or canvas/svg core loaded (major)",
+                "complete loss of design system at desktop breakpoint (major)"
+              ],
+              "score": 10
+            },
+            "1920x1080": {
+              "issues": [
+                "hero renders blank white canvas with only grid lines - main visual missing (major)",
+                "all sections render as unstyled HTML fallback (major)",
+                "no CSS or canvas/svg core loaded (major)",
+                "complete loss of design system at large desktop breakpoint (major)"
+              ],
+              "score": 10
+            },
+            "375x812": {
+              "issues": [
+                "contact section title 'OPENING // THE_CORE' wraps awkwardly producing 'ING // THE_CO RE' (major text break)",
+                "contact section 'OPEN' prefix appears clipped above viewport when scrolled to anchor"
+              ],
+              "score": 80
+            },
+            "414x896": {
+              "issues": [
+                "contact title still wraps as 'ING // THE_COR E' due to large font on narrow column (major)"
+              ],
+              "score": 85
+            },
+            "768x1024": {
+              "issues": [
+                "skills HUD bottom: 'LAT 37.77°N / LON -122.42°W' overlaps 'OPENAI API' text row (minor)",
+                "contact title 'OPENING // THE_CORE' partially obscured by '06' badge overlapping 'OPEN' (major)",
+                "experience section second card placeholder shows 'CORE // ONLINE' overlap with HUD frame (minor)"
+              ],
+              "score": 75
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/iter1/375x812-hero.png",
+            "artifacts/screenshots/iter1/375x812-about.png",
+            "artifacts/screenshots/iter1/375x812-skills.png",
+            "artifacts/screenshots/iter1/375x812-projects.png",
+            "artifacts/screenshots/iter1/375x812-experience.png",
+            "artifacts/screenshots/iter1/375x812-contact.png",
+            "artifacts/screenshots/iter1/414x896-hero.png",
+            "artifacts/screenshots/iter1/414x896-about.png",
+            "artifacts/screenshots/iter1/414x896-skills.png",
+            "artifacts/screenshots/iter1/414x896-projects.png",
+            "artifacts/screenshots/iter1/414x896-experience.png",
+            "artifacts/screenshots/iter1/414x896-contact.png",
+            "artifacts/screenshots/iter1/768x1024-hero.png",
+            "artifacts/screenshots/iter1/768x1024-about.png",
+            "artifacts/screenshots/iter1/768x1024-skills.png",
+            "artifacts/screenshots/iter1/768x1024-projects.png",
+            "artifacts/screenshots/iter1/768x1024-experience.png",
+            "artifacts/screenshots/iter1/768x1024-contact.png",
+            "artifacts/screenshots/iter1/1024x768-hero.png",
+            "artifacts/screenshots/iter1/1024x768-about.png",
+            "artifacts/screenshots/iter1/1024x768-skills.png",
+            "artifacts/screenshots/iter1/1024x768-projects.png",
+            "artifacts/screenshots/iter1/1024x768-experience.png",
+            "artifacts/screenshots/iter1/1024x768-contact.png",
+            "artifacts/screenshots/iter1/1280x800-hero.png",
+            "artifacts/screenshots/iter1/1280x800-about.png",
+            "artifacts/screenshots/iter1/1280x800-skills.png",
+            "artifacts/screenshots/iter1/1280x800-projects.png",
+            "artifacts/screenshots/iter1/1280x800-experience.png",
+            "artifacts/screenshots/iter1/1280x800-contact.png",
+            "artifacts/screenshots/iter1/1920x1080-hero.png",
+            "artifacts/screenshots/iter1/1920x1080-about.png",
+            "artifacts/screenshots/iter1/1920x1080-skills.png",
+            "artifacts/screenshots/iter1/1920x1080-projects.png",
+            "artifacts/screenshots/iter1/1920x1080-experience.png",
+            "artifacts/screenshots/iter1/1920x1080-contact.png"
+          ],
+          "totalIssues": 18
+        }
+      },
+      "instructions": [
+        "Convergence rule: lhDesktop.performance >= targetDesktopPerf AND lhMobile.performance >= targetMobilePerf AND e2e.failed === 0 AND visual.overallScore >= 80.",
+        "If E2E failed > 0, list the specific viewport+browser combos that failed and a concrete fix per failure.",
+        "If lhDesktop or lhMobile under target, list the top 5 LH opportunities (e.g., \"reduce unused JS\", \"minimize main-thread work\") with file paths if known.",
+        "If visual issues exist, list them with viewport + section + suggested fix.",
+        "Return JSON { converged:bool, breakdown:{desktopPerf, mobilePerf, e2eRate, visual}, blockedBy:string[], recommendations:[{priority, category, file?, action}], summary:\"...\" }"
+      ],
+      "outputFormat": "JSON",
+      "role": "QA lead synthesizing perf + responsive scores",
+      "task": "Decide if we have converged. If not, produce a prioritized recommendation list for the next iteration."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7M5ME2DFNJGV99Q384ZKY8/input.json",
+    "outputJsonPath": "tasks/01KQ7M5ME2DFNJGV99Q384ZKY8/result.json"
+  },
+  "kind": "agent",
+  "title": "Compute convergence score + recommendations",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7M5ME2DFNJGV99Q384ZKY8",
+  "taskId": "quality-score",
+  "invocationKey": "portfolio-perf-responsive:S000012:quality-score",
+  "stepId": "S000012",
+  "inputs": {
+    "e2e": {
+      "consoleErrors": [
+        "console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\".",
+        "console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\"."
+      ],
+      "failed": 6,
+      "failures": [
+        {
+          "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+          "project": "chromium",
+          "title": "responsive.spec.ts > viewport iphone-se 375x812 > loads, no overflow, no console errors",
+          "viewport": "375x812"
+        },
+        {
+          "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+          "project": "chromium",
+          "title": "responsive.spec.ts > viewport iphone-11 414x896 > loads, no overflow, no console errors",
+          "viewport": "414x896"
+        },
+        {
+          "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+          "project": "chromium",
+          "title": "responsive.spec.ts > viewport ipad 768x1024 > loads, no overflow, no console errors",
+          "viewport": "768x1024"
+        },
+        {
+          "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+          "project": "chromium",
+          "title": "responsive.spec.ts > viewport ipad-land 1024x768 > loads, no overflow, no console errors",
+          "viewport": "1024x768"
+        },
+        {
+          "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+          "project": "chromium",
+          "title": "responsive.spec.ts > viewport laptop 1280x800 > loads, no overflow, no console errors",
+          "viewport": "1280x800"
+        },
+        {
+          "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+          "project": "chromium",
+          "title": "responsive.spec.ts > viewport desktop 1920x1080 > loads, no overflow, no console errors",
+          "viewport": "1920x1080"
+        }
+      ],
+      "passed": 12,
+      "projects": [
+        {
+          "failed": 6,
+          "name": "chromium",
+          "passed": 0
+        },
+        {
+          "failed": 0,
+          "name": "firefox",
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "name": "webkit",
+          "passed": 6
+        }
+      ],
+      "summary": "12 passed / 6 failed across 6 viewports x 3 browsers (chromium, firefox, webkit). Failures isolated to chromium only due to SVG <circle> cx/cy parse errors (empty/NaN coordinates).",
+      "total": 18
+    },
+    "iteration": 1,
+    "lhDesktop": {
+      "accessibility": 100,
+      "bestPractices": 96,
+      "cls": 0.065838,
+      "fcp": 324.5182,
+      "lcp": 893.5546,
+      "performance": 88,
+      "rawScoreFile": "artifacts/lh-desktop-1.json",
+      "recommendations": [
+        "Reduce unused JavaScript ~100ms ~154KB",
+        "Avoid serving legacy JavaScript to modern browsers ~11KB",
+        "Minimize main-thread work",
+        "Avoid enormous network payloads",
+        "Avoid an excessive DOM size"
+      ],
+      "tbt": 258.2227,
+      "totalBlockingTime": 258.2227,
+      "tti": 1574.80963
+    },
+    "lhMobile": {
+      "accessibility": 96,
+      "bestPractices": 96,
+      "cls": 0.001112,
+      "fcp": 1549.20035,
+      "lcp": 3002.6010499999998,
+      "performance": 66,
+      "rawScoreFile": "artifacts/lh-mobile-1.json",
+      "recommendations": [
+        "Avoid enormous network payloads (saves ~2794397ms)",
+        "Minimize main-thread work (saves ~15127ms)",
+        "Reduce JavaScript execution time (saves ~4949ms)",
+        "Avoid an excessive DOM size (saves ~2500ms)",
+        "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+      ],
+      "tbt": 1572.4999999999995,
+      "totalBlockingTime": 1572.4999999999995,
+      "tti": 6057.321435
+    },
+    "targetDesktopPerf": 90,
+    "targetMobilePerf": 75,
+    "visual": {
+      "overallScore": 45,
+      "perViewport": {
+        "1024x768": {
+          "issues": [
+            "hero shows 'Application error: a client-side exception has occurred' - app crashes (major)",
+            "all other sections render as unstyled HTML fallback (no CSS, no canvas, no theme) (major)",
+            "missing ProjectVisuals canvas/svg core (major)",
+            "no HUD frame, no orange/dark theme applied (major)"
+          ],
+          "score": 15
+        },
+        "1280x800": {
+          "issues": [
+            "hero renders blank white canvas with only grid lines - main visual missing (major)",
+            "about/skills/projects/experience/contact all show unstyled HTML fallback (major)",
+            "no CSS or canvas/svg core loaded (major)",
+            "complete loss of design system at desktop breakpoint (major)"
+          ],
+          "score": 10
+        },
+        "1920x1080": {
+          "issues": [
+            "hero renders blank white canvas with only grid lines - main visual missing (major)",
+            "all sections render as unstyled HTML fallback (major)",
+            "no CSS or canvas/svg core loaded (major)",
+            "complete loss of design system at large desktop breakpoint (major)"
+          ],
+          "score": 10
+        },
+        "375x812": {
+          "issues": [
+            "contact section title 'OPENING // THE_CORE' wraps awkwardly producing 'ING // THE_CO RE' (major text break)",
+            "contact section 'OPEN' prefix appears clipped above viewport when scrolled to anchor"
+          ],
+          "score": 80
+        },
+        "414x896": {
+          "issues": [
+            "contact title still wraps as 'ING // THE_COR E' due to large font on narrow column (major)"
+          ],
+          "score": 85
+        },
+        "768x1024": {
+          "issues": [
+            "skills HUD bottom: 'LAT 37.77°N / LON -122.42°W' overlaps 'OPENAI API' text row (minor)",
+            "contact title 'OPENING // THE_CORE' partially obscured by '06' badge overlapping 'OPEN' (major)",
+            "experience section second card placeholder shows 'CORE // ONLINE' overlap with HUD frame (minor)"
+          ],
+          "score": 75
+        }
+      },
+      "screenshots": [
+        "artifacts/screenshots/iter1/375x812-hero.png",
+        "artifacts/screenshots/iter1/375x812-about.png",
+        "artifacts/screenshots/iter1/375x812-skills.png",
+        "artifacts/screenshots/iter1/375x812-projects.png",
+        "artifacts/screenshots/iter1/375x812-experience.png",
+        "artifacts/screenshots/iter1/375x812-contact.png",
+        "artifacts/screenshots/iter1/414x896-hero.png",
+        "artifacts/screenshots/iter1/414x896-about.png",
+        "artifacts/screenshots/iter1/414x896-skills.png",
+        "artifacts/screenshots/iter1/414x896-projects.png",
+        "artifacts/screenshots/iter1/414x896-experience.png",
+        "artifacts/screenshots/iter1/414x896-contact.png",
+        "artifacts/screenshots/iter1/768x1024-hero.png",
+        "artifacts/screenshots/iter1/768x1024-about.png",
+        "artifacts/screenshots/iter1/768x1024-skills.png",
+        "artifacts/screenshots/iter1/768x1024-projects.png",
+        "artifacts/screenshots/iter1/768x1024-experience.png",
+        "artifacts/screenshots/iter1/768x1024-contact.png",
+        "artifacts/screenshots/iter1/1024x768-hero.png",
+        "artifacts/screenshots/iter1/1024x768-about.png",
+        "artifacts/screenshots/iter1/1024x768-skills.png",
+        "artifacts/screenshots/iter1/1024x768-projects.png",
+        "artifacts/screenshots/iter1/1024x768-experience.png",
+        "artifacts/screenshots/iter1/1024x768-contact.png",
+        "artifacts/screenshots/iter1/1280x800-hero.png",
+        "artifacts/screenshots/iter1/1280x800-about.png",
+        "artifacts/screenshots/iter1/1280x800-skills.png",
+        "artifacts/screenshots/iter1/1280x800-projects.png",
+        "artifacts/screenshots/iter1/1280x800-experience.png",
+        "artifacts/screenshots/iter1/1280x800-contact.png",
+        "artifacts/screenshots/iter1/1920x1080-hero.png",
+        "artifacts/screenshots/iter1/1920x1080-about.png",
+        "artifacts/screenshots/iter1/1920x1080-skills.png",
+        "artifacts/screenshots/iter1/1920x1080-projects.png",
+        "artifacts/screenshots/iter1/1920x1080-experience.png",
+        "artifacts/screenshots/iter1/1920x1080-contact.png"
+      ],
+      "totalIssues": 18
+    }
+  }
+}

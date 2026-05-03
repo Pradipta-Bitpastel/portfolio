@@ -304,13 +304,17 @@ function ExperienceSectionImpl() {
       ref={rootRef}
       ariaLabelledBy="experience-heading"
       bare
-      style={{ minHeight: "150vh" }}
+      style={{ minHeight: "150svh" }}
     >
       {/* Giant "05" top-right, amber */}
       <div
         aria-hidden
-        className="pointer-events-none absolute right-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.95] md:block lg:text-[14rem]"
-        style={{ color: "#FF7A1A", letterSpacing: "-0.02em" }}
+        className="pointer-events-none absolute right-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
+        style={{
+          color: "#FF7A1A",
+          letterSpacing: "-0.02em",
+          fontSize: "clamp(6rem,12vw,14rem)"
+        }}
       >
         05
       </div>
@@ -416,8 +420,10 @@ function ExperienceSectionImpl() {
             </svg>
           </div>
 
-          {/* Entries */}
-          <ul className="exp-list flex flex-col gap-14 pl-[70px]">
+          {/* Entries — pl shrinks on narrow viewports so the card body
+              has breathing room on 375/414px. Rail still sits at the
+              left edge of the section. */}
+          <ul className="exp-list flex flex-col gap-14 pl-[44px] sm:pl-[70px]">
             {experience.map((e, i) => (
               <li
                 key={e.company}
@@ -552,7 +558,7 @@ function ExperienceSectionImpl() {
                   {/* Meta row: period + index */}
                   <div className="flex items-baseline justify-between gap-4">
                     <div
-                      className="exp-period flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.32em] text-[#FF7A1A]"
+                      className="exp-period flex min-w-0 flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#FF7A1A] sm:tracking-[0.32em]"
                     >
                       {i === 0 && (
                         <span
@@ -589,7 +595,7 @@ function ExperienceSectionImpl() {
                     {e.highlights.map((h, bi) => (
                       <li
                         key={h}
-                        className="exp-bullet flex gap-3 font-mono text-[12px] leading-relaxed text-ink-dim"
+                        className="exp-bullet flex min-w-0 gap-3 font-mono text-[12px] leading-relaxed text-ink-dim"
                       >
                         <span className="mt-1 shrink-0 font-mono text-[10px] text-[#FF7A1A]/85">
                           {String(bi + 1).padStart(2, "0")}
@@ -598,7 +604,7 @@ function ExperienceSectionImpl() {
                           aria-hidden
                           className="mt-[7px] h-px w-3 shrink-0 bg-[#FF7A1A]/60"
                         />
-                        <span>{h}</span>
+                        <span className="min-w-0 flex-1 break-words">{h}</span>
                       </li>
                     ))}
                   </ul>

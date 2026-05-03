@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7NFGJGATMFZNMEAEWH5X4C",
+  "taskId": "lighthouse-mobile",
+  "invocationKey": "portfolio-perf-responsive:S000023:lighthouse-mobile",
+  "status": "ok",
+  "result": {
+    "accessibility": 96,
+    "bestPractices": 100,
+    "cls": 0.00094,
+    "fcp": 948.93,
+    "lcp": 2276.79,
+    "performance": 97,
+    "rawScoreFile": "artifacts/lh-mobile-3.json",
+    "recommendations": [
+      "Minimize main-thread work",
+      "Reduce JavaScript execution time",
+      "Avoid enormous network payloads",
+      "Reduce unused JavaScript",
+      "Avoid serving legacy JavaScript to modern browsers"
+    ],
+    "tbt": 126.5,
+    "totalBlockingTime": 126.5,
+    "tti": 4666.69
+  },
+  "startedAt": "2026-04-27T16:11:27.817Z",
+  "finishedAt": "2026-04-27T16:11:27.817Z",
+  "value": {
+    "accessibility": 96,
+    "bestPractices": 100,
+    "cls": 0.00094,
+    "fcp": 948.93,
+    "lcp": 2276.79,
+    "performance": 97,
+    "rawScoreFile": "artifacts/lh-mobile-3.json",
+    "recommendations": [
+      "Minimize main-thread work",
+      "Reduce JavaScript execution time",
+      "Avoid enormous network payloads",
+      "Reduce unused JavaScript",
+      "Avoid serving legacy JavaScript to modern browsers"
+    ],
+    "tbt": 126.5,
+    "totalBlockingTime": 126.5,
+    "tti": 4666.69
+  }
+}

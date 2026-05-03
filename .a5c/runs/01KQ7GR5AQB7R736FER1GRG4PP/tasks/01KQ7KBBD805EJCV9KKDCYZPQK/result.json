@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7KBBD805EJCV9KKDCYZPQK",
+  "taskId": "lighthouse-mobile",
+  "invocationKey": "portfolio-perf-responsive:S000009:lighthouse-mobile",
+  "status": "ok",
+  "result": {
+    "accessibility": 96,
+    "bestPractices": 96,
+    "cls": 0.001112,
+    "fcp": 1549.20035,
+    "lcp": 3002.6010499999998,
+    "performance": 66,
+    "rawScoreFile": "artifacts/lh-mobile-1.json",
+    "recommendations": [
+      "Avoid enormous network payloads (saves ~2794397ms)",
+      "Minimize main-thread work (saves ~15127ms)",
+      "Reduce JavaScript execution time (saves ~4949ms)",
+      "Avoid an excessive DOM size (saves ~2500ms)",
+      "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+    ],
+    "tbt": 1572.4999999999995,
+    "totalBlockingTime": 1572.4999999999995,
+    "tti": 6057.321435
+  },
+  "startedAt": "2026-04-27T14:05:37.511Z",
+  "finishedAt": "2026-04-27T14:05:37.511Z",
+  "value": {
+    "accessibility": 96,
+    "bestPractices": 96,
+    "cls": 0.001112,
+    "fcp": 1549.20035,
+    "lcp": 3002.6010499999998,
+    "performance": 66,
+    "rawScoreFile": "artifacts/lh-mobile-1.json",
+    "recommendations": [
+      "Avoid enormous network payloads (saves ~2794397ms)",
+      "Minimize main-thread work (saves ~15127ms)",
+      "Reduce JavaScript execution time (saves ~4949ms)",
+      "Avoid an excessive DOM size (saves ~2500ms)",
+      "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+    ],
+    "tbt": 1572.4999999999995,
+    "totalBlockingTime": 1572.4999999999995,
+    "tti": 6057.321435
+  }
+}

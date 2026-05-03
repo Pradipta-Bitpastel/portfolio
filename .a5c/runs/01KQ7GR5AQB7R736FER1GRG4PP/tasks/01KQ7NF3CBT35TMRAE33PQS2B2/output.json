@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "typecheckOk": true,
+  "buildOk": true,
+  "errors": [],
+  "stdoutTail": "Route (app) Size First Load JS: / 204 kB / 343 kB. Build clean.",
+  "stderrTail": ""
+}

@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { sceneStore } from "@/lib/sceneStore";
+import { readPerfTier } from "@/lib/usePerfTier";
 
 /**
  * Richer, layered Core — award-style central engine.
@@ -22,7 +23,9 @@ import { sceneStore } from "@/lib/sceneStore";
  * boost `intensity` for section drama.
  */
 
-const PARTICLE_COUNT = 96;
+// Halved from the original 96. On low tier we skip ParticleShell
+// entirely (count=0) — see the parent Core's perfLow gate.
+const PARTICLE_COUNT = 48;
 const PARTICLE_MIN_R = 1.4;
 const PARTICLE_MAX_R = 1.8;
 
@@ -101,8 +104,16 @@ function ParticleShell() {
   );
 }
 
-function Lightning() {
-  const ref = useRef<THREE.LineSegments>(null);
+/**
+ * Lightning — render-only. Its opacity pulse is now driven by the
+ * parent `Core` useFrame so we run a single rAF loop instead of three
+ * (was: Core + ParticleShell + Lightning each had their own useFrame).
+ */
+const Lightning = ({
+  segRef
+}: {
+  segRef: React.MutableRefObject<THREE.LineSegments | null>;
+}) => {
   const geom = useMemo(() => {
     const g = new THREE.BufferGeometry();
     const SEGMENTS = 6;
@@ -124,15 +135,8 @@ function Lightning() {
     return g;
   }, []);
 
-  useFrame((state) => {
-    const mat = ref.current?.material as THREE.LineBasicMaterial | undefined;
-    if (!mat) return;
-    const t = state.clock.elapsedTime;
-    mat.opacity = 0.25 + (Math.sin(t * 4) * 0.5 + 0.5) * 0.35;
-  });
-
   return (
-    <lineSegments ref={ref} geometry={geom}>
+    <lineSegments ref={segRef} geometry={geom}>
       <lineBasicMaterial
         color="#9fd6ff"
         transparent
@@ -142,7 +146,7 @@ function Lightning() {
       />
     </lineSegments>
   );
-}
+};
 
 export function Core() {
   const groupRef = useRef<THREE.Group>(null);
@@ -151,6 +155,19 @@ export function Core() {
   const wireRef = useRef<THREE.Group>(null);
   const particleGroupRef = useRef<THREE.Group>(null);
   const lightRef = useRef<THREE.PointLight>(null);
+  const lightningRef = useRef<THREE.LineSegments | null>(null);
+
+  // Cache once — tier swaps require a reload anyway.
+  const tier = readPerfTier();
+  const isLow = tier === "low";
+
+  // Audit fix #4: drop ico detail (3→2 high, 2→1 low), drop the
+  // wireframe pass on low tier, halve PARTICLE_COUNT (96→48) and
+  // skip the particle shell entirely on low tier.
+  const midDetail = isLow ? 1 : 2;
+  const wireDetail = isLow ? 1 : 2;
+  const showWire = !isLow;
+  const showParticles = !isLow;
 
   useEffect(() => {
     sceneStore.core.ref = meshRef.current;
@@ -161,6 +178,9 @@ export function Core() {
     };
   }, []);
 
+  // Single useFrame drives all in-Core animation: group spin,
+  // wireframe counter-rot, particle group rotation, inner-core pulse,
+  // and the lightning line opacity (was a separate useFrame).
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
     if (groupRef.current) {
@@ -179,29 +199,47 @@ export function Core() {
       const pulse = 0.9 + Math.sin(t * 2.4) * 0.3;
       if ("color" in m) m.color.setScalar(pulse);
     }
+    const lmat = lightningRef.current?.material as
+      | THREE.LineBasicMaterial
+      | undefined;
+    if (lmat) {
+      lmat.opacity = 0.25 + (Math.sin(t * 4) * 0.5 + 0.5) * 0.35;
+    }
   });
 
   return (
     <group ref={groupRef}>
-      {/* Mid physical shell — the "core" GSAP tweens */}
+      {/* Mid shell — physical material (iridescence + clearcoat) only
+          on high tier; standard material everywhere else, since the
+          extra physical shader passes are pricey on integrated GPUs. */}
       <mesh ref={meshRef}>
-        <icosahedronGeometry args={[0.9, 3]} />
-        <meshPhysicalMaterial
-          color="#3a6fcc"
-          emissive="#4f9cff"
-          emissiveIntensity={0.6}
-          roughness={0.15}
-          metalness={0.8}
-          clearcoat={0.9}
-          clearcoatRoughness={0.1}
-          iridescence={1.0}
-          iridescenceIOR={2.0}
-        />
+        <icosahedronGeometry args={[0.9, midDetail]} />
+        {tier === "high" ? (
+          <meshPhysicalMaterial
+            color="#3a6fcc"
+            emissive="#4f9cff"
+            emissiveIntensity={0.6}
+            roughness={0.15}
+            metalness={0.8}
+            clearcoat={0.9}
+            clearcoatRoughness={0.1}
+            iridescence={1.0}
+            iridescenceIOR={2.0}
+          />
+        ) : (
+          <meshStandardMaterial
+            color="#3a6fcc"
+            emissive="#4f9cff"
+            emissiveIntensity={0.8}
+            roughness={0.25}
+            metalness={0.7}
+          />
+        )}
       </mesh>
 
       {/* Inner bright glowing core */}
       <mesh ref={innerCoreRef}>
-        <sphereGeometry args={[0.4, 32, 32]} />
+        <sphereGeometry args={[0.4, isLow ? 16 : 32, isLow ? 16 : 32]} />
         <meshBasicMaterial
           color="#ffffff"
           toneMapped={false}
@@ -212,8 +250,9 @@ export function Core() {
         />
       </mesh>
 
-      {/* Internal lightning lines */}
-      <Lightning />
+      {/* Internal lightning lines — opacity pulse driven by Core's
+          useFrame above (was a separate Lightning useFrame). */}
+      <Lightning segRef={lightningRef} />
 
       {/* Point light (GSAP-tweenable) */}
       <pointLight
@@ -224,24 +263,28 @@ export function Core() {
         decay={2}
       />
 
-      {/* Wireframe HUD cage */}
-      <group ref={wireRef}>
-        <mesh>
-          <icosahedronGeometry args={[1.15, 2]} />
-          <meshBasicMaterial
-            color="#9b5cff"
-            wireframe
-            transparent
-            opacity={0.4}
-            depthWrite={false}
-          />
-        </mesh>
-      </group>
+      {/* Wireframe HUD cage — dropped on low tier */}
+      {showWire && (
+        <group ref={wireRef}>
+          <mesh>
+            <icosahedronGeometry args={[1.15, wireDetail]} />
+            <meshBasicMaterial
+              color="#9b5cff"
+              wireframe
+              transparent
+              opacity={0.4}
+              depthWrite={false}
+            />
+          </mesh>
+        </group>
+      )}
 
-      {/* Floating data particles */}
-      <group ref={particleGroupRef}>
-        <ParticleShell />
-      </group>
+      {/* Floating data particles — dropped on low tier */}
+      {showParticles && (
+        <group ref={particleGroupRef}>
+          <ParticleShell />
+        </group>
+      )}
     </group>
   );
 }

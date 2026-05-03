@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T14:25:30.005Z",
+  "data": {
+    "effectId": "01KQ7N9EVWNFF6MG58T1RKG7JE",
+    "invocationKey": "portfolio-perf-responsive:S000020:refine",
+    "invocationHash": "bc051db52af5cff2fe5c340b92a13e02fce613c79ea15cb0be31c746e6baddc3",
+    "stepId": "S000020",
+    "taskId": "refine",
+    "kind": "agent",
+    "label": "Apply recommendations to converge",
+    "taskDefRef": "tasks/01KQ7N9EVWNFF6MG58T1RKG7JE/task.json"
+  },
+  "checksum": "0dbf027c82979cd528f8968c21d9be80a139a4c9c73a4d0a6951443e8e6005bb"
+}

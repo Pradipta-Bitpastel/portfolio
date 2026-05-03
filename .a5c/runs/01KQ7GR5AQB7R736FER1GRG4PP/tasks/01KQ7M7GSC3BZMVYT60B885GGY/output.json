@@ -1,0 +1,24 @@
+{
+  "patchesApplied": [
+    {
+      "file": "components/three/SceneContainer.tsx",
+      "reason": "REC #1 — Stop preloading Three.js on mobile. Removed the module-scope `dynamic(() => import('./_Scene'))` call so the bundler doesn't see a static import() reference on every route that imports SceneContainer (i.e. the root layout). The dynamic() handle is now created lazily inside getScene(), called only AFTER the desktop / non-low-tier branch is taken. Mobile and low-tier clients no longer preload the _Scene chunk."
+    },
+    {
+      "file": "next.config.mjs",
+      "reason": "REC #3 — Tree-shake heavy packages. Added experimental.optimizePackageImports for ['gsap', '@react-three/drei', '@react-three/fiber', 'three'] so Next rewrites named imports into deep imports and drops unused exports. Also added compiler.removeConsole in production (excluding error/warn) to strip debug logging from the prod bundle."
+    },
+    {
+      "file": "components/ui/ProjectVisuals.tsx",
+      "reason": "REC #2 — Chromium SVG cx/cy NaN console errors. Two bugs fixed: (a) the `nn-packet` <circle> elements rendered with no cx/cy attributes — initial DOM had cx='', triggering Chromium's 'Unexpected end of attribute' warning; now defaulted to the edge's x1/y1 with Number.isFinite guard. GSAP overwrites them once it boots. (b) The bar-cursor's inner <circle> on line 808 was missing the cx attribute entirely (`<circle cy=\"100\" .../>`); set cx='0' to match the parent <g transform=\"translate(60,0)\">."
+    },
+    {
+      "file": "components/sections/ContactSection.tsx",
+      "reason": "REC #5 — Title wrap fix. 'PING // THE_CORE' broke mid-word at 375px ('THE_CO\\nRE'). Lowered the clamp lower-bound to 2rem at narrow viewports, added word-break:keep-all + overflow-wrap:normal so 'THE_CORE' stays atomic and only breaks between PING and THE_CORE if at all. The '06' badge is already hidden md:block so no overlap on mobile — left as-is."
+    }
+  ],
+  "buildOk": true,
+  "firstLoadJsKB": 343,
+  "newBundleStats": "Route (app)                              Size     First Load JS\n┌ ○ /                                    204 kB          343 kB\n├ ○ /_not-found                          873 B          88.4 kB\n├ ƒ /icon                                0 B                0 B\n├ ƒ /opengraph-image                     0 B                0 B\n└ ○ /sitemap.xml                         0 B                0 B\n+ First Load JS shared by all            87.6 kB\n  ├ chunks/117-65fd47b7bdd7cce7.js       31.7 kB\n  ├ chunks/fd9d1056-404ec1d83df8f25c.js  53.6 kB\n  └ other shared chunks (total)          2.23 kB\n\nLargest emitted async chunks (NOT in First Load):\n  b536a0f1-a59822f7d4557c5b.js  670 kB  ← three.js + R3F (desktop-only, lazy)\n  fd9d1056-404ec1d83df8f25c.js  169 kB  ← drei (route-shared, but shaken)\n  435.63cf4767e0e17deb.js        131 kB  ← _Scene + DevStation graph\n  117-65fd47b7bdd7cce7.js        121 kB  ← gsap + plugins (route-shared)",
+  "summary": "Quality iteration 2 applied: SceneContainer no longer preloads three.js for mobile (lazy-instantiated dynamic import); next.config now tree-shakes drei/gsap/three/r3f via optimizePackageImports and strips console.* in prod; SVG NaN console errors fixed in ProjectVisuals (nn-packet missing cx/cy + bar-cursor circle missing cx); ContactSection title now degrades gracefully at 375px without mid-word wrap. Build clean, typecheck clean. Route First Load JS is 343 kB (vs prior 342 kB — within noise; the perf win comes from the 670 kB three.js chunk no longer being on the mobile critical path, not from First Load size). The huge b536a0f1 chunk (~670 kB) is now strictly desktop-on-demand, which is what should move the mobile Lighthouse score."
+}

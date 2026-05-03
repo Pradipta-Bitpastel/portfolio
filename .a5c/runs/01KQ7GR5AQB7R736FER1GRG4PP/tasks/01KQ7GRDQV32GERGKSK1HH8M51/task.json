@@ -1,0 +1,66 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "issues"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "scope": [
+          "Animation performance on Vercel free tier and low-spec Windows machines",
+          "Responsive correctness at 375 / 414 / 768 / 1024 / 1280 / 1920",
+          "Cross-browser correctness (chromium / firefox / webkit)",
+          "Bundle size + initial load"
+        ],
+        "viewports": [
+          "375x812",
+          "414x896",
+          "768x1024",
+          "1024x768",
+          "1280x800",
+          "1920x1080"
+        ]
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Read package.json, next.config.mjs, tailwind.config.ts to confirm stack.",
+        "Read the entire components/three/ directory and components/sections/. Identify: useFrame loops, postprocessing usage, geometry detail levels, draw counts, GSAP ScrollTriggers, scrub usage.",
+        "Read lib/usePerfTier.ts and lib/useIsMobile.ts. Note current low-tier detection thresholds.",
+        "Read app/layout.tsx and app/globals.css. Note backdrop-filter usage, large fonts, expensive selectors.",
+        "Read every section component. For each, list: GSAP ScrollTrigger config, scrub:true presence, pinning, large DOM nodes, hardcoded widths.",
+        "Skim public/ for asset sizes; report the 10 biggest files in public/ with sizes.",
+        "Run `npm run build 2>&1 | tail -120` and capture bundle size output.",
+        "Produce a punch list with EXACT file paths and line numbers per issue. Categorize as: PERF-3D, PERF-DOM, RESPONSIVE, BROWSER-COMPAT, BUNDLE-SIZE.",
+        "Return JSON: { issues: [{ category, severity:\"critical|high|medium\", file, line?, summary, recommendation }], bundleSize:{...}, threeJSStats:{useFrameLoops:N, postProcessing:bool, geometryDetail:[]}, gsapStats:{scrollTriggerCount:N, scrubUsage:N}, summary: \"...\" }"
+      ],
+      "outputFormat": "JSON",
+      "role": "Senior frontend perf engineer auditing a Next.js 14 + R3F + GSAP portfolio",
+      "task": "Audit the existing /Users/pradiptajana/Portfolio codebase and produce a concrete punch list of performance, responsive, and cross-browser issues."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7GRDQV32GERGKSK1HH8M51/input.json",
+    "outputJsonPath": "tasks/01KQ7GRDQV32GERGKSK1HH8M51/result.json"
+  },
+  "kind": "agent",
+  "title": "Audit current performance + responsive state",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7GRDQV32GERGKSK1HH8M51",
+  "taskId": "audit",
+  "invocationKey": "portfolio-perf-responsive:S000001:audit",
+  "stepId": "S000001",
+  "inputs": {
+    "viewports": [
+      "375x812",
+      "414x896",
+      "768x1024",
+      "1024x768",
+      "1280x800",
+      "1920x1080"
+    ]
+  }
+}

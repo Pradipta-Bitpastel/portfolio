@@ -1,0 +1,42 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "performance"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "iteration": 3
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Ensure build is fresh: `npm run build 2>&1 | tail -10`.",
+        "Start `npm run start -- -p 3100` in the background; wait up to 30s for port 3100 to respond. Confirm with `curl -sf http://localhost:3100 -o /dev/null && echo OK || echo FAIL`.",
+        "Run `npx lighthouse http://localhost:3100 --preset=desktop --only-categories=performance,accessibility,best-practices --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=artifacts/lh-desktop-${args.iteration}.json --quiet --max-wait-for-load=60000` (install lighthouse first if missing).",
+        "Kill the dev/start server (find PID by port 3100 and kill it).",
+        "Parse JSON. Return { performance, accessibility, bestPractices, lcp, cls, tbt, fcp, tti, totalBlockingTime, recommendations:[strings] }"
+      ],
+      "outputFormat": "JSON",
+      "role": "Performance auditor",
+      "task": "Run Lighthouse against production build using DESKTOP form factor."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7NFGHKH8X0FN86C3NBCZE9/input.json",
+    "outputJsonPath": "tasks/01KQ7NFGHKH8X0FN86C3NBCZE9/result.json"
+  },
+  "kind": "agent",
+  "title": "Run Lighthouse desktop audit",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7NFGHKH8X0FN86C3NBCZE9",
+  "taskId": "lighthouse-desktop",
+  "invocationKey": "portfolio-perf-responsive:S000022:lighthouse-desktop",
+  "stepId": "S000022",
+  "inputs": {
+    "iteration": 3
+  }
+}

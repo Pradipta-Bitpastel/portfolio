@@ -71,10 +71,12 @@ export function SectionHUD() {
   const total = SECTIONS.length;
   return (
     <>
-      {/* Mobile: compact horizontal strip near the top, below HUD top labels */}
+      {/* Mobile: compact horizontal strip near the top, below HUD top labels.
+          top-14 (was top-10) so it clears the HudFrame top labels at
+          375/414px. */}
       <div
         aria-label="Section progress"
-        className="pointer-events-none fixed left-4 right-4 top-10 z-50 flex select-none items-center gap-2 font-mono uppercase md:hidden"
+        className="pointer-events-none fixed left-4 right-4 top-14 z-50 flex select-none items-center gap-2 font-mono uppercase md:hidden"
       >
         <span className="text-[9px] tracking-[0.28em] text-ink-dim">[</span>
         <span className="text-[9px] tracking-[0.28em] text-[#FF7A1A]">{active.num}</span>

@@ -13,18 +13,29 @@ type SmoothScrollProviderProps = {
  * Wraps the app in #smooth-wrapper / #smooth-content and drives a
  * smooth-scroll engine. Strategy:
  *
- *   1) Register all GSAP plugins via `registerAll()`.
- *   2) If the visitor has `prefers-reduced-motion: reduce`, render
- *      the wrappers but skip smooth-scroll entirely.
- *   3) Try ScrollSmoother.create(...) — if the Club plugin is present
- *      it is the preferred engine because it integrates natively with
- *      ScrollTrigger pinning.
- *   4) If ScrollSmoother is not available, fall back to Lenis and
- *      bridge it into gsap.ticker + ScrollTrigger.update().
+ *   1) Register essential GSAP plugins.
+ *   2) Bail entirely on `prefers-reduced-motion: reduce`, iOS Safari
+ *      (Lenis has known wheel/touch conflicts with Safari's native
+ *      momentum) and Firefox (Lenis + smooth-wheel triggers visual
+ *      tearing on Gecko's compositor on certain GPUs).
+ *   3) Try ScrollSmoother (Club) — if available, prefer it.
+ *   4) Otherwise fall back to Lenis bridged into gsap.ticker +
+ *      ScrollTrigger.update().
  *
- * Teardown reverses whichever engine ran, and we null out the
- * listener so HMR in dev does not stack them.
+ * Teardown reverses whichever engine ran.
  */
+function isIOSSafari(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /iPad|iPhone|iPod/.test(ua);
+}
+
+function isFirefox(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /Firefox/.test(ua);
+}
+
 export function SmoothScrollProvider({
   children
 }: SmoothScrollProviderProps) {
@@ -39,7 +50,7 @@ export function SmoothScrollProvider({
     let cancelled = false;
 
     const boot = async () => {
-      const result = await registerAll();
+      await registerAll();
       if (cancelled) return;
 
       const reduced =
@@ -50,46 +61,47 @@ export function SmoothScrollProvider({
         return;
       }
 
-      // 1) Prefer ScrollSmoother (Club plugin).
-      if (result.registered.includes("ScrollSmoother")) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const ScrollSmoother = (gsap as any).core?.globals?.()
-            ?.ScrollSmoother;
-          if (ScrollSmoother && typeof ScrollSmoother.create === "function") {
-            const low = readPerfTier() === "low";
-            smootherRef.current = ScrollSmoother.create({
-              wrapper: "#smooth-wrapper",
-              content: "#smooth-content",
-              // "smooth" is the number of seconds ScrollSmoother takes
-              // to catch up to the browser's real scroll position. On
-              // high-tier: 1.2s silky feel. On low-tier: 0.5s so scroll
-              // stays responsive without piling up interpolation work
-              // every frame.
-              smooth: low ? 0.5 : 1.2,
-              smoothTouch: low ? 0 : 0.1,
-              // `effects: true` parses data-speed/data-lag attrs on every
-              // element during refresh — not free on large DOMs. Off for
-              // low-tier since we don't use those attrs anywhere.
-              effects: !low,
-              normalizeScroll: true
-            });
-            return;
+      // Disable Lenis on iOS Safari and Firefox: both have known
+      // conflicts with Lenis (Safari momentum hijack, Firefox wheel
+      // event normalization tearing). Native scroll is fine on both.
+      if (isIOSSafari() || isFirefox()) {
+        return;
+      }
+
+      // 1) Prefer ScrollSmoother (Club plugin). Loaded lazily here to
+      //    keep it out of the main bundle when the license isn't
+      //    available.
+      try {
+        const mod = await import("gsap/ScrollSmoother").catch(() => null);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const ScrollSmoother = (mod as any)?.ScrollSmoother ?? (mod as any)?.default;
+        if (ScrollSmoother && typeof ScrollSmoother.create === "function") {
+          try {
+            gsap.registerPlugin(ScrollSmoother);
+          } catch {
+            /* idempotent */
           }
-        } catch (err) {
-          if (typeof console !== "undefined") {
-            console.warn(
-              "[SmoothScroll] ScrollSmoother.create failed, falling back to Lenis",
-              err
-            );
-          }
+          const low = readPerfTier() === "low";
+          smootherRef.current = ScrollSmoother.create({
+            wrapper: "#smooth-wrapper",
+            content: "#smooth-content",
+            smooth: low ? 0.5 : 1.2,
+            smoothTouch: low ? 0 : 0.1,
+            effects: !low,
+            normalizeScroll: true
+          });
+          return;
+        }
+      } catch (err) {
+        if (typeof console !== "undefined") {
+          console.warn(
+            "[SmoothScroll] ScrollSmoother init failed, falling back to Lenis",
+            err
+          );
         }
       }
 
-      // 2) Fallback: Lenis + gsap.ticker bridge. On low-tier use a
-      //    faster lerp (closer to native) so scroll input feels
-      //    responsive and doesn't accumulate frame-rate-sensitive
-      //    interpolation work.
+      // 2) Fallback: Lenis + gsap.ticker bridge.
       const low = readPerfTier() === "low";
       try {
         const lenis = new Lenis({

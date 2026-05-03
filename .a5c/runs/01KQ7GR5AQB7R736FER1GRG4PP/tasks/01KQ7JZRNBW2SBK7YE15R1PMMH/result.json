@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7JZRNBW2SBK7YE15R1PMMH",
+  "taskId": "cross-browser-fixes",
+  "invocationKey": "portfolio-perf-responsive:S000006:cross-browser-fixes",
+  "status": "ok",
+  "result": {
+    "buildOk": true,
+    "filesChanged": [
+      "components/three/_Scene.tsx",
+      "components/three/SceneContainer.tsx",
+      "components/ui/Atmosphere.tsx",
+      "app/globals.css",
+      "app/layout.tsx",
+      "components/three/HeroWarrior.tsx",
+      "components/sections/ProjectsSection.tsx"
+    ],
+    "newFixes": [
+      "_Scene.tsx: pinned powerPreference to 'default' unconditionally (removed the gpuTier/!isWindows exception that still hit Firefox on dual-GPU macOS).",
+      "_Scene.tsx: added gl.failIfMajorPerformanceCaveat: false so SwiftShader / llvmpipe still produces a context (the WebGLErrorBoundary handles real failures).",
+      "_Scene.tsx: added onCreated callback that probes WEBGL_debug_renderer_info and console.warns when a software renderer is detected (NODE_ENV !== 'production' only).",
+      "SceneContainer.tsx: wrapped the dynamic import in .catch() so a chunk-load failure (CSP/ad-blocker/offline) returns a noop component instead of crashing the tree; the existing isMobile/low-tier guards already render SvgCoreFallback when the canvas would otherwise be attempted.",
+      "Atmosphere.tsx: removed the inline feTurbulence grain layer entirely (Firefox-mobile + Edge memory leak path); only the cheap repeating-linear-gradient scanlines remain.",
+      "globals.css: added a single body::after noise overlay gated behind @media (min-width: 1280px) and (hover: hover) so it only runs on desktop with a real mouse — no Firefox-mobile / coarse-pointer execution.",
+      "layout.tsx: added a <noscript> banner inside <body> instructing users to enable JS or contact ayan@bitpastel.com.",
+      "HeroWarrior.tsx: added WebkitClipPath alongside clipPath on the tech-chip and poster-fallback SVG-shape divs.",
+      "ProjectsSection.tsx: added WebkitClipPath alongside clipPath on the diamond proj-dot indicators."
+    ],
+    "summary": "Phase 5 cross-browser audit: hardened WebGL bring-up (pinned powerPreference=default, failIfMajorPerformanceCaveat=false, software-renderer dev warning, dynamic-import .catch) and removed the inline feTurbulence grain (Firefox-mobile leak path) in favor of a single body::after overlay gated behind desktop-mouse @media. Added WebkitClipPath fallbacks to inline polygon clip-paths, plus a <noscript> banner. Verified prior phases (powerPreference default everywhere, material .clone() before mutation, no Environment presets, Lenis UA-detect for iOS Safari + Firefox + reduced-motion, IrisTransition opacity-only on isLowEnd with single box-shadow, @supports backdrop-filter fallback, single noise overlay). All :has() / 100dvh / unguarded matchMedia/navigator usages already absent or properly typeof-guarded. typecheck and build both pass.",
+    "typecheckOk": true,
+    "verifiedFromEarlierPhases": [
+      "components/three/_Scene.tsx — powerPreference was already gated to 'default' for non-(high+!Windows); now hard-pinned to 'default' across the board.",
+      "components/three/HeroWarrior.tsx — material clone via mat.clone() is in place inside cloneOne() before mutating envMapIntensity / emissiveIntensity (lines 112-129).",
+      "components/three/Lights.tsx — no <Environment preset> remains; only a comment referencing the removed warehouse preset. Hemisphere light replaces it.",
+      "components/three/HeroWarrior.tsx — no preset='city' remains; only a comment about the removed Environment preset.",
+      "components/providers/SmoothScrollProvider.tsx — Lenis disabled on iOS Safari (/iPad|iPhone|iPod/), Firefox (/Firefox/), and prefers-reduced-motion before any engine init.",
+      "components/ui/IrisTransition.tsx — returns null on caps.isLowEnd; uses opacity fade (no clipPath morph); single inset box-shadow on the mask wrapper, no dual drop-shadow filter on the mask itself (drop-shadow remains only on the small animated edge SVG path, which is the iris identity).",
+      "app/globals.css — @supports not (backdrop-filter) → solid fallback for .glass; -webkit-backdrop-filter set alongside backdrop-filter; coarse-pointer + reduced-motion media queries strip blur.",
+      "app/globals.css — duplicate noise overlay was already removed (.noise is a no-op shim)."
+    ]
+  },
+  "startedAt": "2026-04-27T13:50:42.187Z",
+  "finishedAt": "2026-04-27T13:50:42.187Z",
+  "value": {
+    "buildOk": true,
+    "filesChanged": [
+      "components/three/_Scene.tsx",
+      "components/three/SceneContainer.tsx",
+      "components/ui/Atmosphere.tsx",
+      "app/globals.css",
+      "app/layout.tsx",
+      "components/three/HeroWarrior.tsx",
+      "components/sections/ProjectsSection.tsx"
+    ],
+    "newFixes": [
+      "_Scene.tsx: pinned powerPreference to 'default' unconditionally (removed the gpuTier/!isWindows exception that still hit Firefox on dual-GPU macOS).",
+      "_Scene.tsx: added gl.failIfMajorPerformanceCaveat: false so SwiftShader / llvmpipe still produces a context (the WebGLErrorBoundary handles real failures).",
+      "_Scene.tsx: added onCreated callback that probes WEBGL_debug_renderer_info and console.warns when a software renderer is detected (NODE_ENV !== 'production' only).",
+      "SceneContainer.tsx: wrapped the dynamic import in .catch() so a chunk-load failure (CSP/ad-blocker/offline) returns a noop component instead of crashing the tree; the existing isMobile/low-tier guards already render SvgCoreFallback when the canvas would otherwise be attempted.",
+      "Atmosphere.tsx: removed the inline feTurbulence grain layer entirely (Firefox-mobile + Edge memory leak path); only the cheap repeating-linear-gradient scanlines remain.",
+      "globals.css: added a single body::after noise overlay gated behind @media (min-width: 1280px) and (hover: hover) so it only runs on desktop with a real mouse — no Firefox-mobile / coarse-pointer execution.",
+      "layout.tsx: added a <noscript> banner inside <body> instructing users to enable JS or contact ayan@bitpastel.com.",
+      "HeroWarrior.tsx: added WebkitClipPath alongside clipPath on the tech-chip and poster-fallback SVG-shape divs.",
+      "ProjectsSection.tsx: added WebkitClipPath alongside clipPath on the diamond proj-dot indicators."
+    ],
+    "summary": "Phase 5 cross-browser audit: hardened WebGL bring-up (pinned powerPreference=default, failIfMajorPerformanceCaveat=false, software-renderer dev warning, dynamic-import .catch) and removed the inline feTurbulence grain (Firefox-mobile leak path) in favor of a single body::after overlay gated behind desktop-mouse @media. Added WebkitClipPath fallbacks to inline polygon clip-paths, plus a <noscript> banner. Verified prior phases (powerPreference default everywhere, material .clone() before mutation, no Environment presets, Lenis UA-detect for iOS Safari + Firefox + reduced-motion, IrisTransition opacity-only on isLowEnd with single box-shadow, @supports backdrop-filter fallback, single noise overlay). All :has() / 100dvh / unguarded matchMedia/navigator usages already absent or properly typeof-guarded. typecheck and build both pass.",
+    "typecheckOk": true,
+    "verifiedFromEarlierPhases": [
+      "components/three/_Scene.tsx — powerPreference was already gated to 'default' for non-(high+!Windows); now hard-pinned to 'default' across the board.",
+      "components/three/HeroWarrior.tsx — material clone via mat.clone() is in place inside cloneOne() before mutating envMapIntensity / emissiveIntensity (lines 112-129).",
+      "components/three/Lights.tsx — no <Environment preset> remains; only a comment referencing the removed warehouse preset. Hemisphere light replaces it.",
+      "components/three/HeroWarrior.tsx — no preset='city' remains; only a comment about the removed Environment preset.",
+      "components/providers/SmoothScrollProvider.tsx — Lenis disabled on iOS Safari (/iPad|iPhone|iPod/), Firefox (/Firefox/), and prefers-reduced-motion before any engine init.",
+      "components/ui/IrisTransition.tsx — returns null on caps.isLowEnd; uses opacity fade (no clipPath morph); single inset box-shadow on the mask wrapper, no dual drop-shadow filter on the mask itself (drop-shadow remains only on the small animated edge SVG path, which is the iris identity).",
+      "app/globals.css — @supports not (backdrop-filter) → solid fallback for .glass; -webkit-backdrop-filter set alongside backdrop-filter; coarse-pointer + reduced-motion media queries strip blur.",
+      "app/globals.css — duplicate noise overlay was already removed (.noise is a no-op shim)."
+    ]
+  }
+}

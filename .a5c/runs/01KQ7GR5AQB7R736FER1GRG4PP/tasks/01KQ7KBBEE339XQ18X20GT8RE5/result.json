@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7KBBEE339XQ18X20GT8RE5",
+  "taskId": "visual-regression",
+  "invocationKey": "portfolio-perf-responsive:S000011:visual-regression",
+  "status": "ok",
+  "result": {
+    "overallScore": 45,
+    "perViewport": {
+      "1024x768": {
+        "issues": [
+          "hero shows 'Application error: a client-side exception has occurred' - app crashes (major)",
+          "all other sections render as unstyled HTML fallback (no CSS, no canvas, no theme) (major)",
+          "missing ProjectVisuals canvas/svg core (major)",
+          "no HUD frame, no orange/dark theme applied (major)"
+        ],
+        "score": 15
+      },
+      "1280x800": {
+        "issues": [
+          "hero renders blank white canvas with only grid lines - main visual missing (major)",
+          "about/skills/projects/experience/contact all show unstyled HTML fallback (major)",
+          "no CSS or canvas/svg core loaded (major)",
+          "complete loss of design system at desktop breakpoint (major)"
+        ],
+        "score": 10
+      },
+      "1920x1080": {
+        "issues": [
+          "hero renders blank white canvas with only grid lines - main visual missing (major)",
+          "all sections render as unstyled HTML fallback (major)",
+          "no CSS or canvas/svg core loaded (major)",
+          "complete loss of design system at large desktop breakpoint (major)"
+        ],
+        "score": 10
+      },
+      "375x812": {
+        "issues": [
+          "contact section title 'OPENING // THE_CORE' wraps awkwardly producing 'ING // THE_CO RE' (major text break)",
+          "contact section 'OPEN' prefix appears clipped above viewport when scrolled to anchor"
+        ],
+        "score": 80
+      },
+      "414x896": {
+        "issues": [
+          "contact title still wraps as 'ING // THE_COR E' due to large font on narrow column (major)"
+        ],
+        "score": 85
+      },
+      "768x1024": {
+        "issues": [
+          "skills HUD bottom: 'LAT 37.77°N / LON -122.42°W' overlaps 'OPENAI API' text row (minor)",
+          "contact title 'OPENING // THE_CORE' partially obscured by '06' badge overlapping 'OPEN' (major)",
+          "experience section second card placeholder shows 'CORE // ONLINE' overlap with HUD frame (minor)"
+        ],
+        "score": 75
+      }
+    },
+    "screenshots": [
+      "artifacts/screenshots/iter1/375x812-hero.png",
+      "artifacts/screenshots/iter1/375x812-about.png",
+      "artifacts/screenshots/iter1/375x812-skills.png",
+      "artifacts/screenshots/iter1/375x812-projects.png",
+      "artifacts/screenshots/iter1/375x812-experience.png",
+      "artifacts/screenshots/iter1/375x812-contact.png",
+      "artifacts/screenshots/iter1/414x896-hero.png",
+      "artifacts/screenshots/iter1/414x896-about.png",
+      "artifacts/screenshots/iter1/414x896-skills.png",
+      "artifacts/screenshots/iter1/414x896-projects.png",
+      "artifacts/screenshots/iter1/414x896-experience.png",
+      "artifacts/screenshots/iter1/414x896-contact.png",
+      "artifacts/screenshots/iter1/768x1024-hero.png",
+      "artifacts/screenshots/iter1/768x1024-about.png",
+      "artifacts/screenshots/iter1/768x1024-skills.png",
+      "artifacts/screenshots/iter1/768x1024-projects.png",
+      "artifacts/screenshots/iter1/768x1024-experience.png",
+      "artifacts/screenshots/iter1/768x1024-contact.png",
+      "artifacts/screenshots/iter1/1024x768-hero.png",
+      "artifacts/screenshots/iter1/1024x768-about.png",
+      "artifacts/screenshots/iter1/1024x768-skills.png",
+      "artifacts/screenshots/iter1/1024x768-projects.png",
+      "artifacts/screenshots/iter1/1024x768-experience.png",
+      "artifacts/screenshots/iter1/1024x768-contact.png",
+      "artifacts/screenshots/iter1/1280x800-hero.png",
+      "artifacts/screenshots/iter1/1280x800-about.png",
+      "artifacts/screenshots/iter1/1280x800-skills.png",
+      "artifacts/screenshots/iter1/1280x800-projects.png",
+      "artifacts/screenshots/iter1/1280x800-experience.png",
+      "artifacts/screenshots/iter1/1280x800-contact.png",
+      "artifacts/screenshots/iter1/1920x1080-hero.png",
+      "artifacts/screenshots/iter1/1920x1080-about.png",
+      "artifacts/screenshots/iter1/1920x1080-skills.png",
+      "artifacts/screenshots/iter1/1920x1080-projects.png",
+      "artifacts/screenshots/iter1/1920x1080-experience.png",
+      "artifacts/screenshots/iter1/1920x1080-contact.png"
+    ],
+    "totalIssues": 18
+  },
+  "startedAt": "2026-04-27T14:05:37.873Z",
+  "finishedAt": "2026-04-27T14:05:37.873Z",
+  "value": {
+    "overallScore": 45,
+    "perViewport": {
+      "1024x768": {
+        "issues": [
+          "hero shows 'Application error: a client-side exception has occurred' - app crashes (major)",
+          "all other sections render as unstyled HTML fallback (no CSS, no canvas, no theme) (major)",
+          "missing ProjectVisuals canvas/svg core (major)",
+          "no HUD frame, no orange/dark theme applied (major)"
+        ],
+        "score": 15
+      },
+      "1280x800": {
+        "issues": [
+          "hero renders blank white canvas with only grid lines - main visual missing (major)",
+          "about/skills/projects/experience/contact all show unstyled HTML fallback (major)",
+          "no CSS or canvas/svg core loaded (major)",
+          "complete loss of design system at desktop breakpoint (major)"
+        ],
+        "score": 10
+      },
+      "1920x1080": {
+        "issues": [
+          "hero renders blank white canvas with only grid lines - main visual missing (major)",
+          "all sections render as unstyled HTML fallback (major)",
+          "no CSS or canvas/svg core loaded (major)",
+          "complete loss of design system at large desktop breakpoint (major)"
+        ],
+        "score": 10
+      },
+      "375x812": {
+        "issues": [
+          "contact section title 'OPENING // THE_CORE' wraps awkwardly producing 'ING // THE_CO RE' (major text break)",
+          "contact section 'OPEN' prefix appears clipped above viewport when scrolled to anchor"
+        ],
+        "score": 80
+      },
+      "414x896": {
+        "issues": [
+          "contact title still wraps as 'ING // THE_COR E' due to large font on narrow column (major)"
+        ],
+        "score": 85
+      },
+      "768x1024": {
+        "issues": [
+          "skills HUD bottom: 'LAT 37.77°N / LON -122.42°W' overlaps 'OPENAI API' text row (minor)",
+          "contact title 'OPENING // THE_CORE' partially obscured by '06' badge overlapping 'OPEN' (major)",
+          "experience section second card placeholder shows 'CORE // ONLINE' overlap with HUD frame (minor)"
+        ],
+        "score": 75
+      }
+    },
+    "screenshots": [
+      "artifacts/screenshots/iter1/375x812-hero.png",
+      "artifacts/screenshots/iter1/375x812-about.png",
+      "artifacts/screenshots/iter1/375x812-skills.png",
+      "artifacts/screenshots/iter1/375x812-projects.png",
+      "artifacts/screenshots/iter1/375x812-experience.png",
+      "artifacts/screenshots/iter1/375x812-contact.png",
+      "artifacts/screenshots/iter1/414x896-hero.png",
+      "artifacts/screenshots/iter1/414x896-about.png",
+      "artifacts/screenshots/iter1/414x896-skills.png",
+      "artifacts/screenshots/iter1/414x896-projects.png",
+      "artifacts/screenshots/iter1/414x896-experience.png",
+      "artifacts/screenshots/iter1/414x896-contact.png",
+      "artifacts/screenshots/iter1/768x1024-hero.png",
+      "artifacts/screenshots/iter1/768x1024-about.png",
+      "artifacts/screenshots/iter1/768x1024-skills.png",
+      "artifacts/screenshots/iter1/768x1024-projects.png",
+      "artifacts/screenshots/iter1/768x1024-experience.png",
+      "artifacts/screenshots/iter1/768x1024-contact.png",
+      "artifacts/screenshots/iter1/1024x768-hero.png",
+      "artifacts/screenshots/iter1/1024x768-about.png",
+      "artifacts/screenshots/iter1/1024x768-skills.png",
+      "artifacts/screenshots/iter1/1024x768-projects.png",
+      "artifacts/screenshots/iter1/1024x768-experience.png",
+      "artifacts/screenshots/iter1/1024x768-contact.png",
+      "artifacts/screenshots/iter1/1280x800-hero.png",
+      "artifacts/screenshots/iter1/1280x800-about.png",
+      "artifacts/screenshots/iter1/1280x800-skills.png",
+      "artifacts/screenshots/iter1/1280x800-projects.png",
+      "artifacts/screenshots/iter1/1280x800-experience.png",
+      "artifacts/screenshots/iter1/1280x800-contact.png",
+      "artifacts/screenshots/iter1/1920x1080-hero.png",
+      "artifacts/screenshots/iter1/1920x1080-about.png",
+      "artifacts/screenshots/iter1/1920x1080-skills.png",
+      "artifacts/screenshots/iter1/1920x1080-projects.png",
+      "artifacts/screenshots/iter1/1920x1080-experience.png",
+      "artifacts/screenshots/iter1/1920x1080-contact.png"
+    ],
+    "totalIssues": 18
+  }
+}

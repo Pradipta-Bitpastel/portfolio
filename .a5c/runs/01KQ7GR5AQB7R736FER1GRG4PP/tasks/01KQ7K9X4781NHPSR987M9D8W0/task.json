@@ -1,0 +1,40 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "success"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "iteration": 0
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Run `npm run typecheck 2>&1 | tail -200` and capture stdout/stderr.",
+        "Run `npm run build 2>&1 | tail -200` and capture stdout/stderr.",
+        "Parse for errors. Return JSON { success:bool, typecheckOk:bool, buildOk:bool, errors:[{file,line,message}], stdoutTail, stderrTail }"
+      ],
+      "outputFormat": "JSON",
+      "role": "CI engineer verifying build",
+      "task": "Run typecheck and production build. Capture errors."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7K9X4781NHPSR987M9D8W0/input.json",
+    "outputJsonPath": "tasks/01KQ7K9X4781NHPSR987M9D8W0/result.json"
+  },
+  "kind": "agent",
+  "title": "Run build + typecheck",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7K9X4781NHPSR987M9D8W0",
+  "taskId": "build-gate",
+  "invocationKey": "portfolio-perf-responsive:S000007:build-gate",
+  "stepId": "S000007",
+  "inputs": {
+    "iteration": 0
+  }
+}

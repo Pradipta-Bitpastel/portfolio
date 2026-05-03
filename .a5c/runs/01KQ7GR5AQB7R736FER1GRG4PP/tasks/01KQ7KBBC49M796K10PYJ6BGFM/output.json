@@ -1,0 +1,19 @@
+{
+  "performance": 88,
+  "accessibility": 100,
+  "bestPractices": 96,
+  "lcp": 893.5546,
+  "cls": 0.065838,
+  "tbt": 258.2227,
+  "fcp": 324.5182,
+  "tti": 1574.80963,
+  "totalBlockingTime": 258.2227,
+  "recommendations": [
+    "Reduce unused JavaScript ~100ms ~154KB",
+    "Avoid serving legacy JavaScript to modern browsers ~11KB",
+    "Minimize main-thread work",
+    "Avoid enormous network payloads",
+    "Avoid an excessive DOM size"
+  ],
+  "rawScoreFile": "artifacts/lh-desktop-1.json"
+}

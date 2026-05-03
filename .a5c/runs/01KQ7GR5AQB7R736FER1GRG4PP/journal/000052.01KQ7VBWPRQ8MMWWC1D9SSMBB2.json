@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T16:11:41.145Z",
+  "data": {
+    "effectId": "01KQ7VBWNXWDA76BD7DD7Y3WFK",
+    "invocationKey": "portfolio-perf-responsive:S000026:quality-score",
+    "invocationHash": "0a9302bb90fd270f9659a82cc6639400df3e105a5cda76d2b68e6e08a987ce8d",
+    "stepId": "S000026",
+    "taskId": "quality-score",
+    "kind": "agent",
+    "label": "Compute convergence score + recommendations",
+    "taskDefRef": "tasks/01KQ7VBWNXWDA76BD7DD7Y3WFK/task.json"
+  },
+  "checksum": "a3753085651674fb9cd01441d8723da1ba3768740a84f722ae7475ea5b3b6f84"
+}

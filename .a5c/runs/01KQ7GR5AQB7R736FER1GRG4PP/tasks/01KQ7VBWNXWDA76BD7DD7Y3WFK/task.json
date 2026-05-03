@@ -1,0 +1,337 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "converged"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "e2e": {
+          "consoleErrors": [],
+          "failed": 0,
+          "failures": [],
+          "passed": 18,
+          "projects": [
+            {
+              "failed": 0,
+              "name": "chromium",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "firefox",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "webkit",
+              "passed": 6
+            }
+          ],
+          "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+          "total": 18
+        },
+        "lhDesktop": {
+          "accessibility": 100,
+          "bestPractices": 100,
+          "cls": 0.068,
+          "fcp": 263.76,
+          "lcp": 774.63,
+          "performance": 99,
+          "rawScoreFile": "artifacts/lh-desktop-2.json",
+          "recommendations": [
+            "Reduce unused JavaScript (~110ms savings on desktop)",
+            "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+            "Add valid source maps for large first-party JavaScript (currently missing)",
+            "Reduce total byte weight of network payloads (score 0.5)",
+            "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+          ],
+          "tbt": 0,
+          "totalBlockingTime": 0,
+          "tti": 774.63
+        },
+        "lhMobile": {
+          "accessibility": 96,
+          "bestPractices": 100,
+          "cls": 0.00094,
+          "fcp": 948.93,
+          "lcp": 2276.79,
+          "performance": 97,
+          "rawScoreFile": "artifacts/lh-mobile-3.json",
+          "recommendations": [
+            "Minimize main-thread work",
+            "Reduce JavaScript execution time",
+            "Avoid enormous network payloads",
+            "Reduce unused JavaScript",
+            "Avoid serving legacy JavaScript to modern browsers"
+          ],
+          "tbt": 126.5,
+          "totalBlockingTime": 126.5,
+          "tti": 4666.69
+        },
+        "targetDesktopPerf": 90,
+        "targetMobilePerf": 75,
+        "visual": {
+          "overallScore": 88,
+          "perViewport": {
+            "1024x768": {
+              "issues": [
+                "'CORE // ONLINE' bleeds/overlaps with footer link text on contact section",
+                "Experience header text overlapping (DEV.05 / SYS.TIMELINE crowded)",
+                "Contact heading not visible — fade timing"
+              ],
+              "score": 86
+            },
+            "1280x800": {
+              "issues": [
+                "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+              ],
+              "score": 94
+            },
+            "1920x1080": {
+              "issues": [
+                "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+              ],
+              "score": 95
+            },
+            "375x812": {
+              "issues": [
+                "Contact heading 'PING // THE_CORE' not visible in screenshot — appears the new block-level fade has opacity 0 at scroll-snapshot time (animation didn't trigger). Truncation bug 'ING // THE_CORE' is GONE — no character clipping observed",
+                "Projects/Experience screenshots show only orb (cards below the section header are not in initial scroll viewport — same behavior as iter4, not new)"
+              ],
+              "score": 80
+            },
+            "414x896": {
+              "issues": [
+                "Contact heading not visible (same fade timing issue) — but no truncation",
+                "Hero: small orb dot still touches FRONTEND DEVELOPER badge edge (very minor)"
+              ],
+              "score": 82
+            },
+            "768x1024": {
+              "issues": [
+                "Contact heading not visible in scroll snapshot — fade timing"
+              ],
+              "score": 92
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/iter5/375x812-hero.png",
+            "artifacts/screenshots/iter5/375x812-about.png",
+            "artifacts/screenshots/iter5/375x812-skills.png",
+            "artifacts/screenshots/iter5/375x812-projects.png",
+            "artifacts/screenshots/iter5/375x812-experience.png",
+            "artifacts/screenshots/iter5/375x812-contact.png",
+            "artifacts/screenshots/iter5/414x896-hero.png",
+            "artifacts/screenshots/iter5/414x896-about.png",
+            "artifacts/screenshots/iter5/414x896-skills.png",
+            "artifacts/screenshots/iter5/414x896-projects.png",
+            "artifacts/screenshots/iter5/414x896-experience.png",
+            "artifacts/screenshots/iter5/414x896-contact.png",
+            "artifacts/screenshots/iter5/768x1024-hero.png",
+            "artifacts/screenshots/iter5/768x1024-about.png",
+            "artifacts/screenshots/iter5/768x1024-skills.png",
+            "artifacts/screenshots/iter5/768x1024-projects.png",
+            "artifacts/screenshots/iter5/768x1024-experience.png",
+            "artifacts/screenshots/iter5/768x1024-contact.png",
+            "artifacts/screenshots/iter5/1024x768-hero.png",
+            "artifacts/screenshots/iter5/1024x768-about.png",
+            "artifacts/screenshots/iter5/1024x768-skills.png",
+            "artifacts/screenshots/iter5/1024x768-projects.png",
+            "artifacts/screenshots/iter5/1024x768-experience.png",
+            "artifacts/screenshots/iter5/1024x768-contact.png",
+            "artifacts/screenshots/iter5/1280x800-hero.png",
+            "artifacts/screenshots/iter5/1280x800-about.png",
+            "artifacts/screenshots/iter5/1280x800-skills.png",
+            "artifacts/screenshots/iter5/1280x800-projects.png",
+            "artifacts/screenshots/iter5/1280x800-experience.png",
+            "artifacts/screenshots/iter5/1280x800-contact.png",
+            "artifacts/screenshots/iter5/1920x1080-hero.png",
+            "artifacts/screenshots/iter5/1920x1080-about.png",
+            "artifacts/screenshots/iter5/1920x1080-skills.png",
+            "artifacts/screenshots/iter5/1920x1080-projects.png",
+            "artifacts/screenshots/iter5/1920x1080-experience.png",
+            "artifacts/screenshots/iter5/1920x1080-contact.png"
+          ],
+          "totalIssues": 9
+        }
+      },
+      "instructions": [
+        "Convergence rule: lhDesktop.performance >= targetDesktopPerf AND lhMobile.performance >= targetMobilePerf AND e2e.failed === 0 AND visual.overallScore >= 80.",
+        "If E2E failed > 0, list the specific viewport+browser combos that failed and a concrete fix per failure.",
+        "If lhDesktop or lhMobile under target, list the top 5 LH opportunities (e.g., \"reduce unused JS\", \"minimize main-thread work\") with file paths if known.",
+        "If visual issues exist, list them with viewport + section + suggested fix.",
+        "Return JSON { converged:bool, breakdown:{desktopPerf, mobilePerf, e2eRate, visual}, blockedBy:string[], recommendations:[{priority, category, file?, action}], summary:\"...\" }"
+      ],
+      "outputFormat": "JSON",
+      "role": "QA lead synthesizing perf + responsive scores",
+      "task": "Decide if we have converged. If not, produce a prioritized recommendation list for the next iteration."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7VBWNXWDA76BD7DD7Y3WFK/input.json",
+    "outputJsonPath": "tasks/01KQ7VBWNXWDA76BD7DD7Y3WFK/result.json"
+  },
+  "kind": "agent",
+  "title": "Compute convergence score + recommendations",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7VBWNXWDA76BD7DD7Y3WFK",
+  "taskId": "quality-score",
+  "invocationKey": "portfolio-perf-responsive:S000026:quality-score",
+  "stepId": "S000026",
+  "inputs": {
+    "e2e": {
+      "consoleErrors": [],
+      "failed": 0,
+      "failures": [],
+      "passed": 18,
+      "projects": [
+        {
+          "failed": 0,
+          "name": "chromium",
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "name": "firefox",
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "name": "webkit",
+          "passed": 6
+        }
+      ],
+      "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+      "total": 18
+    },
+    "iteration": 3,
+    "lhDesktop": {
+      "accessibility": 100,
+      "bestPractices": 100,
+      "cls": 0.068,
+      "fcp": 263.76,
+      "lcp": 774.63,
+      "performance": 99,
+      "rawScoreFile": "artifacts/lh-desktop-2.json",
+      "recommendations": [
+        "Reduce unused JavaScript (~110ms savings on desktop)",
+        "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+        "Add valid source maps for large first-party JavaScript (currently missing)",
+        "Reduce total byte weight of network payloads (score 0.5)",
+        "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+      ],
+      "tbt": 0,
+      "totalBlockingTime": 0,
+      "tti": 774.63
+    },
+    "lhMobile": {
+      "accessibility": 96,
+      "bestPractices": 100,
+      "cls": 0.00094,
+      "fcp": 948.93,
+      "lcp": 2276.79,
+      "performance": 97,
+      "rawScoreFile": "artifacts/lh-mobile-3.json",
+      "recommendations": [
+        "Minimize main-thread work",
+        "Reduce JavaScript execution time",
+        "Avoid enormous network payloads",
+        "Reduce unused JavaScript",
+        "Avoid serving legacy JavaScript to modern browsers"
+      ],
+      "tbt": 126.5,
+      "totalBlockingTime": 126.5,
+      "tti": 4666.69
+    },
+    "targetDesktopPerf": 90,
+    "targetMobilePerf": 75,
+    "visual": {
+      "overallScore": 88,
+      "perViewport": {
+        "1024x768": {
+          "issues": [
+            "'CORE // ONLINE' bleeds/overlaps with footer link text on contact section",
+            "Experience header text overlapping (DEV.05 / SYS.TIMELINE crowded)",
+            "Contact heading not visible — fade timing"
+          ],
+          "score": 86
+        },
+        "1280x800": {
+          "issues": [
+            "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+          ],
+          "score": 94
+        },
+        "1920x1080": {
+          "issues": [
+            "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+          ],
+          "score": 95
+        },
+        "375x812": {
+          "issues": [
+            "Contact heading 'PING // THE_CORE' not visible in screenshot — appears the new block-level fade has opacity 0 at scroll-snapshot time (animation didn't trigger). Truncation bug 'ING // THE_CORE' is GONE — no character clipping observed",
+            "Projects/Experience screenshots show only orb (cards below the section header are not in initial scroll viewport — same behavior as iter4, not new)"
+          ],
+          "score": 80
+        },
+        "414x896": {
+          "issues": [
+            "Contact heading not visible (same fade timing issue) — but no truncation",
+            "Hero: small orb dot still touches FRONTEND DEVELOPER badge edge (very minor)"
+          ],
+          "score": 82
+        },
+        "768x1024": {
+          "issues": [
+            "Contact heading not visible in scroll snapshot — fade timing"
+          ],
+          "score": 92
+        }
+      },
+      "screenshots": [
+        "artifacts/screenshots/iter5/375x812-hero.png",
+        "artifacts/screenshots/iter5/375x812-about.png",
+        "artifacts/screenshots/iter5/375x812-skills.png",
+        "artifacts/screenshots/iter5/375x812-projects.png",
+        "artifacts/screenshots/iter5/375x812-experience.png",
+        "artifacts/screenshots/iter5/375x812-contact.png",
+        "artifacts/screenshots/iter5/414x896-hero.png",
+        "artifacts/screenshots/iter5/414x896-about.png",
+        "artifacts/screenshots/iter5/414x896-skills.png",
+        "artifacts/screenshots/iter5/414x896-projects.png",
+        "artifacts/screenshots/iter5/414x896-experience.png",
+        "artifacts/screenshots/iter5/414x896-contact.png",
+        "artifacts/screenshots/iter5/768x1024-hero.png",
+        "artifacts/screenshots/iter5/768x1024-about.png",
+        "artifacts/screenshots/iter5/768x1024-skills.png",
+        "artifacts/screenshots/iter5/768x1024-projects.png",
+        "artifacts/screenshots/iter5/768x1024-experience.png",
+        "artifacts/screenshots/iter5/768x1024-contact.png",
+        "artifacts/screenshots/iter5/1024x768-hero.png",
+        "artifacts/screenshots/iter5/1024x768-about.png",
+        "artifacts/screenshots/iter5/1024x768-skills.png",
+        "artifacts/screenshots/iter5/1024x768-projects.png",
+        "artifacts/screenshots/iter5/1024x768-experience.png",
+        "artifacts/screenshots/iter5/1024x768-contact.png",
+        "artifacts/screenshots/iter5/1280x800-hero.png",
+        "artifacts/screenshots/iter5/1280x800-about.png",
+        "artifacts/screenshots/iter5/1280x800-skills.png",
+        "artifacts/screenshots/iter5/1280x800-projects.png",
+        "artifacts/screenshots/iter5/1280x800-experience.png",
+        "artifacts/screenshots/iter5/1280x800-contact.png",
+        "artifacts/screenshots/iter5/1920x1080-hero.png",
+        "artifacts/screenshots/iter5/1920x1080-about.png",
+        "artifacts/screenshots/iter5/1920x1080-skills.png",
+        "artifacts/screenshots/iter5/1920x1080-projects.png",
+        "artifacts/screenshots/iter5/1920x1080-experience.png",
+        "artifacts/screenshots/iter5/1920x1080-contact.png"
+      ],
+      "totalIssues": 9
+    }
+  }
+}

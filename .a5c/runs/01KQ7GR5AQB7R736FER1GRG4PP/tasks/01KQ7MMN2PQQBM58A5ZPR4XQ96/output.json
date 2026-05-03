@@ -1,0 +1,19 @@
+{
+  "performance": 95,
+  "accessibility": 96,
+  "bestPractices": 100,
+  "lcp": 2767.69,
+  "cls": 0.001,
+  "tbt": 93,
+  "fcp": 913.13,
+  "tti": 4503.84,
+  "totalBlockingTime": 93,
+  "recommendations": [
+    "Eliminate render-blocking resources (~45ms savings on mobile)",
+    "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+    "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+    "Fix color-contrast issues (accessibility audit failing)",
+    "Add valid source maps and reduce total byte weight / legacy JS"
+  ],
+  "rawScoreFile": "artifacts/lh-mobile-2.json"
+}

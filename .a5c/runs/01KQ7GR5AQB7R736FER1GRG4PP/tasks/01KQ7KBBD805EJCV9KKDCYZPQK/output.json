@@ -1,0 +1,19 @@
+{
+  "performance": 66,
+  "accessibility": 96,
+  "bestPractices": 96,
+  "lcp": 3002.6010499999998,
+  "cls": 0.001112,
+  "tbt": 1572.4999999999995,
+  "fcp": 1549.20035,
+  "tti": 6057.321435,
+  "totalBlockingTime": 1572.4999999999995,
+  "recommendations": [
+    "Avoid enormous network payloads (saves ~2794397ms)",
+    "Minimize main-thread work (saves ~15127ms)",
+    "Reduce JavaScript execution time (saves ~4949ms)",
+    "Avoid an excessive DOM size (saves ~2500ms)",
+    "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+  ],
+  "rawScoreFile": "artifacts/lh-mobile-1.json"
+}

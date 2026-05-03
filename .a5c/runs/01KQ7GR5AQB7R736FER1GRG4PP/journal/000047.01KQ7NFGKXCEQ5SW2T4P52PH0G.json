@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T14:28:48.381Z",
+  "data": {
+    "effectId": "01KQ7NFGKNKZ878JVN70TWDGQ5",
+    "invocationKey": "portfolio-perf-responsive:S000025:visual-regression",
+    "invocationHash": "4e49f15396c3a47efb30085e92c4ef9147432eb7b9e8494b4824711580ff4f04",
+    "stepId": "S000025",
+    "taskId": "visual-regression",
+    "kind": "agent",
+    "label": "Visual regression — screenshots per viewport",
+    "taskDefRef": "tasks/01KQ7NFGKNKZ878JVN70TWDGQ5/task.json"
+  },
+  "checksum": "5ded88bffb405d8f5c507e3023f91226a4be48aadfaca016a0c5c2822ccb8700"
+}

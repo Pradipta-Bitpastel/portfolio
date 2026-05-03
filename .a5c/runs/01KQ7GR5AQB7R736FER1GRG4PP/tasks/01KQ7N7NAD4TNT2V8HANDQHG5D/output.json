@@ -1,0 +1,52 @@
+{
+  "converged": false,
+  "breakdown": {
+    "desktopPerf": 99,
+    "mobilePerf": 95,
+    "e2eRate": 1.0,
+    "visual": 85,
+    "mobileVisualScores": {
+      "375x812": 70,
+      "414x896": 74
+    }
+  },
+  "blockedBy": [
+    "mobile-visual-orb-overlap",
+    "mobile-visual-core-online-badge-bleed",
+    "mobile-contact-title-still-wraps",
+    "mobile-projects-orb-dominates"
+  ],
+  "recommendations": [
+    {
+      "priority": 1,
+      "category": "RESPONSIVE",
+      "file": "components/SvgCoreFallback.tsx",
+      "action": "On mobile (375/414) the SVG core fallback orb overlaps the hero 'FRONTEND DEVELOP' role badge. The fallback is full-viewport positioned. Make the orb's SVG smaller on small viewports (e.g., scale down with viewBox + max-w / smaller fixed center), and offset it vertically to the top half so the role-badge text below it has clear space. Suggested: limit orb visual to the top 55vh on viewports <= 480px and reduce orb radius proportionally."
+    },
+    {
+      "priority": 2,
+      "category": "RESPONSIVE",
+      "file": "components/SvgCoreFallback.tsx OR components/ui/HudFrame.tsx",
+      "action": "The 'CORE // ONLINE' badge + orbiting orange dot is rendering as part of the SVG fallback or HUD overlay and is fixed to the viewport, causing it to bleed visually into projects/career/about sections during scroll. Wrap that badge in a hero-only ScrollTrigger that hides it when hero is scrolled past, OR position it inside the hero section element instead of fixed."
+    },
+    {
+      "priority": 3,
+      "category": "RESPONSIVE",
+      "file": "components/sections/ContactSection.tsx",
+      "action": "Contact title 'PING // THE_CORE' (or 'OPENING // THE_CORE') still wraps awkwardly to 'ING // THE_CORE' at 375px. The Phase 5 fix used keep-all + clamp(2rem,...) but the visual at 375px shows breakage still. Solution: split the title into two lines deliberately ('PING //' on line 1, 'THE_CORE' on line 2) on viewports <= 480px using a `<br className=\"sm:hidden\">` or grid layout. Also reduce font size further on smallest viewport (clamp(1.5rem,...))."
+    },
+    {
+      "priority": 4,
+      "category": "RESPONSIVE",
+      "file": "components/sections/ProjectsSection.tsx",
+      "action": "On mobile (375/414) the projects section shows the SVG orb dominating and the project card content is not visible in the fold. The card is below the orb in the stack. Either: (a) reduce orb size to ~30vh on mobile so card stays in viewport, OR (b) hide the orb entirely on mobile in projects (it's already in hero — duplication is visual noise). Pick whichever fits the design language better."
+    },
+    {
+      "priority": 5,
+      "category": "RESPONSIVE",
+      "file": "components/sections/HeroSection.tsx + global",
+      "action": "Mobile hero role badge 'FRONTEND DEVELOP' is visually overlapped by the orb. Add a dark gradient/glass background to the role badge so it remains readable on top of any background, OR position the orb behind a translucent backdrop layer that slightly fades the orb where text overlaps."
+    }
+  ],
+  "summary": "Iteration 2 RESULTS: desktop perf 99 (target 90, +9), mobile perf 95 (target 75, +20), E2E 18/18 (3 browsers x 6 viewports), visual 85. Performance and E2E targets are massively exceeded. Visual is at 85 but the mobile sub-scores (70 at 375px, 74 at 414px) show real layout issues that the user would consider 'not 100% solid'. One more refine pass to fix mobile orb overlap, persistent CORE badge bleed, and contact title wrap before declaring final convergence."
+}

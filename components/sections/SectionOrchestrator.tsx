@@ -11,6 +11,7 @@ import ProjectsSection from "./ProjectsSection";
 import ExperienceSection from "./ExperienceSection";
 import ContactSection from "./ContactSection";
 import SceneDock from "@/components/three/SceneDock";
+import { useDeviceCapabilities } from "@/lib/usePerfTier";
 
 /**
  * Wraps all 6 sections and layers the section-boundary CINEMATIC BEAT
@@ -34,13 +35,44 @@ import SceneDock from "@/components/three/SceneDock";
 const SECTION_IDS = ["hero", "about", "skills", "projects", "experience", "contact"] as const;
 
 export function SectionOrchestrator() {
+  const caps = useDeviceCapabilities();
+  const isLowEnd = caps.isLowEnd;
+
   useEffect(() => {
+    // On low-end devices skip the cinematic boundary BEAT entirely.
+    // The IrisTransition at the same boundary already carries enough
+    // visual weight; stacking 6+ overlapping tweens on top regularly
+    // saturates integrated GPUs at the moment of crossing.
+    if (isLowEnd) return;
+
     let cancelled = false;
     const killers: Array<() => void> = [];
+
+    // Cache connection materials ONCE at boot — was a `traverse()`
+    // walk on every boundary cross (5 boundaries × N children each
+    // time). Now: traverse once, hold the array.
+    const connMats: Array<THREE.Material & { opacity?: number }> = [];
+    const collectConnMats = () => {
+      const conn = sceneStore.connections.ref;
+      if (!conn) return;
+      conn.traverse((child) => {
+        const obj = child as THREE.Object3D & {
+          material?:
+            | (THREE.Material & { opacity?: number })
+            | THREE.Material[];
+        };
+        const raw = obj.material;
+        const mat = (Array.isArray(raw) ? raw[0] : raw) as
+          | (THREE.Material & { opacity?: number })
+          | undefined;
+        if (mat && typeof mat.opacity === "number") connMats.push(mat);
+      });
+    };
 
     const boot = async () => {
       await registerAll();
       if (cancelled) return;
+      collectConnMats();
 
       SECTION_IDS.forEach((id, idx) => {
         const el = document.getElementById(id);
@@ -117,35 +149,21 @@ export function SectionOrchestrator() {
           }
 
           // 5) Connection-line web flash.
-          const conn = sceneStore.connections.ref;
-          if (conn) {
-            const mats: Array<THREE.Material & { opacity?: number }> = [];
-            conn.traverse((child) => {
-              const obj = child as THREE.Object3D & {
-                material?:
-                  | (THREE.Material & { opacity?: number })
-                  | THREE.Material[];
-              };
-              const raw = obj.material;
-              const mat = (Array.isArray(raw) ? raw[0] : raw) as
-                | (THREE.Material & { opacity?: number })
-                | undefined;
-              if (mat && typeof mat.opacity === "number") mats.push(mat);
-            });
-            if (mats.length > 0) {
-              gsap.fromTo(
-                mats,
-                { opacity: "+=0" },
-                {
-                  opacity: "+=0.4",
-                  duration: 0.16,
-                  ease: "power2.out",
-                  yoyo: true,
-                  repeat: 1,
-                  overwrite: false
-                }
-              );
-            }
+          //    Uses the materials cached at boot (single traversal)
+          //    so this no longer walks the scene graph every cross.
+          if (connMats.length > 0) {
+            gsap.fromTo(
+              connMats,
+              { opacity: "+=0" },
+              {
+                opacity: "+=0.4",
+                duration: 0.16,
+                ease: "power2.out",
+                yoyo: true,
+                repeat: 1,
+                overwrite: false
+              }
+            );
           }
 
           // 6) Module scale pulse — each module briefly bumps up.
@@ -198,7 +216,7 @@ export function SectionOrchestrator() {
       sceneStore.camera.cinematicOffset.set(0, 0, 0);
       sceneStore.camera.fovPulse = 0;
     };
-  }, []);
+  }, [isLowEnd]);
 
   return (
     <>

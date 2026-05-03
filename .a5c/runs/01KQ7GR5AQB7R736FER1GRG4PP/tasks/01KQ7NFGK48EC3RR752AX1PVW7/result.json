@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7NFGK48EC3RR752AX1PVW7",
+  "taskId": "e2e-multi-viewport",
+  "invocationKey": "portfolio-perf-responsive:S000024:e2e-multi-viewport",
+  "status": "ok",
+  "result": {
+    "consoleErrors": [],
+    "failed": 0,
+    "failures": [],
+    "passed": 18,
+    "projects": [
+      {
+        "failed": 0,
+        "name": "chromium",
+        "passed": 6
+      },
+      {
+        "failed": 0,
+        "name": "firefox",
+        "passed": 6
+      },
+      {
+        "failed": 0,
+        "name": "webkit",
+        "passed": 6
+      }
+    ],
+    "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+    "total": 18
+  },
+  "startedAt": "2026-04-27T16:11:28.518Z",
+  "finishedAt": "2026-04-27T16:11:28.518Z",
+  "value": {
+    "consoleErrors": [],
+    "failed": 0,
+    "failures": [],
+    "passed": 18,
+    "projects": [
+      {
+        "failed": 0,
+        "name": "chromium",
+        "passed": 6
+      },
+      {
+        "failed": 0,
+        "name": "firefox",
+        "passed": 6
+      },
+      {
+        "failed": 0,
+        "name": "webkit",
+        "passed": 6
+      }
+    ],
+    "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+    "total": 18
+  }
+}

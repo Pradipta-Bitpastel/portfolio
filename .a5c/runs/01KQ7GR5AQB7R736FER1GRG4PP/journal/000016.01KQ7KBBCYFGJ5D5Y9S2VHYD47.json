@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:51:34.815Z",
+  "data": {
+    "effectId": "01KQ7KBBC49M796K10PYJ6BGFM",
+    "invocationKey": "portfolio-perf-responsive:S000008:lighthouse-desktop",
+    "invocationHash": "d16b7edc395f6e8bdee4ac50b90698dcee8ede403c0560b1265420cb85478667",
+    "stepId": "S000008",
+    "taskId": "lighthouse-desktop",
+    "kind": "agent",
+    "label": "Run Lighthouse desktop audit",
+    "taskDefRef": "tasks/01KQ7KBBC49M796K10PYJ6BGFM/task.json"
+  },
+  "checksum": "3b3bccb33c5fe581e23820df588016b4e7ad3d751cff693f00349e3e376fe3e6"
+}

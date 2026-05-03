@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:37:36.885Z",
+  "data": {
+    "effectId": "01KQ7JHS2S04QA0YQABQF4WPT2",
+    "invocationKey": "portfolio-perf-responsive:S000005:responsive-fixes",
+    "invocationHash": "5e418e9164bde6b4a58f0283e58503e2290712614de8c56ce45fd06982735a06",
+    "stepId": "S000005",
+    "taskId": "responsive-fixes",
+    "kind": "agent",
+    "label": "Audit + fix responsive layout across all viewports",
+    "taskDefRef": "tasks/01KQ7JHS2S04QA0YQABQF4WPT2/task.json"
+  },
+  "checksum": "7c82ae00e6a5d44aabf1eab345784cbd648d3176f098a143bc3b992bceaff176"
+}

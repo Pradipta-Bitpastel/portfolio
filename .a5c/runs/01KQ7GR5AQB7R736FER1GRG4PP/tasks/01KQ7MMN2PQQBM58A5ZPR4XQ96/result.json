@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7MMN2PQQBM58A5ZPR4XQ96",
+  "taskId": "lighthouse-mobile",
+  "invocationKey": "portfolio-perf-responsive:S000016:lighthouse-mobile",
+  "status": "ok",
+  "result": {
+    "accessibility": 96,
+    "bestPractices": 100,
+    "cls": 0.001,
+    "fcp": 913.13,
+    "lcp": 2767.69,
+    "performance": 95,
+    "rawScoreFile": "artifacts/lh-mobile-2.json",
+    "recommendations": [
+      "Eliminate render-blocking resources (~45ms savings on mobile)",
+      "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+      "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+      "Fix color-contrast issues (accessibility audit failing)",
+      "Add valid source maps and reduce total byte weight / legacy JS"
+    ],
+    "tbt": 93,
+    "totalBlockingTime": 93,
+    "tti": 4503.84
+  },
+  "startedAt": "2026-04-27T14:24:24.081Z",
+  "finishedAt": "2026-04-27T14:24:24.081Z",
+  "value": {
+    "accessibility": 96,
+    "bestPractices": 100,
+    "cls": 0.001,
+    "fcp": 913.13,
+    "lcp": 2767.69,
+    "performance": 95,
+    "rawScoreFile": "artifacts/lh-mobile-2.json",
+    "recommendations": [
+      "Eliminate render-blocking resources (~45ms savings on mobile)",
+      "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+      "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+      "Fix color-contrast issues (accessibility audit failing)",
+      "Add valid source maps and reduce total byte weight / legacy JS"
+    ],
+    "tbt": 93,
+    "totalBlockingTime": 93,
+    "tti": 4503.84
+  }
+}

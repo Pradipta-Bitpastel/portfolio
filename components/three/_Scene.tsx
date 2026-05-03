@@ -3,7 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { Scene as DeveloperCoreScene } from "./Scene";
-import { usePerfTier } from "@/lib/usePerfTier";
+import { useDeviceCapabilities } from "@/lib/usePerfTier";
 
 /**
  * The R3F <Canvas/> wrapper. We keep the Canvas-level props here
@@ -27,7 +27,7 @@ export function Scene() {
   const [eventSource, setEventSource] = useState<HTMLElement | null>(null);
   const [frameloop, setFrameloop] =
     useState<"always" | "never">("always");
-  const tier = usePerfTier();
+  const { tier, gpuTier, isWindows, isLowEnd } = useDeviceCapabilities();
   const hiddenRef = useRef(false);
 
   useEffect(() => {
@@ -46,7 +46,19 @@ export function Scene() {
     };
   }, []);
 
-  const isLow = tier === "low";
+  const isLow = tier === "low" || isLowEnd;
+
+  // Cross-browser audit (Phase 3): "high-performance" silently
+  // downgrades Firefox + Windows + several iOS Safari builds to
+  // software rendering on integrated GPUs, then crashes the context
+  // when shadow / postprocessing pipelines exceed the SwiftShader /
+  // llvmpipe budget. Always use "default" — the browser picks the
+  // discrete GPU when it's available anyway, and we avoid the bad
+  // path everywhere else. The previous gating on (gpuTier high &&
+  // !isWindows) was still hitting Firefox on macOS dual-GPU laptops.
+  void gpuTier;
+  void isWindows;
+  const powerPreference: WebGLPowerPreference = "default";
 
   return (
     <Canvas
@@ -56,9 +68,41 @@ export function Scene() {
       gl={{
         antialias: !isLow,
         alpha: true,
-        powerPreference: "high-performance",
+        powerPreference,
         stencil: false,
         depth: true,
+        // Don't refuse to create the context if the browser flags a
+        // major perf caveat (software / SwiftShader). We'd rather
+        // render slowly via the SVG fallback path's WebGLErrorBoundary
+        // catching a real crash than have the canvas silently throw
+        // before our boundary even mounts.
+        failIfMajorPerformanceCaveat: false,
+      }}
+      onCreated={({ gl }) => {
+        if (process.env.NODE_ENV !== "production") {
+          try {
+            const ctx = gl.getContext();
+            const dbg = ctx.getExtension("WEBGL_debug_renderer_info");
+            if (dbg) {
+              // UNMASKED_RENDERER_WEBGL = 0x9246
+              const renderer = ctx.getParameter(
+                (dbg as { UNMASKED_RENDERER_WEBGL: number }).UNMASKED_RENDERER_WEBGL
+              ) as string | undefined;
+              if (
+                typeof renderer === "string" &&
+                /SwiftShader|llvmpipe|Software|Microsoft Basic Render/i.test(renderer)
+              ) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                  "[Scene] Software WebGL renderer detected:",
+                  renderer
+                );
+              }
+            }
+          } catch {
+            /* extension probe is best-effort */
+          }
+        }
       }}
       performance={{ min: 0.35 }}
       eventSource={eventSource ?? undefined}

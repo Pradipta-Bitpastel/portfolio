@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T14:28:48.346Z",
+  "data": {
+    "effectId": "01KQ7NFGJGATMFZNMEAEWH5X4C",
+    "invocationKey": "portfolio-perf-responsive:S000023:lighthouse-mobile",
+    "invocationHash": "62abcbe54aa3be846763bcb985d146d2a0f3ec5cecbfdad7ee37d7038243426d",
+    "stepId": "S000023",
+    "taskId": "lighthouse-mobile",
+    "kind": "agent",
+    "label": "Run Lighthouse mobile audit",
+    "taskDefRef": "tasks/01KQ7NFGJGATMFZNMEAEWH5X4C/task.json"
+  },
+  "checksum": "795e544b3d05225369fe11d4412566c3c628c12998fc3590d7ffa2595c3a6f94"
+}

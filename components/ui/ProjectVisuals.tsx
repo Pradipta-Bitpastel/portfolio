@@ -104,7 +104,8 @@ function NeuralNetImpl({ color }: VisualProps) {
     <svg
       ref={rootRef}
       viewBox="0 0 400 400"
-      className="h-full w-full"
+      className="block aspect-square h-full max-h-full w-full max-w-full"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       <defs>
@@ -126,11 +127,17 @@ function NeuralNetImpl({ color }: VisualProps) {
           strokeWidth="0.8"
         />
       ))}
-      {/* Signal packets — one per selected edge */}
+      {/* Signal packets — one per selected edge.
+          cx/cy must have numeric defaults so the initial DOM render
+          isn't `cx=""` (Chromium logs an "Unexpected end of attribute"
+          error and React throws on hydration). GSAP overwrites these
+          via attr: { cx, cy } once the boot promise resolves. */}
       {edges.slice(0, 7).map((e, i) => (
         <circle
           key={i}
           className="nn-packet"
+          cx={Number.isFinite(e.x1) ? e.x1 : 0}
+          cy={Number.isFinite(e.y1) ? e.y1 : 0}
           r="2.5"
           fill="#FF7A1A"
           data-path={`${e.x1},${e.y1},${e.x2},${e.y2}`}
@@ -204,23 +211,23 @@ function OrbitRingsImpl({ color }: VisualProps) {
       const rings = root.querySelectorAll<SVGGElement>(".orbit-ring");
       rings.forEach((ring, i) => {
         const dir = i % 2 === 0 ? 1 : -1;
+        gsap.set(ring, { transformOrigin: "200px 200px", svgOrigin: "200 200" });
         gsap.to(ring, {
           rotation: 360 * dir,
           duration: 18 + i * 8,
           ease: "none",
-          repeat: -1,
-          transformOrigin: "200px 200px"
+          repeat: -1
         });
       });
       const core = root.querySelector(".orbit-core");
       if (core) {
+        gsap.set(core, { transformOrigin: "200px 200px", svgOrigin: "200 200" });
         gsap.to(core, {
           scale: 1.15,
           duration: 1.4,
           ease: "sine.inOut",
           yoyo: true,
-          repeat: -1,
-          transformOrigin: "200px 200px"
+          repeat: -1
         });
       }
       // Phone silhouette floats.
@@ -251,7 +258,9 @@ function OrbitRingsImpl({ color }: VisualProps) {
     <svg
       ref={rootRef}
       viewBox="0 0 400 400"
-      className="h-full w-full"
+      className="block aspect-square h-full max-h-full w-full max-w-full"
+      preserveAspectRatio="xMidYMid meet"
+      overflow="visible"
       aria-hidden
     >
       <defs>
@@ -266,14 +275,14 @@ function OrbitRingsImpl({ color }: VisualProps) {
         <circle
           cx="200"
           cy="200"
-          r="170"
+          r="155"
           fill="none"
           stroke={color}
           strokeOpacity="0.25"
           strokeWidth="1"
           strokeDasharray="2 6"
         />
-        {markers(12, 170).map((m, i) => (
+        {markers(12, 155).map((m, i) => (
           <circle
             key={i}
             cx={m.x}
@@ -289,14 +298,14 @@ function OrbitRingsImpl({ color }: VisualProps) {
         <circle
           cx="200"
           cy="200"
-          r="125"
+          r="112"
           fill="none"
           stroke="#FF7A1A"
           strokeOpacity="0.45"
           strokeWidth="1"
           strokeDasharray="4 3"
         />
-        {markers(6, 125).map((m, i) => (
+        {markers(6, 112).map((m, i) => (
           <rect
             key={i}
             x={m.x - 3}
@@ -313,13 +322,13 @@ function OrbitRingsImpl({ color }: VisualProps) {
         <circle
           cx="200"
           cy="200"
-          r="80"
+          r="72"
           fill="none"
           stroke={color}
           strokeOpacity="0.6"
           strokeWidth="1.5"
         />
-        {markers(3, 80).map((m, i) => (
+        {markers(3, 72).map((m, i) => (
           <circle
             key={i}
             cx={m.x}
@@ -366,34 +375,36 @@ function OrbitRingsImpl({ color }: VisualProps) {
           RN
         </text>
       </g>
-      {/* Phone silhouettes */}
-      <g className="orbit-phone" transform="translate(60, 80) rotate(-12)">
+      {/* Phone silhouettes — anchored in opposite corners, well outside
+          the outer ring (r=155 → 45..355), so they read as orbital
+          satellites instead of overlapping the rings. */}
+      <g className="orbit-phone" transform="translate(20, 18) rotate(-14)">
         <rect
           x="0"
           y="0"
-          width="46"
-          height="78"
+          width="42"
+          height="70"
           rx="6"
           fill="#0b0f19"
           stroke={color}
           strokeWidth="1.5"
         />
-        <rect x="6" y="10" width="34" height="54" fill={color} opacity="0.15" />
-        <circle cx="23" cy="72" r="2" fill={color} opacity="0.7" />
+        <rect x="5" y="9" width="32" height="48" fill={color} opacity="0.18" />
+        <circle cx="21" cy="64" r="2" fill={color} opacity="0.75" />
       </g>
-      <g className="orbit-phone" transform="translate(296, 242) rotate(12)">
+      <g className="orbit-phone" transform="translate(338, 312) rotate(14)">
         <rect
           x="0"
           y="0"
-          width="46"
-          height="78"
+          width="42"
+          height="70"
           rx="6"
           fill="#0b0f19"
           stroke="#FF7A1A"
           strokeWidth="1.5"
         />
-        <rect x="6" y="10" width="34" height="54" fill="#FF7A1A" opacity="0.18" />
-        <circle cx="23" cy="72" r="2" fill="#FF7A1A" opacity="0.8" />
+        <rect x="5" y="9" width="32" height="48" fill="#FF7A1A" opacity="0.2" />
+        <circle cx="21" cy="64" r="2" fill="#FF7A1A" opacity="0.85" />
       </g>
     </svg>
   );
@@ -474,7 +485,8 @@ function PipelineImpl({ color }: VisualProps) {
     <svg
       ref={rootRef}
       viewBox="0 0 400 400"
-      className="h-full w-full"
+      className="block aspect-square h-full max-h-full w-full max-w-full"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       {/* Clouds floating above */}
@@ -693,7 +705,8 @@ function BarStackImpl({ color }: VisualProps) {
     <svg
       ref={rootRef}
       viewBox="0 0 400 400"
-      className="h-full w-full"
+      className="block aspect-square h-full max-h-full w-full max-w-full"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       {/* Grid */}
@@ -798,7 +811,7 @@ function BarStackImpl({ color }: VisualProps) {
           strokeDasharray="2 3"
           opacity="0.65"
         />
-        <circle cy="100" r="3" fill="#FF7A1A" />
+        <circle cx="0" cy="100" r="3" fill="#FF7A1A" />
       </g>
       {/* Header */}
       <text
@@ -927,7 +940,8 @@ function ModuleGridImpl({ color }: VisualProps) {
     <svg
       ref={rootRef}
       viewBox="0 0 400 400"
-      className="h-full w-full"
+      className="block aspect-square h-full max-h-full w-full max-w-full"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden
     >
       {/* Grid tiles */}

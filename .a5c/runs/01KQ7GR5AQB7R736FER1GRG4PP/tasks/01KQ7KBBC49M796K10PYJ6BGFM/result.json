@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7KBBC49M796K10PYJ6BGFM",
+  "taskId": "lighthouse-desktop",
+  "invocationKey": "portfolio-perf-responsive:S000008:lighthouse-desktop",
+  "status": "ok",
+  "result": {
+    "accessibility": 100,
+    "bestPractices": 96,
+    "cls": 0.065838,
+    "fcp": 324.5182,
+    "lcp": 893.5546,
+    "performance": 88,
+    "rawScoreFile": "artifacts/lh-desktop-1.json",
+    "recommendations": [
+      "Reduce unused JavaScript ~100ms ~154KB",
+      "Avoid serving legacy JavaScript to modern browsers ~11KB",
+      "Minimize main-thread work",
+      "Avoid enormous network payloads",
+      "Avoid an excessive DOM size"
+    ],
+    "tbt": 258.2227,
+    "totalBlockingTime": 258.2227,
+    "tti": 1574.80963
+  },
+  "startedAt": "2026-04-27T14:05:37.309Z",
+  "finishedAt": "2026-04-27T14:05:37.309Z",
+  "value": {
+    "accessibility": 100,
+    "bestPractices": 96,
+    "cls": 0.065838,
+    "fcp": 324.5182,
+    "lcp": 893.5546,
+    "performance": 88,
+    "rawScoreFile": "artifacts/lh-desktop-1.json",
+    "recommendations": [
+      "Reduce unused JavaScript ~100ms ~154KB",
+      "Avoid serving legacy JavaScript to modern browsers ~11KB",
+      "Minimize main-thread work",
+      "Avoid enormous network payloads",
+      "Avoid an excessive DOM size"
+    ],
+    "tbt": 258.2227,
+    "totalBlockingTime": 258.2227,
+    "tti": 1574.80963
+  }
+}

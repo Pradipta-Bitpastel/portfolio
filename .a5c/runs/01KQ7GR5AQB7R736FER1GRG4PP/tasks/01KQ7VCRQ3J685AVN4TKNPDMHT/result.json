@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7VCRQ3J685AVN4TKNPDMHT",
+  "taskId": "final-report",
+  "invocationKey": "portfolio-perf-responsive:S000027:final-report",
+  "status": "ok",
+  "result": {
+    "historyPath": "artifacts/perf-responsive-history.json",
+    "reportPath": "artifacts/perf-responsive-report.md",
+    "summary": "Portfolio perf + responsive optimization converged at iteration 3. Desktop LH 99 (+9), Mobile LH 97 (+22), E2E 18/18, Visual 88 (+8). All targets exceeded. ~33 files changed across perf-tier hardening, 3D scene optimization, GSAP simplification, responsive layout fixes, cross-browser fixes, and iterative refinement.",
+    "verdict": "converged"
+  },
+  "startedAt": "2026-04-27T16:13:44.048Z",
+  "finishedAt": "2026-04-27T16:13:44.048Z",
+  "value": {
+    "historyPath": "artifacts/perf-responsive-history.json",
+    "reportPath": "artifacts/perf-responsive-report.md",
+    "summary": "Portfolio perf + responsive optimization converged at iteration 3. Desktop LH 99 (+9), Mobile LH 97 (+22), E2E 18/18, Visual 88 (+8). All targets exceeded. ~33 files changed across perf-tier hardening, 3D scene optimization, GSAP simplification, responsive layout fixes, cross-browser fixes, and iterative refinement.",
+    "verdict": "converged"
+  }
+}

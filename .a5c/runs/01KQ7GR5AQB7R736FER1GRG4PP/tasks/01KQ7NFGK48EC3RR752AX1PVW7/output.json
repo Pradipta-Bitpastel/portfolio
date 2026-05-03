@@ -1,0 +1,13 @@
+{
+  "passed": 18,
+  "failed": 0,
+  "total": 18,
+  "projects": [
+    {"name": "chromium", "passed": 6, "failed": 0},
+    {"name": "firefox", "passed": 6, "failed": 0},
+    {"name": "webkit", "passed": 6, "failed": 0}
+  ],
+  "failures": [],
+  "consoleErrors": [],
+  "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200."
+}

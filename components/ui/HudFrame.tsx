@@ -113,15 +113,16 @@ export function HudFrame() {
       <Ticks edge="top" />
       <Ticks edge="bottom" />
 
-      {/* Top-left: DEV.OS */}
-      <div className="absolute left-4 top-4 z-50 font-mono text-[9px] uppercase tracking-[0.28em] text-ink-dim md:left-8 md:top-8 md:text-[10px] md:tracking-[0.32em]">
+      {/* Top-left: DEV.OS — hidden on small (<=768px) so the mobile
+          progress strip + section number don't compete with it. */}
+      <div className="absolute left-4 top-4 z-50 hidden font-mono text-[9px] uppercase tracking-[0.28em] text-ink-dim md:left-8 md:top-8 md:flex md:text-[10px] md:tracking-[0.32em]">
         <span className="text-[#FF7A1A]">DEV.OS</span>
         <span className="mx-1 opacity-40">{"//"}</span>
         <span>v14.2.0</span>
       </div>
 
-      {/* Top-right: clock (+ uptime on md+) */}
-      <div className="absolute right-4 top-4 z-50 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.28em] text-ink-dim md:right-8 md:top-8 md:text-[10px] md:tracking-[0.32em]">
+      {/* Top-right: clock (+ uptime on md+) — hidden on <=768px. */}
+      <div className="absolute right-4 top-4 z-50 hidden items-center gap-3 font-mono text-[9px] uppercase tracking-[0.28em] text-ink-dim md:right-8 md:top-8 md:flex md:text-[10px] md:tracking-[0.32em]">
         <span>{clock ? formatClock(clock) : "--:--:-- UTC"}</span>
         <span className="hidden opacity-40 md:inline">{"//"}</span>
         <span className="hidden text-[#FF7A1A] md:inline">UPTIME 99.982%</span>

@@ -1,0 +1,13 @@
+{
+  "runId": "01KQ7GR5AQB7R736FER1GRG4PP",
+  "request": "portfolio-perf-responsive",
+  "processId": "portfolio-perf-responsive",
+  "entrypoint": {
+    "importPath": "../../processes/portfolio-perf-responsive.js",
+    "exportName": "process"
+  },
+  "processPath": "../../processes/portfolio-perf-responsive.js",
+  "layoutVersion": "2026.01-storage-preview",
+  "createdAt": "2026-04-27T13:06:08.864Z",
+  "completionProof": "1f1ee0bf88914dc9ae0c44f85dac3761"
+}

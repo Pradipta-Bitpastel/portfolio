@@ -1,36 +1,20 @@
 "use client";
 
 /**
- * Atmosphere — fixed overlays for film grain + CRT scanlines.
- * Two pointer-events-none divs sitting at z-[60] above the canvas
- * but below the HUD frame labels. Inline SVG for grain so there's
- * no extra network request.
+ * Atmosphere — fixed overlay for CRT scanlines.
+ *
+ * Phase 5 cross-browser audit: the previous SVG `feTurbulence` grain
+ * layer (with mix-blend-mode: overlay) was a known leak path on
+ * Firefox-mobile + older Edge — feTurbulence is CPU-rendered in Gecko
+ * and the inline data-URL grew the document size on every paint. We
+ * dropped it entirely; if a noise overlay is wanted again, it should
+ * live in globals.css behind `@media (min-width: 1280px) and
+ * (hover: hover)` so it only runs on capable desktops.
  */
-
-const GRAIN_SVG = encodeURIComponent(
-  `<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'>
-    <filter id='n'>
-      <feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/>
-      <feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/>
-    </filter>
-    <rect width='100%' height='100%' filter='url(#n)' opacity='1'/>
-  </svg>`
-);
 
 export function Atmosphere() {
   return (
     <>
-      {/* Film grain */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-[60]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml;utf8,${GRAIN_SVG}")`,
-          backgroundSize: "200px 200px",
-          mixBlendMode: "overlay",
-          opacity: 0.12
-        }}
-      />
       {/* Scanlines — 1px transparent / 2px faint-white, repeating */}
       <div
         aria-hidden

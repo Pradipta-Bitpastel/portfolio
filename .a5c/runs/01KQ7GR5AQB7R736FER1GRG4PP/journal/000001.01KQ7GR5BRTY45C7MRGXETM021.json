@@ -1,0 +1,14 @@
+{
+  "type": "RUN_CREATED",
+  "recordedAt": "2026-04-27T13:06:08.888Z",
+  "data": {
+    "runId": "01KQ7GR5AQB7R736FER1GRG4PP",
+    "processId": "portfolio-perf-responsive",
+    "entrypoint": {
+      "importPath": "../../processes/portfolio-perf-responsive.js",
+      "exportName": "process"
+    },
+    "inputsRef": "inputs.json"
+  },
+  "checksum": "4839c3bc896a8777fb927a88dc2ff08cc637f5b75b929db7712f70aea03372cd"
+}

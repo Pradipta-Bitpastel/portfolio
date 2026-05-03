@@ -2,7 +2,7 @@
 
 import { memo, useRef, type FormEvent } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, registerAll, hasPlugin } from "@/lib/gsap";
+import { gsap, registerAll } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { profile } from "@/content/profile";
@@ -15,20 +15,6 @@ import { SectionFrame } from "@/components/ui/SectionFrame";
  * Scene: glow pulse + module disperse (core position owned by
  * SceneDock → center-small).
  */
-
-function splitChars(el: HTMLElement): HTMLSpanElement[] {
-  const text = el.textContent ?? "";
-  el.textContent = "";
-  const spans: HTMLSpanElement[] = [];
-  for (const ch of Array.from(text)) {
-    const span = document.createElement("span");
-    span.className = "inline-block will-change-transform";
-    span.textContent = ch === " " ? "\u00a0" : ch;
-    el.appendChild(span);
-    spans.push(span);
-  }
-  return spans;
-}
 
 function ContactSectionImpl() {
   const rootRef = useRef<HTMLElement>(null);
@@ -45,32 +31,20 @@ function ContactSectionImpl() {
         await registerAll();
         if (cancelled) return;
 
-        // Headline per-char reveal
+        // Headline reveal — simple fade. Per-char split caused "P" to drop
+        // because the SplitText plugin path interacted badly with the literal
+        // " // " (space-slash-slash-space) tokenization. Plain block-level
+        // fade is reliable and the headline is short enough that staggered
+        // chars do not add meaningful polish here.
         const headline = headlineRef.current;
         if (headline) {
-          let spans: Element[] | null = null;
-          if (hasPlugin("SplitText")) {
-            try {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const SplitText = (gsap as any).core?.globals?.()?.SplitText;
-              if (SplitText) {
-                const split = new SplitText(headline, { type: "chars" });
-                spans = split.chars as Element[];
-              }
-            } catch {
-              /* ignore */
-            }
-          }
-          if (!spans) spans = splitChars(headline);
-
           gsap.fromTo(
-            spans,
-            { y: 40, opacity: 0 },
+            headline,
+            { y: 28, opacity: 0 },
             {
               y: 0,
               opacity: 1,
-              duration: 0.6,
-              stagger: 0.02,
+              duration: 0.7,
               ease: "power2.out",
               scrollTrigger: {
                 trigger: rootRef.current,
@@ -205,20 +179,24 @@ function ContactSectionImpl() {
       {/* Giant "06" top-left, amber — inside the frame */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.95] md:block lg:text-[14rem]"
-        style={{ color: "#FF7A1A", letterSpacing: "-0.02em" }}
+        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
+        style={{
+          color: "#FF7A1A",
+          letterSpacing: "-0.02em",
+          fontSize: "clamp(6rem,12vw,14rem)"
+        }}
       >
         06
       </div>
 
-      {/* Ping rings */}
+      {/* Ping rings — fluid sizing so it never clips on 375px viewports.
+          aspect-square + max-w-md keeps the rings centered and uniform. */}
       <svg
         ref={ringsRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-60"
-        width="420"
-        height="420"
+        className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-full max-w-md -translate-x-1/2 -translate-y-1/2 opacity-60"
         viewBox="0 0 420 420"
+        preserveAspectRatio="xMidYMid meet"
       >
         <g fill="none" stroke="#FF7A1A" strokeWidth="1.2">
           <circle className="ping-ring" cx="210" cy="210" r="20" />
@@ -234,13 +212,29 @@ function ContactSectionImpl() {
           <span>AWAITING_SIGNAL...</span>
         </div>
 
+        {/* Headline. At 375px the previous clamp(2.75rem, 10vw, …) was
+            still too big and "THE_CORE" wrapped mid-word ("THE_CO\nRE")
+            because the splitChars routine puts every character into a
+            non-breaking inline-block. We now:
+              - drop the lower clamp bound so it shrinks to ~2rem on
+                <380px viewports,
+              - replace the whitespace around "//" with non-breaking
+                spaces so "PING" and "THE_CORE" stay atomic and the
+                line breaks ONLY between the two words if at all,
+              - hint hyphens/word-break to keep the "THE_CORE" token
+                indivisible. */}
         <h2
           ref={headlineRef}
           id="contact-heading"
           className="font-display leading-[0.88] tracking-[-0.035em] text-ink"
-          style={{ fontWeight: 800, fontSize: "clamp(2.75rem,10vw,9rem)" }}
+          style={{
+            fontWeight: 800,
+            fontSize: "clamp(1.75rem,7vw,5rem)",
+            overflowWrap: "normal",
+            hyphens: "manual"
+          }}
         >
-          PING // THE_CORE
+          {"PING // THE_CORE"}
         </h2>
 
         <p className="max-w-[50ch] font-mono text-sm leading-relaxed text-ink-dim">

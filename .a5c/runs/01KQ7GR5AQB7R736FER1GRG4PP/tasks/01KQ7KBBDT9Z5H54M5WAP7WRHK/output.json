@@ -1,0 +1,65 @@
+{
+  "passed": 12,
+  "failed": 6,
+  "total": 18,
+  "projects": [
+    {
+      "name": "chromium",
+      "passed": 0,
+      "failed": 6
+    },
+    {
+      "name": "firefox",
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "name": "webkit",
+      "passed": 6,
+      "failed": 0
+    }
+  ],
+  "failures": [
+    {
+      "title": "responsive.spec.ts > viewport iphone-se 375x812 > loads, no overflow, no console errors",
+      "project": "chromium",
+      "viewport": "375x812",
+      "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E"
+    },
+    {
+      "title": "responsive.spec.ts > viewport iphone-11 414x896 > loads, no overflow, no console errors",
+      "project": "chromium",
+      "viewport": "414x896",
+      "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E"
+    },
+    {
+      "title": "responsive.spec.ts > viewport ipad 768x1024 > loads, no overflow, no console errors",
+      "project": "chromium",
+      "viewport": "768x1024",
+      "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E"
+    },
+    {
+      "title": "responsive.spec.ts > viewport ipad-land 1024x768 > loads, no overflow, no console errors",
+      "project": "chromium",
+      "viewport": "1024x768",
+      "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E"
+    },
+    {
+      "title": "responsive.spec.ts > viewport laptop 1280x800 > loads, no overflow, no console errors",
+      "project": "chromium",
+      "viewport": "1280x800",
+      "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E"
+    },
+    {
+      "title": "responsive.spec.ts > viewport desktop 1920x1080 > loads, no overflow, no console errors",
+      "project": "chromium",
+      "viewport": "1920x1080",
+      "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E"
+    }
+  ],
+  "consoleErrors": [
+    "console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\".",
+    "console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\"."
+  ],
+  "summary": "12 passed / 6 failed across 6 viewports x 3 browsers (chromium, firefox, webkit). Failures isolated to chromium only due to SVG <circle> cx/cy parse errors (empty/NaN coordinates)."
+}

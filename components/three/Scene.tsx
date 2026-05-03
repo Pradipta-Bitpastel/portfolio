@@ -3,13 +3,8 @@
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import {
-  EffectComposer,
-  Bloom,
-  Vignette,
-  ChromaticAberration,
-} from "@react-three/postprocessing";
-import { readPerfTier } from "@/lib/usePerfTier";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { readPerfTier, useDeviceCapabilities } from "@/lib/usePerfTier";
 import { CameraController } from "./CameraController";
 import { Lights } from "./Lights";
 import { DevStation } from "./DevStation";
@@ -17,7 +12,6 @@ import { Modules } from "./Modules";
 import { ConnectionLines } from "./ConnectionLines";
 import { TimelineRing } from "./TimelineRing";
 import { GroundReflector } from "./GroundReflector";
-import { SceneChromaticController } from "./SceneChromaticController";
 import { useCursor, isCursorReduced } from "@/lib/useCursor";
 
 /**
@@ -72,13 +66,21 @@ function CursorLight() {
  * Full Developer Control Core composition. Kept as a sibling to
  * _Scene so tests can import the graph without the Canvas wrapper.
  *
- * `perfLow` drops the EffectComposer (Bloom + ChromaticAberration +
- * Vignette) entirely — post-processing is per-pixel and is the
- * single most expensive thing in this scene on integrated GPUs.
- * The Bloom-free version still reads as "glowy" because the meshes
- * use additive emissive materials; it just loses the halo spill.
+ * Postprocessing is the single most expensive thing on integrated
+ * GPUs. We render the EffectComposer (Bloom only — ChromaticAberration
+ * and Vignette were dropped) ONLY on confirmed-high desktops that
+ * aren't on Windows. The Bloom-free version still reads as "glowy"
+ * because the meshes use additive emissive materials; it just loses
+ * the halo spill — that's the intentional fallback look.
  */
 export function Scene({ perfLow = false }: { perfLow?: boolean }) {
+  const { tier, gpuTier, isLowEnd, isWindows } = useDeviceCapabilities();
+  const enablePost =
+    !perfLow &&
+    !isLowEnd &&
+    tier === "high" &&
+    gpuTier === "high" &&
+    !isWindows;
   return (
     <Suspense fallback={null}>
       <CameraController />
@@ -89,7 +91,7 @@ export function Scene({ perfLow = false }: { perfLow?: boolean }) {
       <Modules />
       <ConnectionLines />
       <TimelineRing />
-      {!perfLow && (
+      {enablePost && (
         <EffectComposer enableNormalPass={false}>
           <Bloom
             mipmapBlur
@@ -98,13 +100,6 @@ export function Scene({ perfLow = false }: { perfLow?: boolean }) {
             luminanceSmoothing={0.2}
             radius={0.8}
           />
-          <ChromaticAberration
-            offset={new THREE.Vector2(0.0006, 0.0006)}
-            radialModulation={false}
-            modulationOffset={0}
-          />
-          <SceneChromaticController />
-          <Vignette eskil={false} offset={0.1} darkness={0.7} />
         </EffectComposer>
       )}
     </Suspense>

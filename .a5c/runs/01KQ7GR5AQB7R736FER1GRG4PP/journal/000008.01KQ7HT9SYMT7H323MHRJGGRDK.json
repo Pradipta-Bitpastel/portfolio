@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:24:47.550Z",
+  "data": {
+    "effectId": "01KQ7HT9S2QCVXXYG70WMA0CNB",
+    "invocationKey": "portfolio-perf-responsive:S000004:animation-optimize",
+    "invocationHash": "1096fdc7e455ba4cec3a1e91831c22db72939251dc4584d955c359fc3f1981f2",
+    "stepId": "S000004",
+    "taskId": "animation-optimize",
+    "kind": "agent",
+    "label": "Optimize GSAP / animation cost on low-tier devices",
+    "taskDefRef": "tasks/01KQ7HT9S2QCVXXYG70WMA0CNB/task.json"
+  },
+  "checksum": "1591f76a6e4e4f9c57a9f6e01a980eb40743c33181296fc7abf0da0e582481b4"
+}

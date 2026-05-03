@@ -1,0 +1,11 @@
+{
+  "filesChanged": [
+    "lib/usePerfTier.ts",
+    "lib/useIsMobile.ts",
+    "components/three/SceneContainer.tsx"
+  ],
+  "typecheckOk": true,
+  "buildOk": true,
+  "summary": "Hardened device-capability detection with the AGGRESSIVE strategy. usePerfTier now lifts the cores threshold from <4 to <6, adds a cached getGPUTier() probe (offscreen canvas + WEBGL_debug_renderer_info, regex-matches SwiftShader/llvmpipe/Microsoft Basic Render/Mesa/VirtualBox/software/ANGLE software), adds a fire-and-forget Battery API probe, flags Windows UA + cores<8 as low, and exports a new useDeviceCapabilities() hook returning {tier,isMobile,isTouch,gpuTier,prefersReducedMotion,isWindows,saveData,isLowEnd}. useIsMobile widens to viewport<=1024 plus the same low-end signals (cores<6, deviceMemory<4, reduced-motion, gpuTier low, save-data, coarse pointer). SceneContainer now consumes useDeviceCapabilities() and falls back to SvgCoreFallback when isMobile/tier=low/gpuTier=low; the dynamic <Scene/> is wrapped in a local WebGLErrorBoundary class component that swaps to the SVG fallback if context creation throws. All browser API access is SSR-safe; existing usePerfTier/readPerfTier/default exports are preserved. typecheck and next build both pass clean.",
+  "newApis": ["useDeviceCapabilities", "getGPUTier"]
+}

@@ -12,22 +12,44 @@ import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   useGLTF,
-  Environment,
-  ContactShadows,
   Html,
   useProgress,
   OrbitControls,
   Bounds,
   useBounds
 } from "@react-three/drei";
-import {
-  EffectComposer,
-  Bloom,
-  Vignette
-} from "@react-three/postprocessing";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger, registerAll } from "@/lib/gsap";
-import { readPerfTier } from "@/lib/usePerfTier";
+import { useDeviceCapabilities, readPerfTier, getGPUTier } from "@/lib/usePerfTier";
+
+/**
+ * Build a ScrollTrigger that pauses any GSAP tweens passed in when the
+ * hero is off-screen and resumes them when it re-enters. Cuts the
+ * background tween cost to ~zero once the user scrolls past the hero.
+ */
+function pauseTweensOnExit(
+  tweens: Array<gsap.core.Tween | gsap.core.Timeline>,
+  triggers: ScrollTrigger[]
+) {
+  if (typeof document === "undefined") return;
+  const heroSection = document.getElementById("hero");
+  if (!heroSection) return;
+  const t = ScrollTrigger.create({
+    trigger: heroSection,
+    start: "top bottom",
+    end: "bottom top",
+    onLeave: () => tweens.forEach((tw) => tw.pause()),
+    onLeaveBack: () => tweens.forEach((tw) => tw.pause()),
+    onEnter: () => tweens.forEach((tw) => tw.resume()),
+    onEnterBack: () => tweens.forEach((tw) => tw.resume())
+  });
+  triggers.push(t);
+}
+
+// TODO(perf): public/models/elven-warrior.glb is 22MB — too heavy for
+// Vercel free tier first paint. We currently load pc.glb (~4.5MB) here.
+// If the elven warrior is ever swapped back in, run gltfpack -tc on it
+// and gate the load behind `tier === 'high' && !isWindows`.
 
 /**
  * HeroWarrior — hero-section local 3D viewport.
@@ -73,22 +95,37 @@ function WarriorMesh() {
     root.traverse((child) => {
       const mesh = child as THREE.Mesh;
       if (!mesh.isMesh) return;
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      const mat = mesh.material as THREE.MeshStandardMaterial | undefined;
-      if (!mat) return;
-      if ("envMapIntensity" in mat) {
-        mat.envMapIntensity = 1.35;
-      }
-      // Push monitor / screen-like surfaces into emissive territory so
-      // bloom catches them — heuristic: any material whose name hints
-      // at "screen" / "display" / "monitor" / "led", or is already
-      // emissive, gets a stronger emissive boost.
-      const name = (mat.name || mesh.name || "").toLowerCase();
-      const screenish =
-        /screen|display|monitor|led|emit|glow|light/.test(name);
-      if (screenish && "emissiveIntensity" in mat) {
-        mat.emissiveIntensity = Math.max(mat.emissiveIntensity ?? 1, 2.4);
+      // No shadows — Canvas runs with shadows={false} now to avoid the
+      // shadowmap render pass entirely on integrated GPUs.
+      mesh.castShadow = false;
+      mesh.receiveShadow = false;
+      const original = mesh.material as
+        | THREE.MeshStandardMaterial
+        | THREE.MeshStandardMaterial[]
+        | undefined;
+      if (!original) return;
+      // Clone the material before mutation. Under React StrictMode
+      // (`reactStrictMode: true` in next.config.mjs) the GLTF is parsed
+      // twice and any in-place mutation hits the second pass with an
+      // already-mutated material — values stack and materials are
+      // shared across mesh instances. Cloning isolates each instance.
+      const cloneOne = (mat: THREE.MeshStandardMaterial) => {
+        const clone = mat.clone();
+        if ("envMapIntensity" in clone) {
+          clone.envMapIntensity = 1.35;
+        }
+        const name = (clone.name || mesh.name || "").toLowerCase();
+        const screenish =
+          /screen|display|monitor|led|emit|glow|light/.test(name);
+        if (screenish && "emissiveIntensity" in clone) {
+          clone.emissiveIntensity = Math.max(clone.emissiveIntensity ?? 1, 2.4);
+        }
+        return clone;
+      };
+      if (Array.isArray(original)) {
+        mesh.material = original.map(cloneOne);
+      } else {
+        mesh.material = cloneOne(original);
       }
     });
     return root;
@@ -222,26 +259,21 @@ function LoaderReadout() {
   );
 }
 
-function WarriorScene({ isLow }: { isLow: boolean }) {
+function WarriorScene() {
   const controlsRef = useRef<{ autoRotateSpeed: number } | null>(null);
   return (
     <>
       {/* Cool fill — sets the dark-cyan ambient floor */}
-      <ambientLight intensity={0.35} color="#3A5A8C" />
-      {/* Key light — warm amber from front-right, casts shadows */}
+      <ambientLight intensity={0.55} color="#3A5A8C" />
+      {/* Hemisphere fill — replaces the dropped Environment preset */}
+      <hemisphereLight
+        args={["#FFB066", "#0A1020", 0.5]}
+      />
+      {/* Key light — warm amber from front-right (no shadows). */}
       <directionalLight
         position={[4.0, 5.2, 3.5]}
         intensity={3.2}
         color="#FFB066"
-        castShadow={!isLow}
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-near={0.5}
-        shadow-camera-far={20}
-        shadow-camera-left={-4}
-        shadow-camera-right={4}
-        shadow-camera-top={4}
-        shadow-camera-bottom={-4}
       />
       {/* Cyan rim — back-left, separates rig from background */}
       <directionalLight
@@ -273,15 +305,6 @@ function WarriorScene({ isLow }: { isLow: boolean }) {
         <WarriorMesh />
       </AutoFit>
       <HoloPlinth />
-      <ContactShadows
-        position={[0, -1.1, 0]}
-        opacity={0.7}
-        scale={7}
-        blur={2.4}
-        far={4}
-        color="#000"
-      />
-      <Environment preset="city" />
       <CameraRig controlsRef={controlsRef} />
       <OrbitControls
         ref={(node) => {
@@ -315,7 +338,15 @@ function OrbitalBackdrop() {
   useGSAP(
     () => {
       if (!rootRef.current) return;
+      // Low-end: drop entirely. The 4 infinite rotate + 22 dot pulse
+      // tweens all running forever even when the hero is off-screen
+      // were a sustained CPU drain on integrated GPUs.
+      if (readPerfTier() === "low" || getGPUTier() === "low") return;
+
       let cancelled = false;
+      const tweens: Array<gsap.core.Tween> = [];
+      const triggers: ScrollTrigger[] = [];
+
       void (async () => {
         await registerAll();
         if (cancelled || !rootRef.current) return;
@@ -328,59 +359,68 @@ function OrbitalBackdrop() {
         const dots = root.querySelectorAll<SVGCircleElement>(".bd-dot");
 
         if (outer)
-          gsap.to(outer, {
-            rotation: 360,
-            duration: 60,
-            ease: "none",
-            repeat: -1,
-            transformOrigin: "200px 200px"
-          });
+          tweens.push(
+            gsap.to(outer, {
+              rotation: 360,
+              duration: 60,
+              ease: "none",
+              repeat: -1,
+              transformOrigin: "200px 200px"
+            })
+          );
         if (mid)
-          gsap.to(mid, {
-            rotation: -360,
-            duration: 38,
-            ease: "none",
-            repeat: -1,
-            transformOrigin: "200px 200px"
-          });
+          tweens.push(
+            gsap.to(mid, {
+              rotation: -360,
+              duration: 38,
+              ease: "none",
+              repeat: -1,
+              transformOrigin: "200px 200px"
+            })
+          );
         if (inner)
-          gsap.to(inner, {
-            rotation: 360,
-            duration: 22,
-            ease: "none",
-            repeat: -1,
-            transformOrigin: "200px 200px"
-          });
+          tweens.push(
+            gsap.to(inner, {
+              rotation: 360,
+              duration: 22,
+              ease: "none",
+              repeat: -1,
+              transformOrigin: "200px 200px"
+            })
+          );
         if (sweep)
-          gsap.to(sweep, {
-            rotation: 360,
-            duration: 6,
-            ease: "none",
-            repeat: -1,
-            transformOrigin: "200px 200px"
-          });
+          tweens.push(
+            gsap.to(sweep, {
+              rotation: 360,
+              duration: 6,
+              ease: "none",
+              repeat: -1,
+              transformOrigin: "200px 200px"
+            })
+          );
 
         dots.forEach((d, i) => {
-          gsap.to(d, {
-            opacity: 0.15,
-            duration: 1.4 + (i % 4) * 0.3,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-            delay: i * 0.07
-          });
+          tweens.push(
+            gsap.to(d, {
+              opacity: 0.15,
+              duration: 1.4 + (i % 4) * 0.3,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+              delay: i * 0.07
+            })
+          );
         });
 
-        // Note: scroll-coupled rotation is handled inside the Canvas
-        // via auto-rotate speed + FOV (CameraRig). The SVG rings
-        // already loop continuously above; layering a second
-        // ScrollTrigger tween on the same `rotation` would overwrite
-        // those loops. The continuous rings + the canvas-driven
-        // scroll feedback together read as "everything moves faster
-        // when you scroll" without conflict.
+        // Pause every tween once the hero leaves the viewport; resume
+        // when it comes back. Saves ~26 simultaneous infinite tweens
+        // for the entire rest of the page.
+        pauseTweensOnExit(tweens, triggers);
       })();
       return () => {
         cancelled = true;
+        tweens.forEach((tw) => tw.kill());
+        triggers.forEach((t) => t.kill());
       };
     },
     { scope: rootRef, dependencies: [] }
@@ -550,22 +590,22 @@ const TECH_CHIPS: ReadonlyArray<{
 }> = [
   {
     label: "REACT",
-    pos: { top: "12%", left: "-2%" },
+    pos: { top: "12%", left: "2%" },
     color: "#4F9CFF"
   },
   {
     label: "NEXT.JS",
-    pos: { top: "8%", right: "-2%" },
+    pos: { top: "8%", right: "2%" },
     color: "#FF7A1A"
   },
   {
     label: "GSAP",
-    pos: { bottom: "18%", left: "-2%" },
+    pos: { bottom: "18%", left: "2%" },
     color: "#3FE8B4"
   },
   {
     label: "THREE.JS",
-    pos: { bottom: "14%", right: "-2%" },
+    pos: { bottom: "14%", right: "2%" },
     color: "#A78BFA"
   }
 ];
@@ -578,6 +618,9 @@ function TechChips() {
       if (!rootRef.current) return;
       const chips = rootRef.current.querySelectorAll<HTMLElement>(".tech-chip");
       gsap.set(chips, { autoAlpha: 0, scale: 0.6, y: 20 });
+
+      const idleTweens: Array<gsap.core.Tween> = [];
+      const triggers: ScrollTrigger[] = [];
 
       void (async () => {
         await registerAll();
@@ -596,16 +639,24 @@ function TechChips() {
 
         // Idle bob — each chip floats Y±6px at its own period
         chips.forEach((c, i) => {
-          gsap.to(c, {
-            y: i % 2 === 0 ? -8 : 8,
-            duration: 2.6 + i * 0.4,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-            delay: i * 0.2
-          });
+          idleTweens.push(
+            gsap.to(c, {
+              y: i % 2 === 0 ? -8 : 8,
+              duration: 2.6 + i * 0.4,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+              delay: i * 0.2
+            })
+          );
         });
+
+        pauseTweensOnExit(idleTweens, triggers);
       })();
+      return () => {
+        idleTweens.forEach((tw) => tw.kill());
+        triggers.forEach((t) => t.kill());
+      };
     },
     { scope: rootRef, dependencies: [] }
   );
@@ -629,6 +680,8 @@ function TechChips() {
               color: chip.color,
               boxShadow: `0 0 18px ${chip.color}33, inset 0 0 10px ${chip.color}11`,
               clipPath:
+                "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
+              WebkitClipPath:
                 "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)"
             }}
           >
@@ -674,6 +727,9 @@ function StatBars() {
       gsap.set(fills, { scaleX: 0, transformOrigin: "left center" });
       gsap.set(counters, { textContent: 0 });
 
+      const idleTweens: Array<gsap.core.Tween> = [];
+      const triggers: ScrollTrigger[] = [];
+
       void (async () => {
         await registerAll();
         if (!rootRef.current) return;
@@ -701,16 +757,24 @@ function StatBars() {
             }
           );
           // Live shimmer ±1.5%
-          gsap.to(fills[i], {
-            scaleX: `+=${(Math.random() * 0.03 - 0.015).toFixed(3)}`,
-            duration: 2 + Math.random(),
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-            delay: 2.5 + i * 0.3
-          });
+          idleTweens.push(
+            gsap.to(fills[i], {
+              scaleX: `+=${(Math.random() * 0.03 - 0.015).toFixed(3)}`,
+              duration: 2 + Math.random(),
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: -1,
+              delay: 2.5 + i * 0.3
+            })
+          );
         });
+
+        pauseTweensOnExit(idleTweens, triggers);
       })();
+      return () => {
+        idleTweens.forEach((tw) => tw.kill());
+        triggers.forEach((t) => t.kill());
+      };
     },
     { scope: rootRef, dependencies: [] }
   );
@@ -718,7 +782,7 @@ function StatBars() {
   return (
     <div
       ref={rootRef}
-      className="pointer-events-none absolute right-3 top-1/2 z-30 flex w-[clamp(120px,14vw,170px)] -translate-y-1/2 flex-col gap-2.5"
+      className="pointer-events-none absolute right-3 top-1/2 z-30 hidden w-[clamp(120px,14vw,170px)] -translate-y-1/2 flex-col gap-2.5 lg:flex"
     >
       {STATS.map((s) => (
         <div key={s.label} className="flex flex-col gap-1">
@@ -755,23 +819,67 @@ function CoordReadout() {
 
   useEffect(() => {
     let raf = 0;
+    let frame = 0;
+    let active = true;
+    let triggers: ScrollTrigger[] = [];
+
     const tick = () => {
-      const s = warriorState.scrollProgress;
-      const e = warriorState.entryProgress;
-      const az = (s * 360).toFixed(1);
-      const alt = (e * 90 - s * 12).toFixed(1);
-      const fps = (58 + Math.sin(performance.now() * 0.002) * 1.7).toFixed(1);
-      if (azRef.current) azRef.current.textContent = `${az}°`;
-      if (altRef.current) altRef.current.textContent = `${alt}°`;
-      if (fpsRef.current) fpsRef.current.textContent = fps;
+      // Update only every 4th rAF tick (~15Hz at 60fps). The readout
+      // is a HUD vibe element — sub-60Hz precision is invisible to
+      // the user and saves three layout writes per frame.
+      if (active && (frame++ % 4 === 0)) {
+        const s = warriorState.scrollProgress;
+        const e = warriorState.entryProgress;
+        const az = (s * 360).toFixed(1);
+        const alt = (e * 90 - s * 12).toFixed(1);
+        const fps = (58 + Math.sin(performance.now() * 0.002) * 1.7).toFixed(
+          1
+        );
+        if (azRef.current) azRef.current.textContent = `${az}°`;
+        if (altRef.current) altRef.current.textContent = `${alt}°`;
+        if (fpsRef.current) fpsRef.current.textContent = fps;
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+
+    // Pause the rAF loop when hero leaves viewport.
+    void (async () => {
+      await registerAll();
+      const heroSection =
+        typeof document !== "undefined"
+          ? document.getElementById("hero")
+          : null;
+      if (!heroSection) return;
+      const t = ScrollTrigger.create({
+        trigger: heroSection,
+        start: "top bottom",
+        end: "bottom top",
+        onLeave: () => {
+          active = false;
+        },
+        onLeaveBack: () => {
+          active = false;
+        },
+        onEnter: () => {
+          active = true;
+        },
+        onEnterBack: () => {
+          active = true;
+        }
+      });
+      triggers.push(t);
+    })();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      triggers.forEach((t) => t.kill());
+      triggers = [];
+    };
   }, []);
 
   return (
-    <div className="pointer-events-none absolute bottom-3 left-3 z-30 grid grid-cols-2 gap-x-4 gap-y-0.5 font-mono text-[9px] uppercase tracking-[0.28em] text-ink-dim">
+    <div className="pointer-events-none absolute bottom-3 left-3 z-30 hidden grid-cols-2 gap-x-4 gap-y-0.5 font-mono text-[9px] uppercase tracking-[0.28em] text-ink-dim lg:grid">
       <span className="text-[#FF7A1A] opacity-70">AZ</span>
       <span ref={azRef} className="text-ink">0.0°</span>
       <span className="text-[#FF7A1A] opacity-70">ALT</span>
@@ -839,8 +947,20 @@ function HeroWarriorImpl() {
     };
   }, [mounted]);
 
-  const tier = mounted ? readPerfTier() : "high";
-  const isLow = tier === "low";
+  const caps = useDeviceCapabilities();
+  // Audit finding #1: two simultaneous R3F Canvas instances (this one
+  // + the global SceneContainer Canvas) is the #1 cause of Windows /
+  // Firefox crashes and Vercel-tier lag. We now gate the local Canvas
+  // behind a strict desktop-high check; everywhere else (mobile, low
+  // tier, Windows, software GPU) we render only the cinematic SVG /
+  // HUD overlays — they already read as a "rig" without the model.
+  const enable3D =
+    mounted &&
+    caps.tier === "high" &&
+    !caps.isLowEnd &&
+    !caps.isWindows &&
+    !caps.isMobile &&
+    caps.gpuTier === "high";
 
   return (
     <div
@@ -866,38 +986,67 @@ function HeroWarriorImpl() {
         <OrbitalBackdrop />
       </div>
 
-      {/* 1: transparent Canvas */}
-      <div className="absolute inset-0 z-10 cursor-grab active:cursor-grabbing">
-        {mounted && (
+      {/* 1: transparent Canvas — desktop-high only */}
+      {enable3D ? (
+        <div className="absolute inset-0 z-10 cursor-grab active:cursor-grabbing">
           <Canvas
-            shadows={!isLow}
-            dpr={isLow ? [1, 1.25] : [1, 1.6]}
+            shadows={false}
+            dpr={[1, 1.5]}
             camera={{ position: [2.4, 1.6, 4.6], fov: 34 }}
             gl={{
               alpha: true,
-              antialias: !isLow,
-              powerPreference: "high-performance"
+              antialias: true,
+              powerPreference: "default",
+              stencil: false,
+              depth: true
             }}
             performance={{ min: 0.4 }}
           >
             <Suspense fallback={<LoaderReadout />}>
-              <WarriorScene isLow={isLow} />
+              <WarriorScene />
             </Suspense>
-            {!isLow && (
-              <EffectComposer enableNormalPass={false}>
-                <Bloom
-                  mipmapBlur
-                  intensity={1.4}
-                  luminanceThreshold={0.18}
-                  luminanceSmoothing={0.22}
-                  radius={0.85}
-                />
-                <Vignette eskil={false} offset={0.22} darkness={0.6} />
-              </EffectComposer>
-            )}
           </Canvas>
-        )}
-      </div>
+        </div>
+      ) : (
+        // Poster fallback: a CSS-only "viewport" silhouette so the
+        // hero still reads as a 3D rig on low-spec devices without
+        // ever instantiating a second WebGL context.
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
+        >
+          <div
+            className="relative h-[64%] w-[58%] max-w-[420px]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 60%, rgba(255,122,26,0.22) 0%, rgba(79,156,255,0.12) 40%, rgba(7,10,19,0) 75%)"
+            }}
+          >
+            <div
+              className="absolute inset-x-[12%] bottom-[14%] h-[2px]"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, #FF7A1A 50%, transparent)",
+                boxShadow: "0 0 14px rgba(255,122,26,0.7)"
+              }}
+            />
+            <div
+              className="absolute left-1/2 top-1/2 h-[58%] w-[34%] -translate-x-1/2 -translate-y-[58%]"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(79,156,255,0.18), rgba(255,122,26,0.12))",
+                border: "1px solid rgba(79,156,255,0.35)",
+                clipPath:
+                  "polygon(20% 0, 80% 0, 100% 22%, 100% 78%, 80% 100%, 20% 100%, 0 78%, 0 22%)",
+                WebkitClipPath:
+                  "polygon(20% 0, 80% 0, 100% 22%, 100% 78%, 80% 100%, 20% 100%, 0 78%, 0 22%)",
+                boxShadow:
+                  "inset 0 0 30px rgba(79,156,255,0.25), 0 0 40px rgba(79,156,255,0.18)"
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* 2: floating tech chips */}
       <TechChips />

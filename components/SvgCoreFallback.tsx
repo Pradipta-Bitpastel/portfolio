@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 /**
  * Static SVG stand-in for the R3F scene. Rendered when the visitor is
  * on mobile / low-power / reduced-motion. Pure SVG + CSS keyframes —
@@ -15,6 +17,10 @@
  *
  * All motion is CSS `animation`s so the global `prefers-reduced-motion`
  * rule in `globals.css` flattens them without any JS.
+ *
+ * Mobile-only: the orb fades as the user scrolls past the hero zone
+ * (driven by `--scf-scroll-fade` CSS variable). Desktop keeps the orb
+ * persistent — it's a backdrop element of the overall design.
  */
 
 type ModuleDef = {
@@ -37,19 +43,42 @@ const MODULES: readonly ModuleDef[] = [
 ];
 
 export function SvgCoreFallback() {
+  // Track scroll progress 0 → 1 over the first 60% of viewport height.
+  // On mobile we fade the orb out as the user scrolls past the hero so
+  // it stops dominating the fold of Projects / Experience / Contact.
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const h = window.innerHeight || 1;
+      const p = Math.min(1, window.scrollY / (h * 0.6));
+      setScrollProgress(p);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Orb opacity goes 1 → 0.15 as the user scrolls past the hero.
+  // Applied only on mobile via the @media rule below; desktop ignores
+  // the variable so the backdrop stays persistent.
+  const fadeVar = String(1 - 0.85 * scrollProgress);
+
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 flex items-center justify-center"
+      className="pointer-events-none fixed inset-0 z-0 flex justify-center items-start pt-[8vh] sm:items-center sm:pt-0"
       style={{
         background:
-          "radial-gradient(circle at 50% 50%, rgba(79,156,255,0.08) 0%, rgba(11,15,25,0) 55%), #0b0f19"
-      }}
+          "radial-gradient(circle at 50% 50%, rgba(79,156,255,0.08) 0%, rgba(11,15,25,0) 55%), #0b0f19",
+        // CSS custom property consumed by the mobile-only rule below.
+        ["--scf-scroll-fade" as string]: fadeVar
+      } as React.CSSProperties}
     >
       <svg
         data-fallback="core"
         viewBox="-260 -260 520 520"
-        className="h-full w-full"
+        className="scf-svg h-full w-full scale-50 opacity-[0.55] sm:scale-100 sm:opacity-100"
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label="Developer control core — static visualization"
@@ -202,6 +231,7 @@ export function SvgCoreFallback() {
         {/* Terminal-style label under the core */}
         <g
           transform="translate(0, 232)"
+          className="scf-online-label"
           style={{ animation: "scf-text-pulse 3.6s ease-in-out infinite" }}
         >
           <text
@@ -244,6 +274,15 @@ export function SvgCoreFallback() {
         @keyframes scf-orbit-rev {
           from { transform: rotate(0deg); }
           to   { transform: rotate(-360deg); }
+        }
+        @media (max-width: 640px) {
+          .scf-online-label { display: none; }
+          /* Mobile: fade orb out as the visitor scrolls past the hero so
+             it stops dominating the fold of subsequent sections. */
+          .scf-svg {
+            opacity: var(--scf-scroll-fade, 1);
+            transition: none;
+          }
         }
       `}</style>
     </div>

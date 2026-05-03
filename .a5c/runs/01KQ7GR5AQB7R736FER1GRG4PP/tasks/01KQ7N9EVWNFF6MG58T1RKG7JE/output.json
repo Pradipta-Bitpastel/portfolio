@@ -1,0 +1,19 @@
+{
+  "patchesApplied": [
+    {
+      "file": "components/SvgCoreFallback.tsx",
+      "reason": "Issue 1+2+4: scale orb 50% on mobile, push to top half via items-start + pt-[8vh], reduce opacity to 0.55 on <=640px. Added scf-online-label class on the CORE // ONLINE <g> and a @media (max-width: 640px) { display: none } rule so the badge no longer bleeds across about/projects/experience while scrolling."
+    },
+    {
+      "file": "components/sections/ContactSection.tsx",
+      "reason": "Issue 3: dropped headline clamp lower bound from 2rem to 1.5rem and slope from 9vw to 8vw so PING // THE_CORE no longer wraps awkwardly at 375px. Existing word-break: keep-all + non-breaking-space tokenization is preserved so the title stays atomic across the // separator."
+    },
+    {
+      "file": "components/sections/HeroSection.tsx",
+      "reason": "Issue 5: gave the role/typewriter row a glass background (bg-bg/60 backdrop-blur-sm rounded px-2 py-1) on mobile only, transparent again at sm: so it stays readable when the SvgCoreFallback orb sits behind it on 375/414px viewports."
+    }
+  ],
+  "buildOk": true,
+  "firstLoadJsKB": 343,
+  "summary": "Mobile-targeted polish across 3 files. SvgCoreFallback orb is now smaller (scale-50), translated toward the top half (items-start + pt-[8vh]) and faded to opacity 0.55 on <=640px, and its CORE // ONLINE badge is hidden via @media so it stops bleeding across other sections while scrolling. Contact headline font clamp lowered to (1.5rem, 8vw, 9rem) so PING // THE_CORE fits on a single line at 375px without splitting tokens. Hero role line gets a glass scrim (bg-bg/60 backdrop-blur-sm) on mobile only so the cycling FRONTEND DEVELOPER text always wins over the orb. Projects mobile path was already a single-column grid with self-contained per-card visuals — fixes 1+2 also handle the orb-dominance issue there. Typecheck passes; production build is clean; First Load JS = 343 kB (unchanged — pure visibility/layout patch, no new code paths)."
+}

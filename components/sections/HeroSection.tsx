@@ -3,7 +3,7 @@
 import { memo, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useGSAP } from "@gsap/react";
-import { gsap, registerAll, hasPlugin } from "@/lib/gsap";
+import { gsap, registerAll, hasPlugin, ScrollTrigger } from "@/lib/gsap";
 import { sceneStore } from "@/lib/sceneStore";
 import { cn } from "@/lib/cn";
 import { SectionFrame } from "@/components/ui/SectionFrame";
@@ -51,16 +51,34 @@ const ROLES: ReadonlyArray<string> = [
 type CharSpans = HTMLSpanElement[];
 
 function splitChars(el: HTMLElement): CharSpans {
+  // Words wrap as atomic units (nowrap inline-block) so the per-char split
+  // never breaks a word mid-line on narrow viewports.
   const text = el.textContent ?? "";
   el.textContent = "";
   const spans: CharSpans = [];
-  for (const ch of Array.from(text)) {
-    const span = document.createElement("span");
-    span.className = "inline-block will-change-transform";
-    span.textContent = ch === " " ? "\u00a0" : ch;
-    el.appendChild(span);
-    spans.push(span);
-  }
+  const words = text.split(" ");
+  words.forEach((word, wi) => {
+    if (word.length > 0) {
+      const wordWrap = document.createElement("span");
+      wordWrap.style.whiteSpace = "nowrap";
+      wordWrap.style.display = "inline-block";
+      for (const ch of Array.from(word)) {
+        const span = document.createElement("span");
+        span.className = "inline-block will-change-transform";
+        span.textContent = ch;
+        wordWrap.appendChild(span);
+        spans.push(span);
+      }
+      el.appendChild(wordWrap);
+    }
+    if (wi < words.length - 1) {
+      const sep = document.createElement("span");
+      sep.className = "inline-block will-change-transform";
+      sep.textContent = "\u00a0";
+      el.appendChild(sep);
+      spans.push(sep);
+    }
+  });
   return spans;
 }
 
@@ -136,9 +154,15 @@ function HeroSectionImpl() {
         revealName(nameLastRef.current, 0.35);
 
         // ----- Role typewriter cycle --------------------------------
+        // Holder for any infinite timelines registered downstream so
+        // they can be paused when the hero leaves viewport. Declared
+        // here so the typewriter timeline can register itself, and
+        // again referenced after the arrow tween block.
+        const typewriterTweens: Array<gsap.core.Timeline> = [];
         const typeEl = typewriterRef.current;
         if (typeEl) {
           const tl = gsap.timeline({ repeat: -1, delay: 1.2 });
+          typewriterTweens.push(tl);
           ROLES.forEach((role) => {
             const state = { i: 0 };
             tl.to(state, {
@@ -265,15 +289,36 @@ function HeroSectionImpl() {
         }
 
         // ----- Arrow wiggle -----
+        // Tracked so we can pause it when the hero leaves the viewport
+        // (no point burning CPU on a never-visible arrow).
+        const infiniteTweens: Array<gsap.core.Tween | gsap.core.Timeline> = [];
         const arrow = arrowRef.current;
         if (arrow) {
           const wiggleEase = hasPlugin("CustomWiggle") ? "wiggle" : "sine.inOut";
-          gsap.to(arrow, {
-            y: 6,
-            duration: 1.2,
-            repeat: -1,
-            yoyo: true,
-            ease: wiggleEase
+          infiniteTweens.push(
+            gsap.to(arrow, {
+              y: 6,
+              duration: 1.2,
+              repeat: -1,
+              yoyo: true,
+              ease: wiggleEase
+            })
+          );
+        }
+
+        // ----- Pause infinite tweens when hero leaves viewport -----
+        // Includes the arrow wiggle and the role typewriter timeline.
+        // Saves continuous tween work for the entire rest of the page.
+        const allInfinite = [...infiniteTweens, ...typewriterTweens];
+        if (allInfinite.length > 0 && rootRef.current) {
+          ScrollTrigger.create({
+            trigger: rootRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            onLeave: () => allInfinite.forEach((tw) => tw.pause()),
+            onLeaveBack: () => allInfinite.forEach((tw) => tw.pause()),
+            onEnter: () => allInfinite.forEach((tw) => tw.resume()),
+            onEnterBack: () => allInfinite.forEach((tw) => tw.resume())
           });
         }
 
@@ -361,10 +406,10 @@ function HeroSectionImpl() {
           were z-10 and the later-in-DOM terminal won the paint order,
           covering the SCROLL TO INIT button. */}
       <div
-        className="relative z-20 grid w-full grid-cols-1 items-start gap-6 md:grid-cols-12"
+        className="relative z-20 grid w-full grid-cols-1 items-start gap-6 lg:grid-cols-12"
       >
         {/* LEFT: text column, vertical stack. min-w-0 allows children to shrink without overflow. */}
-        <div className="flex min-w-0 flex-col items-start gap-6 md:col-span-7">
+        <div className="flex min-w-0 flex-col items-start gap-6 lg:col-span-7">
           {/* eyebrow */}
           <span
             ref={eyebrowRef}
@@ -400,9 +445,11 @@ function HeroSectionImpl() {
             </span>
           </h1>
 
-          {/* typewriter role line — terminal prompt with cycling roles + caret */}
+          {/* typewriter role line — terminal prompt with cycling roles + caret.
+              Glass bg on mobile so the role text stays readable when
+              the SvgCoreFallback orb sits behind it at 375/414px. */}
           <div
-            className="flex items-center gap-2 font-mono uppercase tracking-[0.18em] text-ink"
+            className="flex items-center gap-2 rounded bg-bg/80 px-3 py-1.5 font-mono uppercase tracking-[0.18em] text-ink backdrop-blur-sm sm:bg-transparent sm:p-0 sm:backdrop-blur-0"
             style={{ fontSize: "clamp(0.95rem, 2.1vw, 1.55rem)" }}
             aria-live="polite"
           >
@@ -445,16 +492,21 @@ function HeroSectionImpl() {
         {/* RIGHT: hero-local 3D warrior viewport. The global SceneDock
             laptop continues to live in the fixed background Canvas
             for other sections; this viewport overlays it in the hero
-            so the warrior is the centerpiece here. */}
-        <div className="relative z-10 hidden md:col-span-5 md:block">
+            so the warrior is the centerpiece here.
+            Hidden on <lg (1024px). It was designed for lg+ width — at
+            md (768-1023px) the warrior column was crowding the
+            headline. */}
+        <div className="relative z-10 hidden lg:col-span-5 lg:block">
           <HeroWarrior />
         </div>
       </div>
 
       {/* Boot-log terminal panel, bottom-left — pinned inside the
-          section padding so it stays clear of the bottom HUD label. */}
+          section padding so it stays clear of the bottom HUD label.
+          Anchored with left:clamp() so it never overlaps the
+          typewriter at 768-900px. */}
       <div
-        className="pointer-events-none absolute bottom-[clamp(56px,7vh,120px)] z-10 hidden w-[min(22rem,30vw)] md:block"
+        className="pointer-events-none absolute bottom-[clamp(56px,7vh,120px)] left-[clamp(48px,6vw,96px)] z-10 hidden w-[min(22rem,30vw)] md:block"
       >
         <div
           className="border border-white/15 bg-[#05080f]/90 p-3 font-mono text-[11px] text-ink-dim backdrop-blur"

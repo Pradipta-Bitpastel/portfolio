@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T14:28:48.365Z",
+  "data": {
+    "effectId": "01KQ7NFGK48EC3RR752AX1PVW7",
+    "invocationKey": "portfolio-perf-responsive:S000024:e2e-multi-viewport",
+    "invocationHash": "b62a6973dc59e451743865b976dbdf0a9a3be3c125ab8d1da43492af7ed27448",
+    "stepId": "S000024",
+    "taskId": "e2e-multi-viewport",
+    "kind": "agent",
+    "label": "Playwright E2E across viewports + browsers",
+    "taskDefRef": "tasks/01KQ7NFGK48EC3RR752AX1PVW7/task.json"
+  },
+  "checksum": "d009ef3abd7c7dab5e85dc0231c2d7ccbc1c5768f541eef88c0635ed088aee9b"
+}

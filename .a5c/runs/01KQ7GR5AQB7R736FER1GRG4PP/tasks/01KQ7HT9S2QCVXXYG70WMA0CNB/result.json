@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7HT9S2QCVXXYG70WMA0CNB",
+  "taskId": "animation-optimize",
+  "invocationKey": "portfolio-perf-responsive:S000004:animation-optimize",
+  "status": "ok",
+  "result": {
+    "buildOk": true,
+    "filesChanged": [
+      "lib/gsap.ts",
+      "components/providers/SmoothScrollProvider.tsx",
+      "components/sections/ProjectsSection.tsx",
+      "components/sections/SkillsSection.tsx",
+      "components/sections/SectionOrchestrator.tsx",
+      "components/ui/IrisTransition.tsx",
+      "components/three/HeroWarrior.tsx",
+      "components/sections/HeroSection.tsx",
+      "app/globals.css"
+    ],
+    "optimizations": [
+      "lib/gsap.ts: replaced registerAll() that imported 17 GSAP plugins with registerEssentials() — static-imports only ScrollTrigger, TextPlugin, CustomEase; lazy-tries the 4 Club plugins actually used (ScrambleText, DrawSVG, SplitText, CustomWiggle). registerAll kept as alias for backwards compat.",
+      "ProjectsSection: gated on isLowEnd — low-end devices render the static mobile grid only (no pin, no scrub). Bumped pinned-rotator matchMedia 1024px → 1280px. Replaced clipPath polygon morph with opacity+scale crossfade (paint-killer on integrated GPUs). Dropped scrub 1.5 → 1. Updated lg:hidden / lg:block markup to xl:.",
+      "SkillsSection: gated on isLowEnd. Bumped matchMedia 1024px → 1280px. Reduced height lg:!h-[800vh] → xl:!h-[500vh] (8 → 5 viewports). Consolidated per-panel ScrollTriggers into a single master timeline with onUpdate-driven panel activation (was 1 master + 5 per-panel scrub triggers).",
+      "SectionOrchestrator: skips cinematic boundary BEAT entirely on isLowEnd. Cached connection materials at boot via single traversal — was walking the scene graph on every of 6 boundary crosses.",
+      "IrisTransition: returns null on isLowEnd. Removed dual drop-shadow filter (replaced with single inset box-shadow). Dropped clipPath polygon animation; uses opacity-only fade for the dark-flood mask (animated bright hex edge SVG path retains visual identity).",
+      "HeroWarrior OrbitalBackdrop: drops entirely on perf-low or gpu-low; remaining 4 rotate + 22 dot-pulse + 4 stat-bar shimmer + tech-chip bob tweens now pause via ScrollTrigger when hero leaves viewport and resume when it re-enters. CoordReadout rAF loop throttled to every 4th frame and pauses when hero off-screen.",
+      "HeroSection: arrow wiggle + role typewriter timeline registered into a ScrollTrigger pause/resume gate keyed to the hero section.",
+      "SmoothScrollProvider: Lenis disabled on iOS Safari (UA detect /iPad|iPhone|iPod/) and Firefox (/Firefox/) — known wheel/momentum conflicts. Reduced-motion bypass kept. ScrollSmoother now loaded lazily via dynamic import (no longer in registerAll).",
+      "globals.css: added @supports not (backdrop-filter) block that swaps .glass to a solid semi-opaque background. Removed unused .noise::after SVG turbulence overlay (Atmosphere.tsx already provides the single grain layer)."
+    ],
+    "removedPlugins": [
+      "GSDevTools",
+      "MorphSVGPlugin",
+      "MotionPathPlugin",
+      "Physics2DPlugin",
+      "PhysicsPropsPlugin",
+      "InertiaPlugin",
+      "Flip",
+      "Observer",
+      "EaselPlugin",
+      "PixiPlugin",
+      "CustomBounce"
+    ],
+    "summary": "Phase-4 GSAP/scroll perf hardening complete. lib/gsap.ts now static-imports only the 3 free plugins the codebase needs (ScrollTrigger, TextPlugin, CustomEase) plus 4 Club plugins behind try/catch (ScrambleText, DrawSVG, SplitText, CustomWiggle); 11 unused plugins dropped including GSDevTools (~469KB) and MorphSVGPlugin (~245KB). ProjectsSection + SkillsSection gate on isLowEnd, bump desktop threshold to 1280px, and reduce scroll work (Skills: 8 → 5 viewports + single master timeline; Projects: clipPath morph → scale+opacity, scrub 1.5 → 1). SectionOrchestrator caches connection mats at boot and skips its 6-tween BEAT on low-end. IrisTransition returns null on low-end and replaces the dual drop-shadow + clipPath polygon with opacity-only fade. HeroWarrior pauses 30+ infinite tweens (orbital rings, dots, stat shimmer, tech-chip bob) and the CoordReadout rAF (now 1/4 rate) when hero is off-screen. HeroSection arrow + typewriter follow the same pause-on-exit pattern. SmoothScrollProvider disables Lenis on iOS Safari and Firefox. globals.css adds @supports backdrop-filter fallback and drops the unused .noise overlay. typecheck OK, production build OK.",
+    "typecheckOk": true
+  },
+  "startedAt": "2026-04-27T13:37:31.281Z",
+  "finishedAt": "2026-04-27T13:37:31.281Z",
+  "value": {
+    "buildOk": true,
+    "filesChanged": [
+      "lib/gsap.ts",
+      "components/providers/SmoothScrollProvider.tsx",
+      "components/sections/ProjectsSection.tsx",
+      "components/sections/SkillsSection.tsx",
+      "components/sections/SectionOrchestrator.tsx",
+      "components/ui/IrisTransition.tsx",
+      "components/three/HeroWarrior.tsx",
+      "components/sections/HeroSection.tsx",
+      "app/globals.css"
+    ],
+    "optimizations": [
+      "lib/gsap.ts: replaced registerAll() that imported 17 GSAP plugins with registerEssentials() — static-imports only ScrollTrigger, TextPlugin, CustomEase; lazy-tries the 4 Club plugins actually used (ScrambleText, DrawSVG, SplitText, CustomWiggle). registerAll kept as alias for backwards compat.",
+      "ProjectsSection: gated on isLowEnd — low-end devices render the static mobile grid only (no pin, no scrub). Bumped pinned-rotator matchMedia 1024px → 1280px. Replaced clipPath polygon morph with opacity+scale crossfade (paint-killer on integrated GPUs). Dropped scrub 1.5 → 1. Updated lg:hidden / lg:block markup to xl:.",
+      "SkillsSection: gated on isLowEnd. Bumped matchMedia 1024px → 1280px. Reduced height lg:!h-[800vh] → xl:!h-[500vh] (8 → 5 viewports). Consolidated per-panel ScrollTriggers into a single master timeline with onUpdate-driven panel activation (was 1 master + 5 per-panel scrub triggers).",
+      "SectionOrchestrator: skips cinematic boundary BEAT entirely on isLowEnd. Cached connection materials at boot via single traversal — was walking the scene graph on every of 6 boundary crosses.",
+      "IrisTransition: returns null on isLowEnd. Removed dual drop-shadow filter (replaced with single inset box-shadow). Dropped clipPath polygon animation; uses opacity-only fade for the dark-flood mask (animated bright hex edge SVG path retains visual identity).",
+      "HeroWarrior OrbitalBackdrop: drops entirely on perf-low or gpu-low; remaining 4 rotate + 22 dot-pulse + 4 stat-bar shimmer + tech-chip bob tweens now pause via ScrollTrigger when hero leaves viewport and resume when it re-enters. CoordReadout rAF loop throttled to every 4th frame and pauses when hero off-screen.",
+      "HeroSection: arrow wiggle + role typewriter timeline registered into a ScrollTrigger pause/resume gate keyed to the hero section.",
+      "SmoothScrollProvider: Lenis disabled on iOS Safari (UA detect /iPad|iPhone|iPod/) and Firefox (/Firefox/) — known wheel/momentum conflicts. Reduced-motion bypass kept. ScrollSmoother now loaded lazily via dynamic import (no longer in registerAll).",
+      "globals.css: added @supports not (backdrop-filter) block that swaps .glass to a solid semi-opaque background. Removed unused .noise::after SVG turbulence overlay (Atmosphere.tsx already provides the single grain layer)."
+    ],
+    "removedPlugins": [
+      "GSDevTools",
+      "MorphSVGPlugin",
+      "MotionPathPlugin",
+      "Physics2DPlugin",
+      "PhysicsPropsPlugin",
+      "InertiaPlugin",
+      "Flip",
+      "Observer",
+      "EaselPlugin",
+      "PixiPlugin",
+      "CustomBounce"
+    ],
+    "summary": "Phase-4 GSAP/scroll perf hardening complete. lib/gsap.ts now static-imports only the 3 free plugins the codebase needs (ScrollTrigger, TextPlugin, CustomEase) plus 4 Club plugins behind try/catch (ScrambleText, DrawSVG, SplitText, CustomWiggle); 11 unused plugins dropped including GSDevTools (~469KB) and MorphSVGPlugin (~245KB). ProjectsSection + SkillsSection gate on isLowEnd, bump desktop threshold to 1280px, and reduce scroll work (Skills: 8 → 5 viewports + single master timeline; Projects: clipPath morph → scale+opacity, scrub 1.5 → 1). SectionOrchestrator caches connection mats at boot and skips its 6-tween BEAT on low-end. IrisTransition returns null on low-end and replaces the dual drop-shadow + clipPath polygon with opacity-only fade. HeroWarrior pauses 30+ infinite tweens (orbital rings, dots, stat shimmer, tech-chip bob) and the CoordReadout rAF (now 1/4 rate) when hero is off-screen. HeroSection arrow + typewriter follow the same pause-on-exit pattern. SmoothScrollProvider disables Lenis on iOS Safari and Firefox. globals.css adds @supports backdrop-filter fallback and drops the unused .noise overlay. typecheck OK, production build OK.",
+    "typecheckOk": true
+  }
+}

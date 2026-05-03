@@ -1,0 +1,1389 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "converged": true,
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "history": [
+          {
+            "e2e": {
+              "consoleErrors": [
+                "console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\".",
+                "console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\"."
+              ],
+              "failed": 6,
+              "failures": [
+                {
+                  "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+                  "project": "chromium",
+                  "title": "responsive.spec.ts > viewport iphone-se 375x812 > loads, no overflow, no console errors",
+                  "viewport": "375x812"
+                },
+                {
+                  "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+                  "project": "chromium",
+                  "title": "responsive.spec.ts > viewport iphone-11 414x896 > loads, no overflow, no console errors",
+                  "viewport": "414x896"
+                },
+                {
+                  "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+                  "project": "chromium",
+                  "title": "responsive.spec.ts > viewport ipad 768x1024 > loads, no overflow, no console errors",
+                  "viewport": "768x1024"
+                },
+                {
+                  "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+                  "project": "chromium",
+                  "title": "responsive.spec.ts > viewport ipad-land 1024x768 > loads, no overflow, no console errors",
+                  "viewport": "1024x768"
+                },
+                {
+                  "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+                  "project": "chromium",
+                  "title": "responsive.spec.ts > viewport laptop 1280x800 > loads, no overflow, no console errors",
+                  "viewport": "1280x800"
+                },
+                {
+                  "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+                  "project": "chromium",
+                  "title": "responsive.spec.ts > viewport desktop 1920x1080 > loads, no overflow, no console errors",
+                  "viewport": "1920x1080"
+                }
+              ],
+              "passed": 12,
+              "projects": [
+                {
+                  "failed": 6,
+                  "name": "chromium",
+                  "passed": 0
+                },
+                {
+                  "failed": 0,
+                  "name": "firefox",
+                  "passed": 6
+                },
+                {
+                  "failed": 0,
+                  "name": "webkit",
+                  "passed": 6
+                }
+              ],
+              "summary": "12 passed / 6 failed across 6 viewports x 3 browsers (chromium, firefox, webkit). Failures isolated to chromium only due to SVG <circle> cx/cy parse errors (empty/NaN coordinates).",
+              "total": 18
+            },
+            "iteration": 1,
+            "lhDesktop": {
+              "accessibility": 100,
+              "bestPractices": 96,
+              "cls": 0.065838,
+              "fcp": 324.5182,
+              "lcp": 893.5546,
+              "performance": 88,
+              "rawScoreFile": "artifacts/lh-desktop-1.json",
+              "recommendations": [
+                "Reduce unused JavaScript ~100ms ~154KB",
+                "Avoid serving legacy JavaScript to modern browsers ~11KB",
+                "Minimize main-thread work",
+                "Avoid enormous network payloads",
+                "Avoid an excessive DOM size"
+              ],
+              "tbt": 258.2227,
+              "totalBlockingTime": 258.2227,
+              "tti": 1574.80963
+            },
+            "lhMobile": {
+              "accessibility": 96,
+              "bestPractices": 96,
+              "cls": 0.001112,
+              "fcp": 1549.20035,
+              "lcp": 3002.6010499999998,
+              "performance": 66,
+              "rawScoreFile": "artifacts/lh-mobile-1.json",
+              "recommendations": [
+                "Avoid enormous network payloads (saves ~2794397ms)",
+                "Minimize main-thread work (saves ~15127ms)",
+                "Reduce JavaScript execution time (saves ~4949ms)",
+                "Avoid an excessive DOM size (saves ~2500ms)",
+                "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+              ],
+              "tbt": 1572.4999999999995,
+              "totalBlockingTime": 1572.4999999999995,
+              "tti": 6057.321435
+            },
+            "score": {
+              "blockedBy": [
+                "lighthouse-mobile-perf-below-target",
+                "chromium-svg-circle-nan",
+                "visual-build-corruption-needs-rerun"
+              ],
+              "breakdown": {
+                "desktopPerf": 88,
+                "e2eRate": 0.667,
+                "mobilePerf": 66,
+                "visual": 45
+              },
+              "converged": false,
+              "recommendations": [
+                {
+                  "action": "Mobile path is shipping the same JS as desktop (R3F + three + drei + postprocessing). Move the dynamic `import('./_Scene')` INSIDE the `!isMobile && !isLowEnd` branch so the Scene chunk is never even prefetched on mobile. Currently next/dynamic is hoisted at module scope. Use a useEffect-driven import OR a conditional dynamic component. Expected mobile-bundle drop: ~150KB.",
+                  "category": "BUNDLE-SIZE",
+                  "file": "components/three/SceneContainer.tsx",
+                  "priority": 1
+                },
+                {
+                  "action": "Chromium throws repeated `<circle> attribute cx/cy: Unexpected end of attribute. Expected length, \"\".` errors — failing all 6 chromium E2E tests. Find SVG <circle> elements where cx/cy values can be empty/undefined/NaN during initial render. Likely OrbitalBackdrop or PingRings. Default coordinates to 0 when unset; never let GSAP write empty strings. grep `cx=` and `cy=` for templates that use undefined refs.",
+                  "category": "BROWSER-COMPAT",
+                  "file": "components/three/HeroWarrior.tsx",
+                  "priority": 2
+                },
+                {
+                  "action": "Lighthouse mobile recommends 'reduce unused JavaScript ~154KB'. Check next.config.mjs and add `experimental: { optimizePackageImports: ['gsap', '@react-three/drei', '@react-three/fiber', 'three'] }` so Next prunes unused subpath exports. Also: explicitly import only the drei pieces actually used (e.g., `import { Float } from '@react-three/drei/web/Float'` rather than top-level).",
+                  "category": "PERF-DOM",
+                  "file": "lib/gsap.ts + components/sections/*",
+                  "priority": 3
+                },
+                {
+                  "action": "Lighthouse mobile TBT 1572ms is a major blocker. The HeroWarrior + DevStation paths even when gated by `tier==='high'` may still execute their imports during initial parse. Wrap the entire HeroWarrior + DevStation modules behind `dynamic(() => import(), { ssr: false })` from the section component, so they're code-split out of the main route bundle.",
+                  "category": "PERF-DOM",
+                  "file": "components/three/HeroWarrior.tsx",
+                  "priority": 4
+                },
+                {
+                  "action": "Visual regression flagged the contact-section title wrapping awkwardly ('ING // THE_CO RE') at 375px and partially obscured by section badge '06' at 768px. Reduce title font size with clamp + adjust the section number badge z-index/position so it doesn't overlap. Verify with re-screenshot.",
+                  "category": "RESPONSIVE",
+                  "file": "components/sections/ContactSection.tsx",
+                  "priority": 5
+                },
+                {
+                  "action": "Visual regression overall score 45 is a FALSE NEGATIVE — caused by build corruption when 4 parallel agents ran `npm run start` against the same .next/ directory. Before the next iteration, do a clean `rm -rf .next && npm run build` and re-run visual regression in isolation (no parallel server starts). The actual layout is sound based on chromium-vs-firefox comparison.",
+                  "category": "TESTING",
+                  "file": "playwright.config.ts + tests/visual/perf-responsive.spec.ts",
+                  "priority": 6
+                },
+                {
+                  "action": "Add Next.js compiler.removeConsole for production: `compiler: { removeConsole: { exclude: ['error', 'warn'] } }`. And add `swcMinify: true` (default in Next 14 but explicit). Also enable `productionBrowserSourceMaps: false` (default but verify) — sourcemaps in production add ~30% to served bundle.",
+                  "category": "PERF-DOM",
+                  "file": "next.config.mjs",
+                  "priority": 7
+                }
+              ],
+              "summary": "Iteration 1 of convergence loop: desktop perf 88 (target 90, -2), mobile perf 66 (target 75, -9), E2E 12/18 (chromium SVG NaN errors), visual 45 (build corruption false-negative). Primary blocker is mobile bundle size — Three.js stack still ships even on mobile fallback path. Secondary: chromium SVG cx/cy NaN guard, code-split HeroWarrior + DevStation, fix contact title wrap, re-run visual after clean build."
+            },
+            "visual": {
+              "overallScore": 45,
+              "perViewport": {
+                "1024x768": {
+                  "issues": [
+                    "hero shows 'Application error: a client-side exception has occurred' - app crashes (major)",
+                    "all other sections render as unstyled HTML fallback (no CSS, no canvas, no theme) (major)",
+                    "missing ProjectVisuals canvas/svg core (major)",
+                    "no HUD frame, no orange/dark theme applied (major)"
+                  ],
+                  "score": 15
+                },
+                "1280x800": {
+                  "issues": [
+                    "hero renders blank white canvas with only grid lines - main visual missing (major)",
+                    "about/skills/projects/experience/contact all show unstyled HTML fallback (major)",
+                    "no CSS or canvas/svg core loaded (major)",
+                    "complete loss of design system at desktop breakpoint (major)"
+                  ],
+                  "score": 10
+                },
+                "1920x1080": {
+                  "issues": [
+                    "hero renders blank white canvas with only grid lines - main visual missing (major)",
+                    "all sections render as unstyled HTML fallback (major)",
+                    "no CSS or canvas/svg core loaded (major)",
+                    "complete loss of design system at large desktop breakpoint (major)"
+                  ],
+                  "score": 10
+                },
+                "375x812": {
+                  "issues": [
+                    "contact section title 'OPENING // THE_CORE' wraps awkwardly producing 'ING // THE_CO RE' (major text break)",
+                    "contact section 'OPEN' prefix appears clipped above viewport when scrolled to anchor"
+                  ],
+                  "score": 80
+                },
+                "414x896": {
+                  "issues": [
+                    "contact title still wraps as 'ING // THE_COR E' due to large font on narrow column (major)"
+                  ],
+                  "score": 85
+                },
+                "768x1024": {
+                  "issues": [
+                    "skills HUD bottom: 'LAT 37.77°N / LON -122.42°W' overlaps 'OPENAI API' text row (minor)",
+                    "contact title 'OPENING // THE_CORE' partially obscured by '06' badge overlapping 'OPEN' (major)",
+                    "experience section second card placeholder shows 'CORE // ONLINE' overlap with HUD frame (minor)"
+                  ],
+                  "score": 75
+                }
+              },
+              "screenshots": [
+                "artifacts/screenshots/iter1/375x812-hero.png",
+                "artifacts/screenshots/iter1/375x812-about.png",
+                "artifacts/screenshots/iter1/375x812-skills.png",
+                "artifacts/screenshots/iter1/375x812-projects.png",
+                "artifacts/screenshots/iter1/375x812-experience.png",
+                "artifacts/screenshots/iter1/375x812-contact.png",
+                "artifacts/screenshots/iter1/414x896-hero.png",
+                "artifacts/screenshots/iter1/414x896-about.png",
+                "artifacts/screenshots/iter1/414x896-skills.png",
+                "artifacts/screenshots/iter1/414x896-projects.png",
+                "artifacts/screenshots/iter1/414x896-experience.png",
+                "artifacts/screenshots/iter1/414x896-contact.png",
+                "artifacts/screenshots/iter1/768x1024-hero.png",
+                "artifacts/screenshots/iter1/768x1024-about.png",
+                "artifacts/screenshots/iter1/768x1024-skills.png",
+                "artifacts/screenshots/iter1/768x1024-projects.png",
+                "artifacts/screenshots/iter1/768x1024-experience.png",
+                "artifacts/screenshots/iter1/768x1024-contact.png",
+                "artifacts/screenshots/iter1/1024x768-hero.png",
+                "artifacts/screenshots/iter1/1024x768-about.png",
+                "artifacts/screenshots/iter1/1024x768-skills.png",
+                "artifacts/screenshots/iter1/1024x768-projects.png",
+                "artifacts/screenshots/iter1/1024x768-experience.png",
+                "artifacts/screenshots/iter1/1024x768-contact.png",
+                "artifacts/screenshots/iter1/1280x800-hero.png",
+                "artifacts/screenshots/iter1/1280x800-about.png",
+                "artifacts/screenshots/iter1/1280x800-skills.png",
+                "artifacts/screenshots/iter1/1280x800-projects.png",
+                "artifacts/screenshots/iter1/1280x800-experience.png",
+                "artifacts/screenshots/iter1/1280x800-contact.png",
+                "artifacts/screenshots/iter1/1920x1080-hero.png",
+                "artifacts/screenshots/iter1/1920x1080-about.png",
+                "artifacts/screenshots/iter1/1920x1080-skills.png",
+                "artifacts/screenshots/iter1/1920x1080-projects.png",
+                "artifacts/screenshots/iter1/1920x1080-experience.png",
+                "artifacts/screenshots/iter1/1920x1080-contact.png"
+              ],
+              "totalIssues": 18
+            }
+          },
+          {
+            "e2e": {
+              "consoleErrors": [],
+              "failed": 0,
+              "failures": [],
+              "passed": 18,
+              "projects": [
+                {
+                  "failed": 0,
+                  "name": "chromium",
+                  "passed": 6
+                },
+                {
+                  "failed": 0,
+                  "name": "firefox",
+                  "passed": 6
+                },
+                {
+                  "failed": 0,
+                  "name": "webkit",
+                  "passed": 6
+                }
+              ],
+              "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+              "total": 18
+            },
+            "iteration": 2,
+            "lhDesktop": {
+              "accessibility": 100,
+              "bestPractices": 100,
+              "cls": 0.068,
+              "fcp": 263.76,
+              "lcp": 774.63,
+              "performance": 99,
+              "rawScoreFile": "artifacts/lh-desktop-2.json",
+              "recommendations": [
+                "Reduce unused JavaScript (~110ms savings on desktop)",
+                "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+                "Add valid source maps for large first-party JavaScript (currently missing)",
+                "Reduce total byte weight of network payloads (score 0.5)",
+                "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+              ],
+              "tbt": 0,
+              "totalBlockingTime": 0,
+              "tti": 774.63
+            },
+            "lhMobile": {
+              "accessibility": 96,
+              "bestPractices": 100,
+              "cls": 0.001,
+              "fcp": 913.13,
+              "lcp": 2767.69,
+              "performance": 95,
+              "rawScoreFile": "artifacts/lh-mobile-2.json",
+              "recommendations": [
+                "Eliminate render-blocking resources (~45ms savings on mobile)",
+                "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+                "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+                "Fix color-contrast issues (accessibility audit failing)",
+                "Add valid source maps and reduce total byte weight / legacy JS"
+              ],
+              "tbt": 93,
+              "totalBlockingTime": 93,
+              "tti": 4503.84
+            },
+            "score": {
+              "blockedBy": [
+                "mobile-visual-orb-overlap",
+                "mobile-visual-core-online-badge-bleed",
+                "mobile-contact-title-still-wraps",
+                "mobile-projects-orb-dominates"
+              ],
+              "breakdown": {
+                "desktopPerf": 99,
+                "e2eRate": 1,
+                "mobilePerf": 95,
+                "mobileVisualScores": {
+                  "375x812": 70,
+                  "414x896": 74
+                },
+                "visual": 85
+              },
+              "converged": false,
+              "recommendations": [
+                {
+                  "action": "On mobile (375/414) the SVG core fallback orb overlaps the hero 'FRONTEND DEVELOP' role badge. The fallback is full-viewport positioned. Make the orb's SVG smaller on small viewports (e.g., scale down with viewBox + max-w / smaller fixed center), and offset it vertically to the top half so the role-badge text below it has clear space. Suggested: limit orb visual to the top 55vh on viewports <= 480px and reduce orb radius proportionally.",
+                  "category": "RESPONSIVE",
+                  "file": "components/SvgCoreFallback.tsx",
+                  "priority": 1
+                },
+                {
+                  "action": "The 'CORE // ONLINE' badge + orbiting orange dot is rendering as part of the SVG fallback or HUD overlay and is fixed to the viewport, causing it to bleed visually into projects/career/about sections during scroll. Wrap that badge in a hero-only ScrollTrigger that hides it when hero is scrolled past, OR position it inside the hero section element instead of fixed.",
+                  "category": "RESPONSIVE",
+                  "file": "components/SvgCoreFallback.tsx OR components/ui/HudFrame.tsx",
+                  "priority": 2
+                },
+                {
+                  "action": "Contact title 'PING // THE_CORE' (or 'OPENING // THE_CORE') still wraps awkwardly to 'ING // THE_CORE' at 375px. The Phase 5 fix used keep-all + clamp(2rem,...) but the visual at 375px shows breakage still. Solution: split the title into two lines deliberately ('PING //' on line 1, 'THE_CORE' on line 2) on viewports <= 480px using a `<br className=\"sm:hidden\">` or grid layout. Also reduce font size further on smallest viewport (clamp(1.5rem,...)).",
+                  "category": "RESPONSIVE",
+                  "file": "components/sections/ContactSection.tsx",
+                  "priority": 3
+                },
+                {
+                  "action": "On mobile (375/414) the projects section shows the SVG orb dominating and the project card content is not visible in the fold. The card is below the orb in the stack. Either: (a) reduce orb size to ~30vh on mobile so card stays in viewport, OR (b) hide the orb entirely on mobile in projects (it's already in hero — duplication is visual noise). Pick whichever fits the design language better.",
+                  "category": "RESPONSIVE",
+                  "file": "components/sections/ProjectsSection.tsx",
+                  "priority": 4
+                },
+                {
+                  "action": "Mobile hero role badge 'FRONTEND DEVELOP' is visually overlapped by the orb. Add a dark gradient/glass background to the role badge so it remains readable on top of any background, OR position the orb behind a translucent backdrop layer that slightly fades the orb where text overlaps.",
+                  "category": "RESPONSIVE",
+                  "file": "components/sections/HeroSection.tsx + global",
+                  "priority": 5
+                }
+              ],
+              "summary": "Iteration 2 RESULTS: desktop perf 99 (target 90, +9), mobile perf 95 (target 75, +20), E2E 18/18 (3 browsers x 6 viewports), visual 85. Performance and E2E targets are massively exceeded. Visual is at 85 but the mobile sub-scores (70 at 375px, 74 at 414px) show real layout issues that the user would consider 'not 100% solid'. One more refine pass to fix mobile orb overlap, persistent CORE badge bleed, and contact title wrap before declaring final convergence."
+            },
+            "visual": {
+              "overallScore": 85,
+              "perViewport": {
+                "1024x768": {
+                  "issues": [
+                    "Projects: project card slightly overlaps orb visual (busy composition)"
+                  ],
+                  "score": 88
+                },
+                "1280x800": {
+                  "issues": [],
+                  "score": 94
+                },
+                "1920x1080": {
+                  "issues": [],
+                  "score": 96
+                },
+                "375x812": {
+                  "issues": [
+                    "Hero orb canvas overlaps the 'FRONTEND DEVELOP' role badge text",
+                    "Persistent CORE // ONLINE badge and orbiting orange dot bleed into projects/career/about sections (visual leak from hero canvas)",
+                    "Contact heading wraps awkwardly to 'ING // THE_CORE'",
+                    "Projects section shows large orb but project card content not visible at this viewport"
+                  ],
+                  "score": 70
+                },
+                "414x896": {
+                  "issues": [
+                    "Hero orb visual overlaps 'FRONTEND DEVELOP' role badge text",
+                    "Projects section: orb dominates and project card not visible in fold"
+                  ],
+                  "score": 74
+                },
+                "768x1024": {
+                  "issues": [
+                    "Hero role badge slightly overlapped by orb visual"
+                  ],
+                  "score": 86
+                }
+              },
+              "screenshots": [
+                "artifacts/screenshots/iter2/375x812-hero.png",
+                "artifacts/screenshots/iter2/375x812-about.png",
+                "artifacts/screenshots/iter2/375x812-skills.png",
+                "artifacts/screenshots/iter2/375x812-projects.png",
+                "artifacts/screenshots/iter2/375x812-experience.png",
+                "artifacts/screenshots/iter2/375x812-contact.png",
+                "artifacts/screenshots/iter2/414x896-hero.png",
+                "artifacts/screenshots/iter2/414x896-about.png",
+                "artifacts/screenshots/iter2/414x896-skills.png",
+                "artifacts/screenshots/iter2/414x896-projects.png",
+                "artifacts/screenshots/iter2/414x896-experience.png",
+                "artifacts/screenshots/iter2/414x896-contact.png",
+                "artifacts/screenshots/iter2/768x1024-hero.png",
+                "artifacts/screenshots/iter2/768x1024-about.png",
+                "artifacts/screenshots/iter2/768x1024-skills.png",
+                "artifacts/screenshots/iter2/768x1024-projects.png",
+                "artifacts/screenshots/iter2/768x1024-experience.png",
+                "artifacts/screenshots/iter2/768x1024-contact.png",
+                "artifacts/screenshots/iter2/1024x768-hero.png",
+                "artifacts/screenshots/iter2/1024x768-about.png",
+                "artifacts/screenshots/iter2/1024x768-skills.png",
+                "artifacts/screenshots/iter2/1024x768-projects.png",
+                "artifacts/screenshots/iter2/1024x768-experience.png",
+                "artifacts/screenshots/iter2/1024x768-contact.png",
+                "artifacts/screenshots/iter2/1280x800-hero.png",
+                "artifacts/screenshots/iter2/1280x800-about.png",
+                "artifacts/screenshots/iter2/1280x800-skills.png",
+                "artifacts/screenshots/iter2/1280x800-projects.png",
+                "artifacts/screenshots/iter2/1280x800-experience.png",
+                "artifacts/screenshots/iter2/1280x800-contact.png",
+                "artifacts/screenshots/iter2/1920x1080-hero.png",
+                "artifacts/screenshots/iter2/1920x1080-about.png",
+                "artifacts/screenshots/iter2/1920x1080-skills.png",
+                "artifacts/screenshots/iter2/1920x1080-projects.png",
+                "artifacts/screenshots/iter2/1920x1080-experience.png",
+                "artifacts/screenshots/iter2/1920x1080-contact.png"
+              ],
+              "totalIssues": 8
+            }
+          },
+          {
+            "e2e": {
+              "consoleErrors": [],
+              "failed": 0,
+              "failures": [],
+              "passed": 18,
+              "projects": [
+                {
+                  "failed": 0,
+                  "name": "chromium",
+                  "passed": 6
+                },
+                {
+                  "failed": 0,
+                  "name": "firefox",
+                  "passed": 6
+                },
+                {
+                  "failed": 0,
+                  "name": "webkit",
+                  "passed": 6
+                }
+              ],
+              "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+              "total": 18
+            },
+            "iteration": 3,
+            "lhDesktop": {
+              "accessibility": 100,
+              "bestPractices": 100,
+              "cls": 0.068,
+              "fcp": 263.76,
+              "lcp": 774.63,
+              "performance": 99,
+              "rawScoreFile": "artifacts/lh-desktop-2.json",
+              "recommendations": [
+                "Reduce unused JavaScript (~110ms savings on desktop)",
+                "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+                "Add valid source maps for large first-party JavaScript (currently missing)",
+                "Reduce total byte weight of network payloads (score 0.5)",
+                "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+              ],
+              "tbt": 0,
+              "totalBlockingTime": 0,
+              "tti": 774.63
+            },
+            "lhMobile": {
+              "accessibility": 96,
+              "bestPractices": 100,
+              "cls": 0.00094,
+              "fcp": 948.93,
+              "lcp": 2276.79,
+              "performance": 97,
+              "rawScoreFile": "artifacts/lh-mobile-3.json",
+              "recommendations": [
+                "Minimize main-thread work",
+                "Reduce JavaScript execution time",
+                "Avoid enormous network payloads",
+                "Reduce unused JavaScript",
+                "Avoid serving legacy JavaScript to modern browsers"
+              ],
+              "tbt": 126.5,
+              "totalBlockingTime": 126.5,
+              "tti": 4666.69
+            },
+            "score": {
+              "blockedBy": [],
+              "breakdown": {
+                "desktopPerf": 99,
+                "e2eRate": 1,
+                "mobilePerf": 97,
+                "perViewport": {
+                  "1024x768": 86,
+                  "1280x800": 94,
+                  "1920x1080": 95,
+                  "375x812": 80,
+                  "414x896": 82,
+                  "768x1024": 92
+                },
+                "visual": 88
+              },
+              "converged": true,
+              "recommendations": [
+                {
+                  "action": "Minor: at 1024x768 (tablet-landscape) the 'CORE // ONLINE' label still bleeds slightly into the LinkedIn link area at the bottom of contact. Bump the @media query in SvgCoreFallback.tsx from `(max-width: 640px)` to `(max-width: 1024px)` to also hide the badge at tablet-landscape. NON-BLOCKING for convergence.",
+                  "category": "POLISH",
+                  "file": "components/ui/HudFrame.tsx OR app/globals.css",
+                  "priority": 1
+                },
+                {
+                  "action": "Mobile orb fade currently goes from 1.0 to 0.15 with 0.85 multiplier. Consider increasing fade depth to 0.95 multiplier so background is even cleaner on small viewports. NON-BLOCKING.",
+                  "category": "POLISH",
+                  "file": "components/SvgCoreFallback.tsx",
+                  "priority": 2
+                }
+              ],
+              "summary": "CONVERGED. Desktop LH 99 (target 90, +9). Mobile LH 97 (target 75, +22). E2E 18/18 across chromium/firefox/webkit at 6 viewports. Visual 88/100 (target 80, +8) with mobile sub-scores 80/82, tablet 86-92, desktop 94-95. Critical path issues resolved: dual R3F Canvas removed, Three.js code-split off mobile bundle, GLTF material clones, Lenis disabled on iOS+Firefox, 17 GSAP plugins reduced to 4, splitChars wraps words atomically, contact heading bug fixed, mobile orb fade implemented. Remaining items are minor polish that does not block convergence."
+            },
+            "visual": {
+              "overallScore": 88,
+              "perViewport": {
+                "1024x768": {
+                  "issues": [
+                    "'CORE // ONLINE' bleeds/overlaps with footer link text on contact section",
+                    "Experience header text overlapping (DEV.05 / SYS.TIMELINE crowded)",
+                    "Contact heading not visible — fade timing"
+                  ],
+                  "score": 86
+                },
+                "1280x800": {
+                  "issues": [
+                    "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+                  ],
+                  "score": 94
+                },
+                "1920x1080": {
+                  "issues": [
+                    "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+                  ],
+                  "score": 95
+                },
+                "375x812": {
+                  "issues": [
+                    "Contact heading 'PING // THE_CORE' not visible in screenshot — appears the new block-level fade has opacity 0 at scroll-snapshot time (animation didn't trigger). Truncation bug 'ING // THE_CORE' is GONE — no character clipping observed",
+                    "Projects/Experience screenshots show only orb (cards below the section header are not in initial scroll viewport — same behavior as iter4, not new)"
+                  ],
+                  "score": 80
+                },
+                "414x896": {
+                  "issues": [
+                    "Contact heading not visible (same fade timing issue) — but no truncation",
+                    "Hero: small orb dot still touches FRONTEND DEVELOPER badge edge (very minor)"
+                  ],
+                  "score": 82
+                },
+                "768x1024": {
+                  "issues": [
+                    "Contact heading not visible in scroll snapshot — fade timing"
+                  ],
+                  "score": 92
+                }
+              },
+              "screenshots": [
+                "artifacts/screenshots/iter5/375x812-hero.png",
+                "artifacts/screenshots/iter5/375x812-about.png",
+                "artifacts/screenshots/iter5/375x812-skills.png",
+                "artifacts/screenshots/iter5/375x812-projects.png",
+                "artifacts/screenshots/iter5/375x812-experience.png",
+                "artifacts/screenshots/iter5/375x812-contact.png",
+                "artifacts/screenshots/iter5/414x896-hero.png",
+                "artifacts/screenshots/iter5/414x896-about.png",
+                "artifacts/screenshots/iter5/414x896-skills.png",
+                "artifacts/screenshots/iter5/414x896-projects.png",
+                "artifacts/screenshots/iter5/414x896-experience.png",
+                "artifacts/screenshots/iter5/414x896-contact.png",
+                "artifacts/screenshots/iter5/768x1024-hero.png",
+                "artifacts/screenshots/iter5/768x1024-about.png",
+                "artifacts/screenshots/iter5/768x1024-skills.png",
+                "artifacts/screenshots/iter5/768x1024-projects.png",
+                "artifacts/screenshots/iter5/768x1024-experience.png",
+                "artifacts/screenshots/iter5/768x1024-contact.png",
+                "artifacts/screenshots/iter5/1024x768-hero.png",
+                "artifacts/screenshots/iter5/1024x768-about.png",
+                "artifacts/screenshots/iter5/1024x768-skills.png",
+                "artifacts/screenshots/iter5/1024x768-projects.png",
+                "artifacts/screenshots/iter5/1024x768-experience.png",
+                "artifacts/screenshots/iter5/1024x768-contact.png",
+                "artifacts/screenshots/iter5/1280x800-hero.png",
+                "artifacts/screenshots/iter5/1280x800-about.png",
+                "artifacts/screenshots/iter5/1280x800-skills.png",
+                "artifacts/screenshots/iter5/1280x800-projects.png",
+                "artifacts/screenshots/iter5/1280x800-experience.png",
+                "artifacts/screenshots/iter5/1280x800-contact.png",
+                "artifacts/screenshots/iter5/1920x1080-hero.png",
+                "artifacts/screenshots/iter5/1920x1080-about.png",
+                "artifacts/screenshots/iter5/1920x1080-skills.png",
+                "artifacts/screenshots/iter5/1920x1080-projects.png",
+                "artifacts/screenshots/iter5/1920x1080-experience.png",
+                "artifacts/screenshots/iter5/1920x1080-contact.png"
+              ],
+              "totalIssues": 9
+            }
+          }
+        ],
+        "iterations": 3,
+        "lastScore": {
+          "blockedBy": [],
+          "breakdown": {
+            "desktopPerf": 99,
+            "e2eRate": 1,
+            "mobilePerf": 97,
+            "perViewport": {
+              "1024x768": 86,
+              "1280x800": 94,
+              "1920x1080": 95,
+              "375x812": 80,
+              "414x896": 82,
+              "768x1024": 92
+            },
+            "visual": 88
+          },
+          "converged": true,
+          "recommendations": [
+            {
+              "action": "Minor: at 1024x768 (tablet-landscape) the 'CORE // ONLINE' label still bleeds slightly into the LinkedIn link area at the bottom of contact. Bump the @media query in SvgCoreFallback.tsx from `(max-width: 640px)` to `(max-width: 1024px)` to also hide the badge at tablet-landscape. NON-BLOCKING for convergence.",
+              "category": "POLISH",
+              "file": "components/ui/HudFrame.tsx OR app/globals.css",
+              "priority": 1
+            },
+            {
+              "action": "Mobile orb fade currently goes from 1.0 to 0.15 with 0.85 multiplier. Consider increasing fade depth to 0.95 multiplier so background is even cleaner on small viewports. NON-BLOCKING.",
+              "category": "POLISH",
+              "file": "components/SvgCoreFallback.tsx",
+              "priority": 2
+            }
+          ],
+          "summary": "CONVERGED. Desktop LH 99 (target 90, +9). Mobile LH 97 (target 75, +22). E2E 18/18 across chromium/firefox/webkit at 6 viewports. Visual 88/100 (target 80, +8) with mobile sub-scores 80/82, tablet 86-92, desktop 94-95. Critical path issues resolved: dual R3F Canvas removed, Three.js code-split off mobile bundle, GLTF material clones, Lenis disabled on iOS+Firefox, 17 GSAP plugins reduced to 4, splitChars wraps words atomically, contact heading bug fixed, mobile orb fade implemented. Remaining items are minor polish that does not block convergence."
+        },
+        "targetDesktopPerf": 90,
+        "targetMobilePerf": 75
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Write artifacts/perf-responsive-report.md with: status (converged or not), final Lighthouse desktop+mobile scores, E2E pass rate per browser+viewport, list of optimizations applied per phase, remaining caveats, recommended manual checks (real device test list — iPhone SE, iPad, Pixel low-end, mid-range Windows laptop).",
+        "Write artifacts/perf-responsive-history.json from history array.",
+        "Return JSON { reportPath, historyPath, verdict, summary }"
+      ],
+      "outputFormat": "JSON",
+      "role": "Technical writer",
+      "task": "Produce artifacts/perf-responsive-report.md and artifacts/perf-responsive-history.json."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7VCRQ3J685AVN4TKNPDMHT/input.json",
+    "outputJsonPath": "tasks/01KQ7VCRQ3J685AVN4TKNPDMHT/result.json"
+  },
+  "kind": "agent",
+  "title": "Write final perf + responsive report",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7VCRQ3J685AVN4TKNPDMHT",
+  "taskId": "final-report",
+  "invocationKey": "portfolio-perf-responsive:S000027:final-report",
+  "stepId": "S000027",
+  "inputs": {
+    "converged": true,
+    "history": [
+      {
+        "e2e": {
+          "consoleErrors": [
+            "console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\".",
+            "console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\"."
+          ],
+          "failed": 6,
+          "failures": [
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport iphone-se 375x812 > loads, no overflow, no console errors",
+              "viewport": "375x812"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport iphone-11 414x896 > loads, no overflow, no console errors",
+              "viewport": "414x896"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport ipad 768x1024 > loads, no overflow, no console errors",
+              "viewport": "768x1024"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport ipad-land 1024x768 > loads, no overflow, no console errors",
+              "viewport": "1024x768"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport laptop 1280x800 > loads, no overflow, no console errors",
+              "viewport": "1280x800"
+            },
+            {
+              "error": "Error: fatal console/page errors: console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cy: Unexpected end of attribute. Expected length, \"\". console: Error: <circle> attribute cx: Unexpected end of attribute. Expected length, \"\". console: E",
+              "project": "chromium",
+              "title": "responsive.spec.ts > viewport desktop 1920x1080 > loads, no overflow, no console errors",
+              "viewport": "1920x1080"
+            }
+          ],
+          "passed": 12,
+          "projects": [
+            {
+              "failed": 6,
+              "name": "chromium",
+              "passed": 0
+            },
+            {
+              "failed": 0,
+              "name": "firefox",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "webkit",
+              "passed": 6
+            }
+          ],
+          "summary": "12 passed / 6 failed across 6 viewports x 3 browsers (chromium, firefox, webkit). Failures isolated to chromium only due to SVG <circle> cx/cy parse errors (empty/NaN coordinates).",
+          "total": 18
+        },
+        "iteration": 1,
+        "lhDesktop": {
+          "accessibility": 100,
+          "bestPractices": 96,
+          "cls": 0.065838,
+          "fcp": 324.5182,
+          "lcp": 893.5546,
+          "performance": 88,
+          "rawScoreFile": "artifacts/lh-desktop-1.json",
+          "recommendations": [
+            "Reduce unused JavaScript ~100ms ~154KB",
+            "Avoid serving legacy JavaScript to modern browsers ~11KB",
+            "Minimize main-thread work",
+            "Avoid enormous network payloads",
+            "Avoid an excessive DOM size"
+          ],
+          "tbt": 258.2227,
+          "totalBlockingTime": 258.2227,
+          "tti": 1574.80963
+        },
+        "lhMobile": {
+          "accessibility": 96,
+          "bestPractices": 96,
+          "cls": 0.001112,
+          "fcp": 1549.20035,
+          "lcp": 3002.6010499999998,
+          "performance": 66,
+          "rawScoreFile": "artifacts/lh-mobile-1.json",
+          "recommendations": [
+            "Avoid enormous network payloads (saves ~2794397ms)",
+            "Minimize main-thread work (saves ~15127ms)",
+            "Reduce JavaScript execution time (saves ~4949ms)",
+            "Avoid an excessive DOM size (saves ~2500ms)",
+            "Avoid serving legacy JavaScript to modern browsers (saves ~150ms)"
+          ],
+          "tbt": 1572.4999999999995,
+          "totalBlockingTime": 1572.4999999999995,
+          "tti": 6057.321435
+        },
+        "score": {
+          "blockedBy": [
+            "lighthouse-mobile-perf-below-target",
+            "chromium-svg-circle-nan",
+            "visual-build-corruption-needs-rerun"
+          ],
+          "breakdown": {
+            "desktopPerf": 88,
+            "e2eRate": 0.667,
+            "mobilePerf": 66,
+            "visual": 45
+          },
+          "converged": false,
+          "recommendations": [
+            {
+              "action": "Mobile path is shipping the same JS as desktop (R3F + three + drei + postprocessing). Move the dynamic `import('./_Scene')` INSIDE the `!isMobile && !isLowEnd` branch so the Scene chunk is never even prefetched on mobile. Currently next/dynamic is hoisted at module scope. Use a useEffect-driven import OR a conditional dynamic component. Expected mobile-bundle drop: ~150KB.",
+              "category": "BUNDLE-SIZE",
+              "file": "components/three/SceneContainer.tsx",
+              "priority": 1
+            },
+            {
+              "action": "Chromium throws repeated `<circle> attribute cx/cy: Unexpected end of attribute. Expected length, \"\".` errors — failing all 6 chromium E2E tests. Find SVG <circle> elements where cx/cy values can be empty/undefined/NaN during initial render. Likely OrbitalBackdrop or PingRings. Default coordinates to 0 when unset; never let GSAP write empty strings. grep `cx=` and `cy=` for templates that use undefined refs.",
+              "category": "BROWSER-COMPAT",
+              "file": "components/three/HeroWarrior.tsx",
+              "priority": 2
+            },
+            {
+              "action": "Lighthouse mobile recommends 'reduce unused JavaScript ~154KB'. Check next.config.mjs and add `experimental: { optimizePackageImports: ['gsap', '@react-three/drei', '@react-three/fiber', 'three'] }` so Next prunes unused subpath exports. Also: explicitly import only the drei pieces actually used (e.g., `import { Float } from '@react-three/drei/web/Float'` rather than top-level).",
+              "category": "PERF-DOM",
+              "file": "lib/gsap.ts + components/sections/*",
+              "priority": 3
+            },
+            {
+              "action": "Lighthouse mobile TBT 1572ms is a major blocker. The HeroWarrior + DevStation paths even when gated by `tier==='high'` may still execute their imports during initial parse. Wrap the entire HeroWarrior + DevStation modules behind `dynamic(() => import(), { ssr: false })` from the section component, so they're code-split out of the main route bundle.",
+              "category": "PERF-DOM",
+              "file": "components/three/HeroWarrior.tsx",
+              "priority": 4
+            },
+            {
+              "action": "Visual regression flagged the contact-section title wrapping awkwardly ('ING // THE_CO RE') at 375px and partially obscured by section badge '06' at 768px. Reduce title font size with clamp + adjust the section number badge z-index/position so it doesn't overlap. Verify with re-screenshot.",
+              "category": "RESPONSIVE",
+              "file": "components/sections/ContactSection.tsx",
+              "priority": 5
+            },
+            {
+              "action": "Visual regression overall score 45 is a FALSE NEGATIVE — caused by build corruption when 4 parallel agents ran `npm run start` against the same .next/ directory. Before the next iteration, do a clean `rm -rf .next && npm run build` and re-run visual regression in isolation (no parallel server starts). The actual layout is sound based on chromium-vs-firefox comparison.",
+              "category": "TESTING",
+              "file": "playwright.config.ts + tests/visual/perf-responsive.spec.ts",
+              "priority": 6
+            },
+            {
+              "action": "Add Next.js compiler.removeConsole for production: `compiler: { removeConsole: { exclude: ['error', 'warn'] } }`. And add `swcMinify: true` (default in Next 14 but explicit). Also enable `productionBrowserSourceMaps: false` (default but verify) — sourcemaps in production add ~30% to served bundle.",
+              "category": "PERF-DOM",
+              "file": "next.config.mjs",
+              "priority": 7
+            }
+          ],
+          "summary": "Iteration 1 of convergence loop: desktop perf 88 (target 90, -2), mobile perf 66 (target 75, -9), E2E 12/18 (chromium SVG NaN errors), visual 45 (build corruption false-negative). Primary blocker is mobile bundle size — Three.js stack still ships even on mobile fallback path. Secondary: chromium SVG cx/cy NaN guard, code-split HeroWarrior + DevStation, fix contact title wrap, re-run visual after clean build."
+        },
+        "visual": {
+          "overallScore": 45,
+          "perViewport": {
+            "1024x768": {
+              "issues": [
+                "hero shows 'Application error: a client-side exception has occurred' - app crashes (major)",
+                "all other sections render as unstyled HTML fallback (no CSS, no canvas, no theme) (major)",
+                "missing ProjectVisuals canvas/svg core (major)",
+                "no HUD frame, no orange/dark theme applied (major)"
+              ],
+              "score": 15
+            },
+            "1280x800": {
+              "issues": [
+                "hero renders blank white canvas with only grid lines - main visual missing (major)",
+                "about/skills/projects/experience/contact all show unstyled HTML fallback (major)",
+                "no CSS or canvas/svg core loaded (major)",
+                "complete loss of design system at desktop breakpoint (major)"
+              ],
+              "score": 10
+            },
+            "1920x1080": {
+              "issues": [
+                "hero renders blank white canvas with only grid lines - main visual missing (major)",
+                "all sections render as unstyled HTML fallback (major)",
+                "no CSS or canvas/svg core loaded (major)",
+                "complete loss of design system at large desktop breakpoint (major)"
+              ],
+              "score": 10
+            },
+            "375x812": {
+              "issues": [
+                "contact section title 'OPENING // THE_CORE' wraps awkwardly producing 'ING // THE_CO RE' (major text break)",
+                "contact section 'OPEN' prefix appears clipped above viewport when scrolled to anchor"
+              ],
+              "score": 80
+            },
+            "414x896": {
+              "issues": [
+                "contact title still wraps as 'ING // THE_COR E' due to large font on narrow column (major)"
+              ],
+              "score": 85
+            },
+            "768x1024": {
+              "issues": [
+                "skills HUD bottom: 'LAT 37.77°N / LON -122.42°W' overlaps 'OPENAI API' text row (minor)",
+                "contact title 'OPENING // THE_CORE' partially obscured by '06' badge overlapping 'OPEN' (major)",
+                "experience section second card placeholder shows 'CORE // ONLINE' overlap with HUD frame (minor)"
+              ],
+              "score": 75
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/iter1/375x812-hero.png",
+            "artifacts/screenshots/iter1/375x812-about.png",
+            "artifacts/screenshots/iter1/375x812-skills.png",
+            "artifacts/screenshots/iter1/375x812-projects.png",
+            "artifacts/screenshots/iter1/375x812-experience.png",
+            "artifacts/screenshots/iter1/375x812-contact.png",
+            "artifacts/screenshots/iter1/414x896-hero.png",
+            "artifacts/screenshots/iter1/414x896-about.png",
+            "artifacts/screenshots/iter1/414x896-skills.png",
+            "artifacts/screenshots/iter1/414x896-projects.png",
+            "artifacts/screenshots/iter1/414x896-experience.png",
+            "artifacts/screenshots/iter1/414x896-contact.png",
+            "artifacts/screenshots/iter1/768x1024-hero.png",
+            "artifacts/screenshots/iter1/768x1024-about.png",
+            "artifacts/screenshots/iter1/768x1024-skills.png",
+            "artifacts/screenshots/iter1/768x1024-projects.png",
+            "artifacts/screenshots/iter1/768x1024-experience.png",
+            "artifacts/screenshots/iter1/768x1024-contact.png",
+            "artifacts/screenshots/iter1/1024x768-hero.png",
+            "artifacts/screenshots/iter1/1024x768-about.png",
+            "artifacts/screenshots/iter1/1024x768-skills.png",
+            "artifacts/screenshots/iter1/1024x768-projects.png",
+            "artifacts/screenshots/iter1/1024x768-experience.png",
+            "artifacts/screenshots/iter1/1024x768-contact.png",
+            "artifacts/screenshots/iter1/1280x800-hero.png",
+            "artifacts/screenshots/iter1/1280x800-about.png",
+            "artifacts/screenshots/iter1/1280x800-skills.png",
+            "artifacts/screenshots/iter1/1280x800-projects.png",
+            "artifacts/screenshots/iter1/1280x800-experience.png",
+            "artifacts/screenshots/iter1/1280x800-contact.png",
+            "artifacts/screenshots/iter1/1920x1080-hero.png",
+            "artifacts/screenshots/iter1/1920x1080-about.png",
+            "artifacts/screenshots/iter1/1920x1080-skills.png",
+            "artifacts/screenshots/iter1/1920x1080-projects.png",
+            "artifacts/screenshots/iter1/1920x1080-experience.png",
+            "artifacts/screenshots/iter1/1920x1080-contact.png"
+          ],
+          "totalIssues": 18
+        }
+      },
+      {
+        "e2e": {
+          "consoleErrors": [],
+          "failed": 0,
+          "failures": [],
+          "passed": 18,
+          "projects": [
+            {
+              "failed": 0,
+              "name": "chromium",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "firefox",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "webkit",
+              "passed": 6
+            }
+          ],
+          "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+          "total": 18
+        },
+        "iteration": 2,
+        "lhDesktop": {
+          "accessibility": 100,
+          "bestPractices": 100,
+          "cls": 0.068,
+          "fcp": 263.76,
+          "lcp": 774.63,
+          "performance": 99,
+          "rawScoreFile": "artifacts/lh-desktop-2.json",
+          "recommendations": [
+            "Reduce unused JavaScript (~110ms savings on desktop)",
+            "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+            "Add valid source maps for large first-party JavaScript (currently missing)",
+            "Reduce total byte weight of network payloads (score 0.5)",
+            "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+          ],
+          "tbt": 0,
+          "totalBlockingTime": 0,
+          "tti": 774.63
+        },
+        "lhMobile": {
+          "accessibility": 96,
+          "bestPractices": 100,
+          "cls": 0.001,
+          "fcp": 913.13,
+          "lcp": 2767.69,
+          "performance": 95,
+          "rawScoreFile": "artifacts/lh-mobile-2.json",
+          "recommendations": [
+            "Eliminate render-blocking resources (~45ms savings on mobile)",
+            "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+            "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+            "Fix color-contrast issues (accessibility audit failing)",
+            "Add valid source maps and reduce total byte weight / legacy JS"
+          ],
+          "tbt": 93,
+          "totalBlockingTime": 93,
+          "tti": 4503.84
+        },
+        "score": {
+          "blockedBy": [
+            "mobile-visual-orb-overlap",
+            "mobile-visual-core-online-badge-bleed",
+            "mobile-contact-title-still-wraps",
+            "mobile-projects-orb-dominates"
+          ],
+          "breakdown": {
+            "desktopPerf": 99,
+            "e2eRate": 1,
+            "mobilePerf": 95,
+            "mobileVisualScores": {
+              "375x812": 70,
+              "414x896": 74
+            },
+            "visual": 85
+          },
+          "converged": false,
+          "recommendations": [
+            {
+              "action": "On mobile (375/414) the SVG core fallback orb overlaps the hero 'FRONTEND DEVELOP' role badge. The fallback is full-viewport positioned. Make the orb's SVG smaller on small viewports (e.g., scale down with viewBox + max-w / smaller fixed center), and offset it vertically to the top half so the role-badge text below it has clear space. Suggested: limit orb visual to the top 55vh on viewports <= 480px and reduce orb radius proportionally.",
+              "category": "RESPONSIVE",
+              "file": "components/SvgCoreFallback.tsx",
+              "priority": 1
+            },
+            {
+              "action": "The 'CORE // ONLINE' badge + orbiting orange dot is rendering as part of the SVG fallback or HUD overlay and is fixed to the viewport, causing it to bleed visually into projects/career/about sections during scroll. Wrap that badge in a hero-only ScrollTrigger that hides it when hero is scrolled past, OR position it inside the hero section element instead of fixed.",
+              "category": "RESPONSIVE",
+              "file": "components/SvgCoreFallback.tsx OR components/ui/HudFrame.tsx",
+              "priority": 2
+            },
+            {
+              "action": "Contact title 'PING // THE_CORE' (or 'OPENING // THE_CORE') still wraps awkwardly to 'ING // THE_CORE' at 375px. The Phase 5 fix used keep-all + clamp(2rem,...) but the visual at 375px shows breakage still. Solution: split the title into two lines deliberately ('PING //' on line 1, 'THE_CORE' on line 2) on viewports <= 480px using a `<br className=\"sm:hidden\">` or grid layout. Also reduce font size further on smallest viewport (clamp(1.5rem,...)).",
+              "category": "RESPONSIVE",
+              "file": "components/sections/ContactSection.tsx",
+              "priority": 3
+            },
+            {
+              "action": "On mobile (375/414) the projects section shows the SVG orb dominating and the project card content is not visible in the fold. The card is below the orb in the stack. Either: (a) reduce orb size to ~30vh on mobile so card stays in viewport, OR (b) hide the orb entirely on mobile in projects (it's already in hero — duplication is visual noise). Pick whichever fits the design language better.",
+              "category": "RESPONSIVE",
+              "file": "components/sections/ProjectsSection.tsx",
+              "priority": 4
+            },
+            {
+              "action": "Mobile hero role badge 'FRONTEND DEVELOP' is visually overlapped by the orb. Add a dark gradient/glass background to the role badge so it remains readable on top of any background, OR position the orb behind a translucent backdrop layer that slightly fades the orb where text overlaps.",
+              "category": "RESPONSIVE",
+              "file": "components/sections/HeroSection.tsx + global",
+              "priority": 5
+            }
+          ],
+          "summary": "Iteration 2 RESULTS: desktop perf 99 (target 90, +9), mobile perf 95 (target 75, +20), E2E 18/18 (3 browsers x 6 viewports), visual 85. Performance and E2E targets are massively exceeded. Visual is at 85 but the mobile sub-scores (70 at 375px, 74 at 414px) show real layout issues that the user would consider 'not 100% solid'. One more refine pass to fix mobile orb overlap, persistent CORE badge bleed, and contact title wrap before declaring final convergence."
+        },
+        "visual": {
+          "overallScore": 85,
+          "perViewport": {
+            "1024x768": {
+              "issues": [
+                "Projects: project card slightly overlaps orb visual (busy composition)"
+              ],
+              "score": 88
+            },
+            "1280x800": {
+              "issues": [],
+              "score": 94
+            },
+            "1920x1080": {
+              "issues": [],
+              "score": 96
+            },
+            "375x812": {
+              "issues": [
+                "Hero orb canvas overlaps the 'FRONTEND DEVELOP' role badge text",
+                "Persistent CORE // ONLINE badge and orbiting orange dot bleed into projects/career/about sections (visual leak from hero canvas)",
+                "Contact heading wraps awkwardly to 'ING // THE_CORE'",
+                "Projects section shows large orb but project card content not visible at this viewport"
+              ],
+              "score": 70
+            },
+            "414x896": {
+              "issues": [
+                "Hero orb visual overlaps 'FRONTEND DEVELOP' role badge text",
+                "Projects section: orb dominates and project card not visible in fold"
+              ],
+              "score": 74
+            },
+            "768x1024": {
+              "issues": [
+                "Hero role badge slightly overlapped by orb visual"
+              ],
+              "score": 86
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/iter2/375x812-hero.png",
+            "artifacts/screenshots/iter2/375x812-about.png",
+            "artifacts/screenshots/iter2/375x812-skills.png",
+            "artifacts/screenshots/iter2/375x812-projects.png",
+            "artifacts/screenshots/iter2/375x812-experience.png",
+            "artifacts/screenshots/iter2/375x812-contact.png",
+            "artifacts/screenshots/iter2/414x896-hero.png",
+            "artifacts/screenshots/iter2/414x896-about.png",
+            "artifacts/screenshots/iter2/414x896-skills.png",
+            "artifacts/screenshots/iter2/414x896-projects.png",
+            "artifacts/screenshots/iter2/414x896-experience.png",
+            "artifacts/screenshots/iter2/414x896-contact.png",
+            "artifacts/screenshots/iter2/768x1024-hero.png",
+            "artifacts/screenshots/iter2/768x1024-about.png",
+            "artifacts/screenshots/iter2/768x1024-skills.png",
+            "artifacts/screenshots/iter2/768x1024-projects.png",
+            "artifacts/screenshots/iter2/768x1024-experience.png",
+            "artifacts/screenshots/iter2/768x1024-contact.png",
+            "artifacts/screenshots/iter2/1024x768-hero.png",
+            "artifacts/screenshots/iter2/1024x768-about.png",
+            "artifacts/screenshots/iter2/1024x768-skills.png",
+            "artifacts/screenshots/iter2/1024x768-projects.png",
+            "artifacts/screenshots/iter2/1024x768-experience.png",
+            "artifacts/screenshots/iter2/1024x768-contact.png",
+            "artifacts/screenshots/iter2/1280x800-hero.png",
+            "artifacts/screenshots/iter2/1280x800-about.png",
+            "artifacts/screenshots/iter2/1280x800-skills.png",
+            "artifacts/screenshots/iter2/1280x800-projects.png",
+            "artifacts/screenshots/iter2/1280x800-experience.png",
+            "artifacts/screenshots/iter2/1280x800-contact.png",
+            "artifacts/screenshots/iter2/1920x1080-hero.png",
+            "artifacts/screenshots/iter2/1920x1080-about.png",
+            "artifacts/screenshots/iter2/1920x1080-skills.png",
+            "artifacts/screenshots/iter2/1920x1080-projects.png",
+            "artifacts/screenshots/iter2/1920x1080-experience.png",
+            "artifacts/screenshots/iter2/1920x1080-contact.png"
+          ],
+          "totalIssues": 8
+        }
+      },
+      {
+        "e2e": {
+          "consoleErrors": [],
+          "failed": 0,
+          "failures": [],
+          "passed": 18,
+          "projects": [
+            {
+              "failed": 0,
+              "name": "chromium",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "firefox",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "webkit",
+              "passed": 6
+            }
+          ],
+          "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+          "total": 18
+        },
+        "iteration": 3,
+        "lhDesktop": {
+          "accessibility": 100,
+          "bestPractices": 100,
+          "cls": 0.068,
+          "fcp": 263.76,
+          "lcp": 774.63,
+          "performance": 99,
+          "rawScoreFile": "artifacts/lh-desktop-2.json",
+          "recommendations": [
+            "Reduce unused JavaScript (~110ms savings on desktop)",
+            "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+            "Add valid source maps for large first-party JavaScript (currently missing)",
+            "Reduce total byte weight of network payloads (score 0.5)",
+            "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+          ],
+          "tbt": 0,
+          "totalBlockingTime": 0,
+          "tti": 774.63
+        },
+        "lhMobile": {
+          "accessibility": 96,
+          "bestPractices": 100,
+          "cls": 0.00094,
+          "fcp": 948.93,
+          "lcp": 2276.79,
+          "performance": 97,
+          "rawScoreFile": "artifacts/lh-mobile-3.json",
+          "recommendations": [
+            "Minimize main-thread work",
+            "Reduce JavaScript execution time",
+            "Avoid enormous network payloads",
+            "Reduce unused JavaScript",
+            "Avoid serving legacy JavaScript to modern browsers"
+          ],
+          "tbt": 126.5,
+          "totalBlockingTime": 126.5,
+          "tti": 4666.69
+        },
+        "score": {
+          "blockedBy": [],
+          "breakdown": {
+            "desktopPerf": 99,
+            "e2eRate": 1,
+            "mobilePerf": 97,
+            "perViewport": {
+              "1024x768": 86,
+              "1280x800": 94,
+              "1920x1080": 95,
+              "375x812": 80,
+              "414x896": 82,
+              "768x1024": 92
+            },
+            "visual": 88
+          },
+          "converged": true,
+          "recommendations": [
+            {
+              "action": "Minor: at 1024x768 (tablet-landscape) the 'CORE // ONLINE' label still bleeds slightly into the LinkedIn link area at the bottom of contact. Bump the @media query in SvgCoreFallback.tsx from `(max-width: 640px)` to `(max-width: 1024px)` to also hide the badge at tablet-landscape. NON-BLOCKING for convergence.",
+              "category": "POLISH",
+              "file": "components/ui/HudFrame.tsx OR app/globals.css",
+              "priority": 1
+            },
+            {
+              "action": "Mobile orb fade currently goes from 1.0 to 0.15 with 0.85 multiplier. Consider increasing fade depth to 0.95 multiplier so background is even cleaner on small viewports. NON-BLOCKING.",
+              "category": "POLISH",
+              "file": "components/SvgCoreFallback.tsx",
+              "priority": 2
+            }
+          ],
+          "summary": "CONVERGED. Desktop LH 99 (target 90, +9). Mobile LH 97 (target 75, +22). E2E 18/18 across chromium/firefox/webkit at 6 viewports. Visual 88/100 (target 80, +8) with mobile sub-scores 80/82, tablet 86-92, desktop 94-95. Critical path issues resolved: dual R3F Canvas removed, Three.js code-split off mobile bundle, GLTF material clones, Lenis disabled on iOS+Firefox, 17 GSAP plugins reduced to 4, splitChars wraps words atomically, contact heading bug fixed, mobile orb fade implemented. Remaining items are minor polish that does not block convergence."
+        },
+        "visual": {
+          "overallScore": 88,
+          "perViewport": {
+            "1024x768": {
+              "issues": [
+                "'CORE // ONLINE' bleeds/overlaps with footer link text on contact section",
+                "Experience header text overlapping (DEV.05 / SYS.TIMELINE crowded)",
+                "Contact heading not visible — fade timing"
+              ],
+              "score": 86
+            },
+            "1280x800": {
+              "issues": [
+                "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+              ],
+              "score": 94
+            },
+            "1920x1080": {
+              "issues": [
+                "Contact heading not visible in screenshot due to fade timing (no truncation regression)"
+              ],
+              "score": 95
+            },
+            "375x812": {
+              "issues": [
+                "Contact heading 'PING // THE_CORE' not visible in screenshot — appears the new block-level fade has opacity 0 at scroll-snapshot time (animation didn't trigger). Truncation bug 'ING // THE_CORE' is GONE — no character clipping observed",
+                "Projects/Experience screenshots show only orb (cards below the section header are not in initial scroll viewport — same behavior as iter4, not new)"
+              ],
+              "score": 80
+            },
+            "414x896": {
+              "issues": [
+                "Contact heading not visible (same fade timing issue) — but no truncation",
+                "Hero: small orb dot still touches FRONTEND DEVELOPER badge edge (very minor)"
+              ],
+              "score": 82
+            },
+            "768x1024": {
+              "issues": [
+                "Contact heading not visible in scroll snapshot — fade timing"
+              ],
+              "score": 92
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/iter5/375x812-hero.png",
+            "artifacts/screenshots/iter5/375x812-about.png",
+            "artifacts/screenshots/iter5/375x812-skills.png",
+            "artifacts/screenshots/iter5/375x812-projects.png",
+            "artifacts/screenshots/iter5/375x812-experience.png",
+            "artifacts/screenshots/iter5/375x812-contact.png",
+            "artifacts/screenshots/iter5/414x896-hero.png",
+            "artifacts/screenshots/iter5/414x896-about.png",
+            "artifacts/screenshots/iter5/414x896-skills.png",
+            "artifacts/screenshots/iter5/414x896-projects.png",
+            "artifacts/screenshots/iter5/414x896-experience.png",
+            "artifacts/screenshots/iter5/414x896-contact.png",
+            "artifacts/screenshots/iter5/768x1024-hero.png",
+            "artifacts/screenshots/iter5/768x1024-about.png",
+            "artifacts/screenshots/iter5/768x1024-skills.png",
+            "artifacts/screenshots/iter5/768x1024-projects.png",
+            "artifacts/screenshots/iter5/768x1024-experience.png",
+            "artifacts/screenshots/iter5/768x1024-contact.png",
+            "artifacts/screenshots/iter5/1024x768-hero.png",
+            "artifacts/screenshots/iter5/1024x768-about.png",
+            "artifacts/screenshots/iter5/1024x768-skills.png",
+            "artifacts/screenshots/iter5/1024x768-projects.png",
+            "artifacts/screenshots/iter5/1024x768-experience.png",
+            "artifacts/screenshots/iter5/1024x768-contact.png",
+            "artifacts/screenshots/iter5/1280x800-hero.png",
+            "artifacts/screenshots/iter5/1280x800-about.png",
+            "artifacts/screenshots/iter5/1280x800-skills.png",
+            "artifacts/screenshots/iter5/1280x800-projects.png",
+            "artifacts/screenshots/iter5/1280x800-experience.png",
+            "artifacts/screenshots/iter5/1280x800-contact.png",
+            "artifacts/screenshots/iter5/1920x1080-hero.png",
+            "artifacts/screenshots/iter5/1920x1080-about.png",
+            "artifacts/screenshots/iter5/1920x1080-skills.png",
+            "artifacts/screenshots/iter5/1920x1080-projects.png",
+            "artifacts/screenshots/iter5/1920x1080-experience.png",
+            "artifacts/screenshots/iter5/1920x1080-contact.png"
+          ],
+          "totalIssues": 9
+        }
+      }
+    ],
+    "iterations": 3,
+    "lastScore": {
+      "blockedBy": [],
+      "breakdown": {
+        "desktopPerf": 99,
+        "e2eRate": 1,
+        "mobilePerf": 97,
+        "perViewport": {
+          "1024x768": 86,
+          "1280x800": 94,
+          "1920x1080": 95,
+          "375x812": 80,
+          "414x896": 82,
+          "768x1024": 92
+        },
+        "visual": 88
+      },
+      "converged": true,
+      "recommendations": [
+        {
+          "action": "Minor: at 1024x768 (tablet-landscape) the 'CORE // ONLINE' label still bleeds slightly into the LinkedIn link area at the bottom of contact. Bump the @media query in SvgCoreFallback.tsx from `(max-width: 640px)` to `(max-width: 1024px)` to also hide the badge at tablet-landscape. NON-BLOCKING for convergence.",
+          "category": "POLISH",
+          "file": "components/ui/HudFrame.tsx OR app/globals.css",
+          "priority": 1
+        },
+        {
+          "action": "Mobile orb fade currently goes from 1.0 to 0.15 with 0.85 multiplier. Consider increasing fade depth to 0.95 multiplier so background is even cleaner on small viewports. NON-BLOCKING.",
+          "category": "POLISH",
+          "file": "components/SvgCoreFallback.tsx",
+          "priority": 2
+        }
+      ],
+      "summary": "CONVERGED. Desktop LH 99 (target 90, +9). Mobile LH 97 (target 75, +22). E2E 18/18 across chromium/firefox/webkit at 6 viewports. Visual 88/100 (target 80, +8) with mobile sub-scores 80/82, tablet 86-92, desktop 94-95. Critical path issues resolved: dual R3F Canvas removed, Three.js code-split off mobile bundle, GLTF material clones, Lenis disabled on iOS+Firefox, 17 GSAP plugins reduced to 4, splitChars wraps words atomically, contact heading bug fixed, mobile orb fade implemented. Remaining items are minor polish that does not block convergence."
+    },
+    "targetDesktopPerf": 90,
+    "targetMobilePerf": 75
+  }
+}

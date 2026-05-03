@@ -1,0 +1,19 @@
+{
+  "performance": 99,
+  "accessibility": 100,
+  "bestPractices": 100,
+  "lcp": 774.63,
+  "cls": 0.068,
+  "tbt": 0,
+  "fcp": 263.76,
+  "tti": 774.63,
+  "totalBlockingTime": 0,
+  "recommendations": [
+    "Reduce unused JavaScript (~110ms savings on desktop)",
+    "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+    "Add valid source maps for large first-party JavaScript (currently missing)",
+    "Reduce total byte weight of network payloads (score 0.5)",
+    "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+  ],
+  "rawScoreFile": "artifacts/lh-desktop-2.json"
+}

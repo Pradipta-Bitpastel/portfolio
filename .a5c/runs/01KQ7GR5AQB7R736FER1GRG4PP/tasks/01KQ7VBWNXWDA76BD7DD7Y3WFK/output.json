@@ -1,0 +1,33 @@
+{
+  "converged": true,
+  "breakdown": {
+    "desktopPerf": 99,
+    "mobilePerf": 97,
+    "e2eRate": 1.0,
+    "visual": 88,
+    "perViewport": {
+      "375x812": 80,
+      "414x896": 82,
+      "768x1024": 92,
+      "1024x768": 86,
+      "1280x800": 94,
+      "1920x1080": 95
+    }
+  },
+  "blockedBy": [],
+  "recommendations": [
+    {
+      "priority": 1,
+      "category": "POLISH",
+      "file": "components/ui/HudFrame.tsx OR app/globals.css",
+      "action": "Minor: at 1024x768 (tablet-landscape) the 'CORE // ONLINE' label still bleeds slightly into the LinkedIn link area at the bottom of contact. Bump the @media query in SvgCoreFallback.tsx from `(max-width: 640px)` to `(max-width: 1024px)` to also hide the badge at tablet-landscape. NON-BLOCKING for convergence."
+    },
+    {
+      "priority": 2,
+      "category": "POLISH",
+      "file": "components/SvgCoreFallback.tsx",
+      "action": "Mobile orb fade currently goes from 1.0 to 0.15 with 0.85 multiplier. Consider increasing fade depth to 0.95 multiplier so background is even cleaner on small viewports. NON-BLOCKING."
+    }
+  ],
+  "summary": "CONVERGED. Desktop LH 99 (target 90, +9). Mobile LH 97 (target 75, +22). E2E 18/18 across chromium/firefox/webkit at 6 viewports. Visual 88/100 (target 80, +8) with mobile sub-scores 80/82, tablet 86-92, desktop 94-95. Critical path issues resolved: dual R3F Canvas removed, Three.js code-split off mobile bundle, GLTF material clones, Lenis disabled on iOS+Firefox, 17 GSAP plugins reduced to 4, splitChars wraps words atomically, contact heading bug fixed, mobile orb fade implemented. Remaining items are minor polish that does not block convergence."
+}

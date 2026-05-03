@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KQ7MMN3TJTVTFS9J2KWVFFWM",
+  "taskId": "visual-regression",
+  "invocationKey": "portfolio-perf-responsive:S000018:visual-regression",
+  "status": "ok",
+  "result": {
+    "overallScore": 85,
+    "perViewport": {
+      "1024x768": {
+        "issues": [
+          "Projects: project card slightly overlaps orb visual (busy composition)"
+        ],
+        "score": 88
+      },
+      "1280x800": {
+        "issues": [],
+        "score": 94
+      },
+      "1920x1080": {
+        "issues": [],
+        "score": 96
+      },
+      "375x812": {
+        "issues": [
+          "Hero orb canvas overlaps the 'FRONTEND DEVELOP' role badge text",
+          "Persistent CORE // ONLINE badge and orbiting orange dot bleed into projects/career/about sections (visual leak from hero canvas)",
+          "Contact heading wraps awkwardly to 'ING // THE_CORE'",
+          "Projects section shows large orb but project card content not visible at this viewport"
+        ],
+        "score": 70
+      },
+      "414x896": {
+        "issues": [
+          "Hero orb visual overlaps 'FRONTEND DEVELOP' role badge text",
+          "Projects section: orb dominates and project card not visible in fold"
+        ],
+        "score": 74
+      },
+      "768x1024": {
+        "issues": [
+          "Hero role badge slightly overlapped by orb visual"
+        ],
+        "score": 86
+      }
+    },
+    "screenshots": [
+      "artifacts/screenshots/iter2/375x812-hero.png",
+      "artifacts/screenshots/iter2/375x812-about.png",
+      "artifacts/screenshots/iter2/375x812-skills.png",
+      "artifacts/screenshots/iter2/375x812-projects.png",
+      "artifacts/screenshots/iter2/375x812-experience.png",
+      "artifacts/screenshots/iter2/375x812-contact.png",
+      "artifacts/screenshots/iter2/414x896-hero.png",
+      "artifacts/screenshots/iter2/414x896-about.png",
+      "artifacts/screenshots/iter2/414x896-skills.png",
+      "artifacts/screenshots/iter2/414x896-projects.png",
+      "artifacts/screenshots/iter2/414x896-experience.png",
+      "artifacts/screenshots/iter2/414x896-contact.png",
+      "artifacts/screenshots/iter2/768x1024-hero.png",
+      "artifacts/screenshots/iter2/768x1024-about.png",
+      "artifacts/screenshots/iter2/768x1024-skills.png",
+      "artifacts/screenshots/iter2/768x1024-projects.png",
+      "artifacts/screenshots/iter2/768x1024-experience.png",
+      "artifacts/screenshots/iter2/768x1024-contact.png",
+      "artifacts/screenshots/iter2/1024x768-hero.png",
+      "artifacts/screenshots/iter2/1024x768-about.png",
+      "artifacts/screenshots/iter2/1024x768-skills.png",
+      "artifacts/screenshots/iter2/1024x768-projects.png",
+      "artifacts/screenshots/iter2/1024x768-experience.png",
+      "artifacts/screenshots/iter2/1024x768-contact.png",
+      "artifacts/screenshots/iter2/1280x800-hero.png",
+      "artifacts/screenshots/iter2/1280x800-about.png",
+      "artifacts/screenshots/iter2/1280x800-skills.png",
+      "artifacts/screenshots/iter2/1280x800-projects.png",
+      "artifacts/screenshots/iter2/1280x800-experience.png",
+      "artifacts/screenshots/iter2/1280x800-contact.png",
+      "artifacts/screenshots/iter2/1920x1080-hero.png",
+      "artifacts/screenshots/iter2/1920x1080-about.png",
+      "artifacts/screenshots/iter2/1920x1080-skills.png",
+      "artifacts/screenshots/iter2/1920x1080-projects.png",
+      "artifacts/screenshots/iter2/1920x1080-experience.png",
+      "artifacts/screenshots/iter2/1920x1080-contact.png"
+    ],
+    "totalIssues": 8
+  },
+  "startedAt": "2026-04-27T14:24:24.446Z",
+  "finishedAt": "2026-04-27T14:24:24.446Z",
+  "value": {
+    "overallScore": 85,
+    "perViewport": {
+      "1024x768": {
+        "issues": [
+          "Projects: project card slightly overlaps orb visual (busy composition)"
+        ],
+        "score": 88
+      },
+      "1280x800": {
+        "issues": [],
+        "score": 94
+      },
+      "1920x1080": {
+        "issues": [],
+        "score": 96
+      },
+      "375x812": {
+        "issues": [
+          "Hero orb canvas overlaps the 'FRONTEND DEVELOP' role badge text",
+          "Persistent CORE // ONLINE badge and orbiting orange dot bleed into projects/career/about sections (visual leak from hero canvas)",
+          "Contact heading wraps awkwardly to 'ING // THE_CORE'",
+          "Projects section shows large orb but project card content not visible at this viewport"
+        ],
+        "score": 70
+      },
+      "414x896": {
+        "issues": [
+          "Hero orb visual overlaps 'FRONTEND DEVELOP' role badge text",
+          "Projects section: orb dominates and project card not visible in fold"
+        ],
+        "score": 74
+      },
+      "768x1024": {
+        "issues": [
+          "Hero role badge slightly overlapped by orb visual"
+        ],
+        "score": 86
+      }
+    },
+    "screenshots": [
+      "artifacts/screenshots/iter2/375x812-hero.png",
+      "artifacts/screenshots/iter2/375x812-about.png",
+      "artifacts/screenshots/iter2/375x812-skills.png",
+      "artifacts/screenshots/iter2/375x812-projects.png",
+      "artifacts/screenshots/iter2/375x812-experience.png",
+      "artifacts/screenshots/iter2/375x812-contact.png",
+      "artifacts/screenshots/iter2/414x896-hero.png",
+      "artifacts/screenshots/iter2/414x896-about.png",
+      "artifacts/screenshots/iter2/414x896-skills.png",
+      "artifacts/screenshots/iter2/414x896-projects.png",
+      "artifacts/screenshots/iter2/414x896-experience.png",
+      "artifacts/screenshots/iter2/414x896-contact.png",
+      "artifacts/screenshots/iter2/768x1024-hero.png",
+      "artifacts/screenshots/iter2/768x1024-about.png",
+      "artifacts/screenshots/iter2/768x1024-skills.png",
+      "artifacts/screenshots/iter2/768x1024-projects.png",
+      "artifacts/screenshots/iter2/768x1024-experience.png",
+      "artifacts/screenshots/iter2/768x1024-contact.png",
+      "artifacts/screenshots/iter2/1024x768-hero.png",
+      "artifacts/screenshots/iter2/1024x768-about.png",
+      "artifacts/screenshots/iter2/1024x768-skills.png",
+      "artifacts/screenshots/iter2/1024x768-projects.png",
+      "artifacts/screenshots/iter2/1024x768-experience.png",
+      "artifacts/screenshots/iter2/1024x768-contact.png",
+      "artifacts/screenshots/iter2/1280x800-hero.png",
+      "artifacts/screenshots/iter2/1280x800-about.png",
+      "artifacts/screenshots/iter2/1280x800-skills.png",
+      "artifacts/screenshots/iter2/1280x800-projects.png",
+      "artifacts/screenshots/iter2/1280x800-experience.png",
+      "artifacts/screenshots/iter2/1280x800-contact.png",
+      "artifacts/screenshots/iter2/1920x1080-hero.png",
+      "artifacts/screenshots/iter2/1920x1080-about.png",
+      "artifacts/screenshots/iter2/1920x1080-skills.png",
+      "artifacts/screenshots/iter2/1920x1080-projects.png",
+      "artifacts/screenshots/iter2/1920x1080-experience.png",
+      "artifacts/screenshots/iter2/1920x1080-contact.png"
+    ],
+    "totalIssues": 8
+  }
+}

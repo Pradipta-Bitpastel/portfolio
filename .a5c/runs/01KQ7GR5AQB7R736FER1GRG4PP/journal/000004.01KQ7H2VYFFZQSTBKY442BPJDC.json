@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T13:11:59.695Z",
+  "data": {
+    "effectId": "01KQ7H2VXVB1VM3N5PXRWEE2RA",
+    "invocationKey": "portfolio-perf-responsive:S000002:perf-tier-upgrade",
+    "invocationHash": "6616813600143f3495e7a5d8cb13d950eb8257dd15ca03b689a6e079dd701b0e",
+    "stepId": "S000002",
+    "taskId": "perf-tier-upgrade",
+    "kind": "agent",
+    "label": "Upgrade perf-tier + mobile detection (aggressive low-tier)",
+    "taskDefRef": "tasks/01KQ7H2VXVB1VM3N5PXRWEE2RA/task.json"
+  },
+  "checksum": "afb893af356e8532407e39d9c760dc4ff40224248a12344ce4eac59ad0dbe119"
+}

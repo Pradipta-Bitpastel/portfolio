@@ -1,0 +1,28 @@
+{
+  "filesChanged": [
+    "components/three/_Scene.tsx",
+    "components/three/Scene.tsx",
+    "components/three/HeroWarrior.tsx",
+    "components/three/Lights.tsx",
+    "components/three/Core.tsx",
+    "components/three/Modules.tsx",
+    "components/three/GroundReflector.tsx",
+    "components/three/DevStation.tsx"
+  ],
+  "typecheckOk": true,
+  "buildOk": true,
+  "optimizations": [
+    "_Scene.tsx: powerPreference downgraded from 'high-performance' to 'default' except on confirmed high-tier non-Windows desktops (fixes Firefox+Windows software-fallback crash)",
+    "Scene.tsx: EffectComposer now gated behind tier=='high' && gpuTier=='high' && !isWindows && !isLowEnd; ChromaticAberration + Vignette removed entirely; only Bloom kept on high tier",
+    "HeroWarrior.tsx: REMOVED the inner Canvas on low/mobile/Windows/software-GPU; CSS-poster fallback shown otherwise — eliminates the dual-WebGL-context Windows/Firefox crash",
+    "HeroWarrior.tsx (when 3D enabled): shadows={false} on Canvas, removed <Environment preset='city'/>, removed <ContactShadows>, dropped EffectComposer (Bloom + Vignette) entirely",
+    "HeroWarrior.tsx: GLTF materials now CLONED before mutation (handles arrays too) — fixes StrictMode double-mount material stacking",
+    "HeroWarrior.tsx: TODO comment added re: 22MB elven-warrior.glb gltfpack compression",
+    "Lights.tsx: removed <Environment preset='warehouse'/> (poly.haven runtime fetch); replaced with stronger ambientLight + hemisphereLight; Sparkles count 60→30 on high, 0 on low; total scene-wide lights kept ≤ 5",
+    "Core.tsx: ico detail 3→2 (high) / 2→1 (low); wireframe pass dropped on low; PARTICLE_COUNT 96→48 (skipped on low); meshPhysicalMaterial swapped to meshStandardMaterial when tier!=='high'; Lightning useFrame consolidated into Core's main useFrame (1 rAF loop instead of 3)",
+    "Modules.tsx: sphere segments → 12 across the board; RoundedBox smoothness 3→1; drei <Float> wrapper removed (float math inlined); single useFrame in parent drives all 5 ModuleOrbits + DevOps pill spin + Mobile satellite spin (was ~8 useFrames)",
+    "GroundReflector.tsx: MeshReflectorMaterial resolution 512→256, blur [100,50]→[50,25]; now only renders when tier=='high' && gpuTier=='high' (else static meshStandardMaterial plane)",
+    "DevStation.tsx: screen-canvas redraw cadence 30→90 frames; on low tier the redraw is skipped entirely after the variant-effect paint (texture set up once); 4 GlyphBillboards (160x160 canvases) skipped entirely on low tier"
+  ],
+  "summary": "Removed the dual-Canvas situation in HeroWarrior (the #1 Windows/Firefox crash trigger), cut postprocessing on every non-high-tier path (ChromaticAberration + Vignette dropped wholesale, Bloom gated to confirmed-high desktops), removed two runtime poly.haven HDR fetches (city + warehouse Environment presets) replaced with cheap hemisphere lights, halved per-frame GPU work in the core scene (ico detail, particle count, sphere segments, RoundedBox smoothness, MeshReflectorMaterial resolution+blur), consolidated ~12 useFrame loops down to 3 (Core 3→1, Modules 8→1, plus DevStation), cloned GLTF materials to fix StrictMode double-mount stacking, and downgraded gl.powerPreference from 'high-performance' to 'default' except on high-tier non-Windows desktops. Typecheck + production build both pass."
+}

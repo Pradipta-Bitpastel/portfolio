@@ -1,0 +1,57 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "overallScore"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "iteration": 1,
+        "viewports": [
+          "375x812",
+          "414x896",
+          "768x1024",
+          "1024x768",
+          "1280x800",
+          "1920x1080"
+        ]
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Write tests/visual/perf-responsive.spec.ts: for each viewport, visit /, scroll to each of 6 section ids, wait 600ms, take a full-page screenshot to artifacts/screenshots/iter${args.iteration}/${viewport}-${id}.png.",
+        "Run `npx playwright test tests/visual/perf-responsive.spec.ts --reporter=list || true`.",
+        "Read screenshots: report any with horizontal overflow, clipped HUD, missing canvas/svg, or obvious mis-layout. Score each viewport 0-100.",
+        "Return JSON { perViewport: { \"375x812\": {score, issues:[]}, ... }, overallScore, totalIssues:N, screenshots:[paths] }"
+      ],
+      "outputFormat": "JSON",
+      "role": "Visual QA engineer",
+      "task": "Take full-page screenshots at every viewport for every section, then assess visual quality."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7KBBEE339XQ18X20GT8RE5/input.json",
+    "outputJsonPath": "tasks/01KQ7KBBEE339XQ18X20GT8RE5/result.json"
+  },
+  "kind": "agent",
+  "title": "Visual regression — screenshots per viewport",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7KBBEE339XQ18X20GT8RE5",
+  "taskId": "visual-regression",
+  "invocationKey": "portfolio-perf-responsive:S000011:visual-regression",
+  "stepId": "S000011",
+  "inputs": {
+    "iteration": 1,
+    "viewports": [
+      "375x812",
+      "414x896",
+      "768x1024",
+      "1024x768",
+      "1280x800",
+      "1920x1080"
+    ]
+  }
+}

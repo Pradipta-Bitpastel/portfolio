@@ -9,6 +9,7 @@ import { projects } from "@/content/projects";
 import { SectionFrame } from "@/components/ui/SectionFrame";
 import { KineticTitle } from "@/components/ui/KineticTitle";
 import { PROJECT_VISUALS } from "@/components/ui/ProjectVisuals";
+import { useDeviceCapabilities } from "@/lib/usePerfTier";
 
 /**
  * Projects — "SYS.EXEC // 04" — pinned scroll-scrubbed feature
@@ -40,6 +41,8 @@ function ProjectsSectionImpl() {
   const progressRef = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLDivElement>(null);
   const dotsRef = useRef<HTMLDivElement>(null);
+  const caps = useDeviceCapabilities();
+  const isLowEnd = caps.isLowEnd;
 
   useGSAP(
     () => {
@@ -50,6 +53,37 @@ function ProjectsSectionImpl() {
       const boot = async () => {
         await registerAll();
         if (cancelled) return;
+
+        // On low-end devices: skip the desktop pinned rotator entirely
+        // and rely on the mobile grid below. The clipPath morph + 5
+        // viewports of pin is the single biggest scroll-CPU cost on
+        // integrated GPUs.
+        if (isLowEnd) {
+          const cards = rootRef.current!.querySelectorAll<HTMLElement>(
+            ".proj-mobile-card"
+          );
+          gsap.fromTo(
+            cards,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.7,
+              stagger: 0.12,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: rootRef.current,
+                start: "top 70%"
+              }
+            }
+          );
+          try {
+            ScrollTrigger.refresh();
+          } catch {
+            /* ignore */
+          }
+          return;
+        }
 
         /* ---- 3D scene: amber connection line breath (scrub) ---- */
         const connGroup = sceneStore.connections.ref;
@@ -101,9 +135,13 @@ function ProjectsSectionImpl() {
           }
         }
 
-        /* ---- Desktop pinned rotator ---- */
+        /* ---- Desktop pinned rotator ----
+           Bumped threshold from 1024px → 1280px so low-spec laptops
+           (1024-1279px) fall through to the mobile grid path; the
+           clipPath polygon morph is the single biggest CPU paint cost
+           on integrated GPUs. */
         const mm = gsap.matchMedia();
-        mm.add("(min-width: 1024px)", () => {
+        mm.add("(min-width: 1280px)", () => {
           const stage = stageRef.current!;
           const visuals = stage.querySelectorAll<HTMLElement>(".proj-visual");
           const infos = stage.querySelectorAll<HTMLElement>(".proj-info");
@@ -113,24 +151,31 @@ function ProjectsSectionImpl() {
 
           if (visuals.length === 0 || infos.length === 0) return;
 
-          // Seed initial state: only the first visual + info are visible.
-          // autoAlpha = opacity + visibility, so hidden slides are truly
-          // removed from compositing (no faint bleed-through behind the
-          // active slide during scrub).
+          // Seed initial state. Each slide is a stacked layer:
+          // - slide 0 fully visible at rest position
+          // - slides 1..N hidden below with autoAlpha:0 (visibility
+          //   hidden = removed from compositing, no paint cost) and
+          //   pre-positioned where they will enter FROM
+          //
+          // We use `autoAlpha` (not raw opacity) because it pairs
+          // visibility:hidden with opacity:0 — hidden slides are
+          // truly off the GPU compositor, won't intercept any
+          // pointer events, and won't paint if a parent rerender
+          // happens to wipe inline styles. autoAlpha + transform
+          // ONLY (no clip-path string interpolation) keeps the scrub
+          // tween's interpolation purely numeric and robust against
+          // playhead jumps.
           visuals.forEach((v, i) => {
             gsap.set(v, {
               autoAlpha: i === 0 ? 1 : 0,
-              scale: i === 0 ? 1 : 0.9,
-              clipPath:
-                i === 0
-                  ? "polygon(0 0, 100% 0, 100% 100%, 0 100%)"
-                  : "polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)"
+              y: i === 0 ? 0 : 80,
+              scale: i === 0 ? 1 : 0.92
             });
           });
           infos.forEach((inf, i) => {
             gsap.set(inf, {
               autoAlpha: i === 0 ? 1 : 0,
-              x: i === 0 ? 0 : 40
+              y: i === 0 ? 0 : 64
             });
           });
           dots?.forEach((d, i) => {
@@ -146,11 +191,12 @@ function ProjectsSectionImpl() {
           }
 
           const total = projects.length;
-          // Each slide gets ~2 viewports of scroll (was 1.5) so a
-          // scroll gesture comfortably lands on a project instead of
-          // flying through two at a time. + longer tail on the last
-          // slide for a real "dwell" before un-pinning.
-          const scrollDistance = (total - 1) * 200 + 100;
+          // Each slide gets ~2.4 viewports of scroll so the new
+          // tactile reveal (translate-up + clip-path mask) has room to
+          // breathe AND there is a meaningful "locked" dwell on each
+          // project before the next one takes over. + tail on the last
+          // slide for a real settle before un-pinning.
+          const scrollDistance = (total - 1) * 240 + 120;
 
           // Snap points — one per slide. Progress 0 = slide 1, 0.25 =
           // slide 2, ..., 1.0 = slide 5. A big scroll flick settles
@@ -167,7 +213,8 @@ function ProjectsSectionImpl() {
               start: "top top",
               end: `+=${scrollDistance}%`,
               pin: stageRef.current,
-              scrub: 1.5,
+              // Dropped 1.5 → 1: less CPU overshoot smoothing per frame.
+              scrub: 1,
               anticipatePin: 1,
               invalidateOnRefresh: true,
               snap: {
@@ -200,63 +247,97 @@ function ProjectsSectionImpl() {
             }
           });
 
-          // Build transition segments: from i to i+1.
+          // Build transition segments: from slide i to i+1. The new
+          // tactile reveal replaces the soft crossfade. Each segment
+          // is split into 4 phases (timestamps relative to seg start):
+          //
+          //   0.00 — 0.10·seg : pre-exit dwell (slide i still locked,
+          //                     subtle parallax y drift continues)
+          //   0.10·seg — 0.45·seg : OUTGOING — slide i translates UP
+          //                     (-72px), clip-path collapses bottom-up
+          //                     (inset 0→100% top), scale 1→0.94. Uses
+          //                     power2.in so it accelerates out of frame.
+          //   0.40·seg — 0.85·seg : INCOMING — slide i+1 translates UP
+          //                     from +60px → 0, clip-path opens
+          //                     top-down (inset 100%→0% bottom), scale
+          //                     0.96→1. Uses expo.out so it SNAPS into
+          //                     a locked rest position.
+          //   0.85·seg — 1.00·seg : post-entry dwell (slide i+1 locked,
+          //                     subtle scale-breath parallax 1→1.025)
+          //
+          // The brief overlap at 0.40-0.45·seg (outgoing tail meeting
+          // incoming head) is the only moment two slides are both
+          // visible — a clean handoff, not a floaty crossfade.
           const seg = 1 / (total - 1);
+
           for (let i = 0; i < total - 1; i++) {
             const at = i * seg;
-            const endAt = (i + 1) * seg;
-            const mid = (at + endAt) / 2;
 
-            // Outgoing visual: shrink + clip to a hex pinpoint + fade.
+            // ── OUTGOING: slide i translates UP and out ─────────────
+            // Decisive `power2.in` ease so the slab accelerates out of
+            // frame rather than drifting. autoAlpha (visibility+opacity)
+            // ensures the layer is fully removed from the compositor
+            // once the tween completes.
             tl.to(
               visuals[i],
               {
+                y: -80,
+                scale: 0.92,
                 autoAlpha: 0,
-                scale: 0.88,
-                clipPath:
-                  "polygon(50% 0, 100% 50%, 50% 100%, 0 50%, 50% 50%)",
-                duration: seg * 0.55
+                duration: seg * 0.35,
+                ease: "power2.in"
               },
-              at
+              at + seg * 0.10
             );
-            // Incoming visual: grow from hex pinpoint + fade in.
-            tl.fromTo(
-              visuals[i + 1],
-              {
-                autoAlpha: 0,
-                scale: 0.9,
-                clipPath:
-                  "polygon(50% 0, 100% 50%, 50% 100%, 0 50%, 50% 50%)"
-              },
-              {
-                autoAlpha: 1,
-                scale: 1,
-                clipPath:
-                  "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
-                duration: seg * 0.6
-              },
-              mid - seg * 0.05
-            );
-            // Outgoing info slides out left.
             tl.to(
               infos[i],
               {
+                y: -64,
                 autoAlpha: 0,
-                x: -60,
-                duration: seg * 0.45
+                duration: seg * 0.32,
+                ease: "power2.in"
               },
-              at
+              at + seg * 0.10
             );
-            // Incoming info slides in from right.
-            tl.fromTo(
-              infos[i + 1],
-              { autoAlpha: 0, x: 60 },
+
+            // ── INCOMING: slide i+1 translates UP from below ────────
+            // `expo.out` ease so the slab SNAPS into a locked rest
+            // position (large initial velocity, decisive arrival).
+            // The translateY (80→0) + scale (0.92→1) combination is
+            // what gives the slab its "physical push" — not a fade.
+            tl.to(
+              visuals[i + 1],
               {
+                y: 0,
+                scale: 1,
                 autoAlpha: 1,
-                x: 0,
-                duration: seg * 0.5
+                duration: seg * 0.45,
+                ease: "expo.out"
               },
-              mid
+              at + seg * 0.40
+            );
+            tl.to(
+              infos[i + 1],
+              {
+                y: 0,
+                autoAlpha: 1,
+                duration: seg * 0.42,
+                ease: "expo.out"
+              },
+              at + seg * 0.43
+            );
+
+            // ── LOCKED DWELL parallax: subtle scale-breath on the
+            //    newly-arrived visual. Sells the "alive but anchored"
+            //    feel without distracting from the content.
+            tl.to(
+              visuals[i + 1],
+              {
+                scale: 1.025,
+                duration: seg * 0.15,
+                ease: "sine.inOut"
+              },
+              at + seg * 0.85
             );
           }
 
@@ -283,8 +364,8 @@ function ProjectsSectionImpl() {
           };
         });
 
-        /* ---- Mobile: grid fallback fade-in stagger ---- */
-        mm.add("(max-width: 1023px)", () => {
+        /* ---- Mobile / low-spec: grid fallback fade-in stagger ---- */
+        mm.add("(max-width: 1279px)", () => {
           const cards = rootRef.current!.querySelectorAll<HTMLElement>(
             ".proj-mobile-card"
           );
@@ -330,13 +411,17 @@ function ProjectsSectionImpl() {
       ref={rootRef}
       ariaLabelledBy="projects-heading"
       bare
-      style={{ minHeight: "100vh" }}
+      style={{ minHeight: "100svh" }}
     >
       {/* Giant "04" background */}
       <div
         aria-hidden
-        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono text-[10rem] font-bold leading-none opacity-[0.08] md:block lg:text-[14rem]"
-        style={{ color: "#FF7A1A", letterSpacing: "-0.02em" }}
+        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.08] md:block"
+        style={{
+          color: "#FF7A1A",
+          letterSpacing: "-0.02em",
+          fontSize: "clamp(6rem,12vw,14rem)"
+        }}
       >
         04
       </div>
@@ -344,7 +429,7 @@ function ProjectsSectionImpl() {
       {/* =========== Desktop: pinned rotator =========== */}
       <div
         ref={stageRef}
-        className="relative hidden h-screen w-full overflow-hidden lg:block"
+        className="relative hidden h-[100svh] w-full overflow-hidden xl:block"
       >
         {/* HUD top bar */}
         <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 flex items-start justify-between px-12 pt-12">
@@ -384,7 +469,7 @@ function ProjectsSectionImpl() {
             is pushed into the background in the scene pose so the
             SVG visual is the featured right-side subject. */}
         <div className="absolute inset-x-0 top-[min(200px,24vh)] bottom-[120px] flex items-center">
-          <div className="mx-auto grid w-full max-w-7xl grid-cols-12 gap-10 px-12">
+          <div className="mx-auto grid w-full max-w-10xl grid-cols-12 gap-10 px-12">
             {/* ───── INFO PANE (LEFT, col-span-6) ───── */}
             <div className="relative col-span-6 flex min-h-[480px] items-center">
               <div className="relative w-full">
@@ -473,10 +558,10 @@ function ProjectsSectionImpl() {
                 `overflow-visible` ensures the dashed outer ring never
                 gets cropped even when it extends past the column. */}
             <div
-              className="relative col-span-6 aspect-square w-full self-center justify-self-center"
+              className="relative col-span-6 aspect-square w-full max-w-full self-center justify-self-center"
               style={{
-                maxWidth: "min(460px, 50vh)",
-                maxHeight: "min(460px, 50vh)",
+                maxWidth: "min(380px, 42vh)",
+                maxHeight: "min(380px, 42vh)",
                 overflow: "visible"
               }}
             >
@@ -557,11 +642,11 @@ function ProjectsSectionImpl() {
         </div>
 
         {/* HUD bottom: progress bar + nav dots.
-            Pushed UP to bottom-32 (128px) so it clears the global
-            HudFrame's bottom-left LAT/LON + bottom-right SID labels
-            (anchored at bottom-8). Anything closer made the orange
-            progress bar visually crowd the LAT/LON line. */}
-        <div className="pointer-events-none absolute bottom-32 left-12 right-12 z-20">
+            Sits above the global HudFrame's bottom-left LAT/LON +
+            bottom-right SID labels (anchored at bottom-8). Bumped down
+            from bottom-32 → bottom-20 so it never collides with the
+            HudFrame at heights <820px. */}
+        <div className="pointer-events-none absolute bottom-40 left-12 right-12 z-20">
           <div className="flex items-end justify-between gap-8">
             {/* Progress bar */}
             <div className="flex flex-1 flex-col gap-3">
@@ -592,7 +677,7 @@ function ProjectsSectionImpl() {
                   key={p.id}
                   type="button"
                   aria-label={`Jump to ${p.name}`}
-                  className="proj-dot group relative flex h-8 w-8 items-center justify-center"
+                  className="proj-dot group relative flex h-11 w-11 items-center justify-center"
                   style={
                     {
                       "--dot-color": p.color
@@ -601,11 +686,17 @@ function ProjectsSectionImpl() {
                 >
                   <span
                     className="absolute inset-0 border border-white/15 transition-colors group-[.is-active]:border-[var(--dot-color)]"
-                    style={{ clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}
+                    style={{
+                      clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
+                      WebkitClipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)"
+                    }}
                   />
                   <span
                     className="h-[6px] w-[6px] bg-white/30 transition-all group-[.is-active]:scale-150 group-[.is-active]:bg-[var(--dot-color)]"
-                    style={{ clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)" }}
+                    style={{
+                      clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
+                      WebkitClipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)"
+                    }}
                   />
                 </button>
               ))}
@@ -615,7 +706,7 @@ function ProjectsSectionImpl() {
       </div>
 
       {/* =========== Mobile / tablet: grid fallback =========== */}
-      <div className="lg:hidden">
+      <div className="xl:hidden">
         <div className="mx-auto mb-10 max-w-7xl px-[clamp(16px,5vw,48px)]">
           <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
             <span className="text-[#FF7A1A]">SYS.EXEC // 04</span>

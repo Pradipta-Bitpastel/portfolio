@@ -1,0 +1,15 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-04-27T16:12:09.866Z",
+  "data": {
+    "effectId": "01KQ7VCRQ3J685AVN4TKNPDMHT",
+    "invocationKey": "portfolio-perf-responsive:S000027:final-report",
+    "invocationHash": "5182ea586a745d327e5e3dccf7a3e0857b94e47586721e1df9a82e6139b5912e",
+    "stepId": "S000027",
+    "taskId": "final-report",
+    "kind": "agent",
+    "label": "Write final perf + responsive report",
+    "taskDefRef": "tasks/01KQ7VCRQ3J685AVN4TKNPDMHT/task.json"
+  },
+  "checksum": "19aabfe581b135606e3c745d6d1cdbe7087e8cf338e82d8c978c6e97b30ed643"
+}

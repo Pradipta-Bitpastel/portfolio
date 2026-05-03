@@ -1,0 +1,329 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "converged"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "e2e": {
+          "consoleErrors": [],
+          "failed": 0,
+          "failures": [],
+          "passed": 18,
+          "projects": [
+            {
+              "failed": 0,
+              "name": "chromium",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "firefox",
+              "passed": 6
+            },
+            {
+              "failed": 0,
+              "name": "webkit",
+              "passed": 6
+            }
+          ],
+          "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+          "total": 18
+        },
+        "lhDesktop": {
+          "accessibility": 100,
+          "bestPractices": 100,
+          "cls": 0.068,
+          "fcp": 263.76,
+          "lcp": 774.63,
+          "performance": 99,
+          "rawScoreFile": "artifacts/lh-desktop-2.json",
+          "recommendations": [
+            "Reduce unused JavaScript (~110ms savings on desktop)",
+            "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+            "Add valid source maps for large first-party JavaScript (currently missing)",
+            "Reduce total byte weight of network payloads (score 0.5)",
+            "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+          ],
+          "tbt": 0,
+          "totalBlockingTime": 0,
+          "tti": 774.63
+        },
+        "lhMobile": {
+          "accessibility": 96,
+          "bestPractices": 100,
+          "cls": 0.001,
+          "fcp": 913.13,
+          "lcp": 2767.69,
+          "performance": 95,
+          "rawScoreFile": "artifacts/lh-mobile-2.json",
+          "recommendations": [
+            "Eliminate render-blocking resources (~45ms savings on mobile)",
+            "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+            "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+            "Fix color-contrast issues (accessibility audit failing)",
+            "Add valid source maps and reduce total byte weight / legacy JS"
+          ],
+          "tbt": 93,
+          "totalBlockingTime": 93,
+          "tti": 4503.84
+        },
+        "targetDesktopPerf": 90,
+        "targetMobilePerf": 75,
+        "visual": {
+          "overallScore": 85,
+          "perViewport": {
+            "1024x768": {
+              "issues": [
+                "Projects: project card slightly overlaps orb visual (busy composition)"
+              ],
+              "score": 88
+            },
+            "1280x800": {
+              "issues": [],
+              "score": 94
+            },
+            "1920x1080": {
+              "issues": [],
+              "score": 96
+            },
+            "375x812": {
+              "issues": [
+                "Hero orb canvas overlaps the 'FRONTEND DEVELOP' role badge text",
+                "Persistent CORE // ONLINE badge and orbiting orange dot bleed into projects/career/about sections (visual leak from hero canvas)",
+                "Contact heading wraps awkwardly to 'ING // THE_CORE'",
+                "Projects section shows large orb but project card content not visible at this viewport"
+              ],
+              "score": 70
+            },
+            "414x896": {
+              "issues": [
+                "Hero orb visual overlaps 'FRONTEND DEVELOP' role badge text",
+                "Projects section: orb dominates and project card not visible in fold"
+              ],
+              "score": 74
+            },
+            "768x1024": {
+              "issues": [
+                "Hero role badge slightly overlapped by orb visual"
+              ],
+              "score": 86
+            }
+          },
+          "screenshots": [
+            "artifacts/screenshots/iter2/375x812-hero.png",
+            "artifacts/screenshots/iter2/375x812-about.png",
+            "artifacts/screenshots/iter2/375x812-skills.png",
+            "artifacts/screenshots/iter2/375x812-projects.png",
+            "artifacts/screenshots/iter2/375x812-experience.png",
+            "artifacts/screenshots/iter2/375x812-contact.png",
+            "artifacts/screenshots/iter2/414x896-hero.png",
+            "artifacts/screenshots/iter2/414x896-about.png",
+            "artifacts/screenshots/iter2/414x896-skills.png",
+            "artifacts/screenshots/iter2/414x896-projects.png",
+            "artifacts/screenshots/iter2/414x896-experience.png",
+            "artifacts/screenshots/iter2/414x896-contact.png",
+            "artifacts/screenshots/iter2/768x1024-hero.png",
+            "artifacts/screenshots/iter2/768x1024-about.png",
+            "artifacts/screenshots/iter2/768x1024-skills.png",
+            "artifacts/screenshots/iter2/768x1024-projects.png",
+            "artifacts/screenshots/iter2/768x1024-experience.png",
+            "artifacts/screenshots/iter2/768x1024-contact.png",
+            "artifacts/screenshots/iter2/1024x768-hero.png",
+            "artifacts/screenshots/iter2/1024x768-about.png",
+            "artifacts/screenshots/iter2/1024x768-skills.png",
+            "artifacts/screenshots/iter2/1024x768-projects.png",
+            "artifacts/screenshots/iter2/1024x768-experience.png",
+            "artifacts/screenshots/iter2/1024x768-contact.png",
+            "artifacts/screenshots/iter2/1280x800-hero.png",
+            "artifacts/screenshots/iter2/1280x800-about.png",
+            "artifacts/screenshots/iter2/1280x800-skills.png",
+            "artifacts/screenshots/iter2/1280x800-projects.png",
+            "artifacts/screenshots/iter2/1280x800-experience.png",
+            "artifacts/screenshots/iter2/1280x800-contact.png",
+            "artifacts/screenshots/iter2/1920x1080-hero.png",
+            "artifacts/screenshots/iter2/1920x1080-about.png",
+            "artifacts/screenshots/iter2/1920x1080-skills.png",
+            "artifacts/screenshots/iter2/1920x1080-projects.png",
+            "artifacts/screenshots/iter2/1920x1080-experience.png",
+            "artifacts/screenshots/iter2/1920x1080-contact.png"
+          ],
+          "totalIssues": 8
+        }
+      },
+      "instructions": [
+        "Convergence rule: lhDesktop.performance >= targetDesktopPerf AND lhMobile.performance >= targetMobilePerf AND e2e.failed === 0 AND visual.overallScore >= 80.",
+        "If E2E failed > 0, list the specific viewport+browser combos that failed and a concrete fix per failure.",
+        "If lhDesktop or lhMobile under target, list the top 5 LH opportunities (e.g., \"reduce unused JS\", \"minimize main-thread work\") with file paths if known.",
+        "If visual issues exist, list them with viewport + section + suggested fix.",
+        "Return JSON { converged:bool, breakdown:{desktopPerf, mobilePerf, e2eRate, visual}, blockedBy:string[], recommendations:[{priority, category, file?, action}], summary:\"...\" }"
+      ],
+      "outputFormat": "JSON",
+      "role": "QA lead synthesizing perf + responsive scores",
+      "task": "Decide if we have converged. If not, produce a prioritized recommendation list for the next iteration."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7N7NAD4TNT2V8HANDQHG5D/input.json",
+    "outputJsonPath": "tasks/01KQ7N7NAD4TNT2V8HANDQHG5D/result.json"
+  },
+  "kind": "agent",
+  "title": "Compute convergence score + recommendations",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7N7NAD4TNT2V8HANDQHG5D",
+  "taskId": "quality-score",
+  "invocationKey": "portfolio-perf-responsive:S000019:quality-score",
+  "stepId": "S000019",
+  "inputs": {
+    "e2e": {
+      "consoleErrors": [],
+      "failed": 0,
+      "failures": [],
+      "passed": 18,
+      "projects": [
+        {
+          "failed": 0,
+          "name": "chromium",
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "name": "firefox",
+          "passed": 6
+        },
+        {
+          "failed": 0,
+          "name": "webkit",
+          "passed": 6
+        }
+      ],
+      "summary": "All 18 responsive E2E tests passed across chromium, firefox, and webkit (6 viewports each: iphone-se, iphone-11, ipad, ipad-land, laptop, desktop). No horizontal overflow, no fatal console errors, hero heading visible across all viewports. Run completed in ~35.6s against production server on port 3200.",
+      "total": 18
+    },
+    "iteration": 2,
+    "lhDesktop": {
+      "accessibility": 100,
+      "bestPractices": 100,
+      "cls": 0.068,
+      "fcp": 263.76,
+      "lcp": 774.63,
+      "performance": 99,
+      "rawScoreFile": "artifacts/lh-desktop-2.json",
+      "recommendations": [
+        "Reduce unused JavaScript (~110ms savings on desktop)",
+        "Eliminate render-blocking resources (~4ms savings, score 0.5)",
+        "Add valid source maps for large first-party JavaScript (currently missing)",
+        "Reduce total byte weight of network payloads (score 0.5)",
+        "Avoid serving legacy JavaScript to modern browsers (score 0.5)"
+      ],
+      "tbt": 0,
+      "totalBlockingTime": 0,
+      "tti": 774.63
+    },
+    "lhMobile": {
+      "accessibility": 96,
+      "bestPractices": 100,
+      "cls": 0.001,
+      "fcp": 913.13,
+      "lcp": 2767.69,
+      "performance": 95,
+      "rawScoreFile": "artifacts/lh-mobile-2.json",
+      "recommendations": [
+        "Eliminate render-blocking resources (~45ms savings on mobile)",
+        "Minimize main-thread work (mobile mainthread-work-breakdown failing)",
+        "Optimize Largest Contentful Paint element (LCP 2.77s on mobile)",
+        "Fix color-contrast issues (accessibility audit failing)",
+        "Add valid source maps and reduce total byte weight / legacy JS"
+      ],
+      "tbt": 93,
+      "totalBlockingTime": 93,
+      "tti": 4503.84
+    },
+    "targetDesktopPerf": 90,
+    "targetMobilePerf": 75,
+    "visual": {
+      "overallScore": 85,
+      "perViewport": {
+        "1024x768": {
+          "issues": [
+            "Projects: project card slightly overlaps orb visual (busy composition)"
+          ],
+          "score": 88
+        },
+        "1280x800": {
+          "issues": [],
+          "score": 94
+        },
+        "1920x1080": {
+          "issues": [],
+          "score": 96
+        },
+        "375x812": {
+          "issues": [
+            "Hero orb canvas overlaps the 'FRONTEND DEVELOP' role badge text",
+            "Persistent CORE // ONLINE badge and orbiting orange dot bleed into projects/career/about sections (visual leak from hero canvas)",
+            "Contact heading wraps awkwardly to 'ING // THE_CORE'",
+            "Projects section shows large orb but project card content not visible at this viewport"
+          ],
+          "score": 70
+        },
+        "414x896": {
+          "issues": [
+            "Hero orb visual overlaps 'FRONTEND DEVELOP' role badge text",
+            "Projects section: orb dominates and project card not visible in fold"
+          ],
+          "score": 74
+        },
+        "768x1024": {
+          "issues": [
+            "Hero role badge slightly overlapped by orb visual"
+          ],
+          "score": 86
+        }
+      },
+      "screenshots": [
+        "artifacts/screenshots/iter2/375x812-hero.png",
+        "artifacts/screenshots/iter2/375x812-about.png",
+        "artifacts/screenshots/iter2/375x812-skills.png",
+        "artifacts/screenshots/iter2/375x812-projects.png",
+        "artifacts/screenshots/iter2/375x812-experience.png",
+        "artifacts/screenshots/iter2/375x812-contact.png",
+        "artifacts/screenshots/iter2/414x896-hero.png",
+        "artifacts/screenshots/iter2/414x896-about.png",
+        "artifacts/screenshots/iter2/414x896-skills.png",
+        "artifacts/screenshots/iter2/414x896-projects.png",
+        "artifacts/screenshots/iter2/414x896-experience.png",
+        "artifacts/screenshots/iter2/414x896-contact.png",
+        "artifacts/screenshots/iter2/768x1024-hero.png",
+        "artifacts/screenshots/iter2/768x1024-about.png",
+        "artifacts/screenshots/iter2/768x1024-skills.png",
+        "artifacts/screenshots/iter2/768x1024-projects.png",
+        "artifacts/screenshots/iter2/768x1024-experience.png",
+        "artifacts/screenshots/iter2/768x1024-contact.png",
+        "artifacts/screenshots/iter2/1024x768-hero.png",
+        "artifacts/screenshots/iter2/1024x768-about.png",
+        "artifacts/screenshots/iter2/1024x768-skills.png",
+        "artifacts/screenshots/iter2/1024x768-projects.png",
+        "artifacts/screenshots/iter2/1024x768-experience.png",
+        "artifacts/screenshots/iter2/1024x768-contact.png",
+        "artifacts/screenshots/iter2/1280x800-hero.png",
+        "artifacts/screenshots/iter2/1280x800-about.png",
+        "artifacts/screenshots/iter2/1280x800-skills.png",
+        "artifacts/screenshots/iter2/1280x800-projects.png",
+        "artifacts/screenshots/iter2/1280x800-experience.png",
+        "artifacts/screenshots/iter2/1280x800-contact.png",
+        "artifacts/screenshots/iter2/1920x1080-hero.png",
+        "artifacts/screenshots/iter2/1920x1080-about.png",
+        "artifacts/screenshots/iter2/1920x1080-skills.png",
+        "artifacts/screenshots/iter2/1920x1080-projects.png",
+        "artifacts/screenshots/iter2/1920x1080-experience.png",
+        "artifacts/screenshots/iter2/1920x1080-contact.png"
+      ],
+      "totalIssues": 8
+    }
+  }
+}

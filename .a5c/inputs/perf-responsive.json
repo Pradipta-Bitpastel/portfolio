@@ -1,0 +1,6 @@
+{
+  "targetDesktopPerf": 90,
+  "targetMobilePerf": 75,
+  "maxIterations": 5,
+  "viewports": ["375x812", "414x896", "768x1024", "1024x768", "1280x800", "1920x1080"]
+}

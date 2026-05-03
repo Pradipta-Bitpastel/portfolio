@@ -1,0 +1,59 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "required": [
+        "passed",
+        "failed"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "cwd": "/Users/pradiptajana/Portfolio",
+        "iteration": 3,
+        "viewports": [
+          "375x812",
+          "414x896",
+          "768x1024",
+          "1024x768",
+          "1280x800",
+          "1920x1080"
+        ]
+      },
+      "instructions": [
+        "cd /Users/pradiptajana/Portfolio",
+        "Edit playwright.config.ts: add projects for chromium / firefox / webkit. Skip webkit on linux if missing deps. Set webServer to `npm run start -- -p 3200` with reuseExistingServer:true and timeout 120000. Pre-build with `npm run build`.",
+        "Create or update tests/e2e/responsive.spec.ts with the viewport list from input. For each viewport, for each project: visit /, assert no horizontal overflow (document.documentElement.scrollWidth <= clientWidth), assert hero text \"PRADIPTA JANA\" or HUD heading visible, scroll through 6 sections, assert each section anchor is reachable, assert NO uncaught console errors and NO pageerrors.",
+        "Run `npm run build` then `npx playwright test tests/e2e/responsive.spec.ts --reporter=json > artifacts/e2e-${args.iteration}.json || true`.",
+        "Parse JSON for total/passed/failed/failures. Capture console errors per project/viewport.",
+        "Return JSON { passed, failed, total, projects:[{name,passed,failed}], failures:[{title,project,viewport,error}], consoleErrors:[strings] }"
+      ],
+      "outputFormat": "JSON",
+      "role": "E2E test engineer",
+      "task": "Run Playwright tests at every viewport size in chromium / firefox / webkit. Verify hero, sections, no console errors, no horizontal overflow."
+    }
+  },
+  "io": {
+    "inputJsonPath": "tasks/01KQ7NFGK48EC3RR752AX1PVW7/input.json",
+    "outputJsonPath": "tasks/01KQ7NFGK48EC3RR752AX1PVW7/result.json"
+  },
+  "kind": "agent",
+  "title": "Playwright E2E across viewports + browsers",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KQ7NFGK48EC3RR752AX1PVW7",
+  "taskId": "e2e-multi-viewport",
+  "invocationKey": "portfolio-perf-responsive:S000024:e2e-multi-viewport",
+  "stepId": "S000024",
+  "inputs": {
+    "iteration": 3,
+    "viewports": [
+      "375x812",
+      "414x896",
+      "768x1024",
+      "1024x768",
+      "1280x800",
+      "1920x1080"
+    ]
+  }
+}
