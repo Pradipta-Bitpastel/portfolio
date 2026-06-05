@@ -1,0 +1,6 @@
+{
+  "approved": true,
+  "decision": "approve-with-revisions",
+  "note": "User requested 4 polish items, all applied + verified: (1) PRE-SCALED PNGS: downscaled all 9 hero parallax PNGs 7000x2076 -> 3200x949 via sips (~4x less decode/texture memory; ~3MB total); originals backed up to public/images/parallax_src_7000/; re-screenshot confirms they still render sharp at object-cover. (2) CORE//ONLINE OVERLAP: set opacity 0.18 on the SvgCoreFallback terminal label so it reads as subtle background atmosphere (only shows on low-tier SVG fallback). (3) STRONGER HERO PARALLAX: TRAVEL_FRONT 0.45->0.64, TRAVEL_BACK 0.03->0.05; mid-scroll shot shows much more dramatic foreground fall-away/layer separation. (4) BRIGHTER LAPTOP SCREEN: screenBg emissiveIntensity 0.25->0.7 (+toneMapped false), code bars 1.4->2.4 (cyan) and 1.2->2.1 (blue) so the dev laptop's code-screen glows clearly. tsc clean; zero console/page errors.",
+  "screenshots": ["/tmp/polish_top.png", "/tmp/polish_mid.png"]
+}

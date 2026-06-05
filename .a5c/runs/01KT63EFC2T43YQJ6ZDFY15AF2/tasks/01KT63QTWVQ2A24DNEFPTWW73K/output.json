@@ -1,0 +1,6 @@
+{
+  "approved": true,
+  "decision": "approve-with-fix",
+  "note": "User approved WS1 and requested masking the baked-in FIREWATCH wordmark. Applied a feathered elliptical CSS mask to the parallax2 layer only (the layer carrying the logo in its transparent upper-centre sky band), revealing the sky layers behind. Wordmark removed cleanly, ridgeline intact, title now stands alone. tsc clean. Verified via /tmp/ws1_masked.png.",
+  "screenshot": "/tmp/ws1_masked.png"
+}

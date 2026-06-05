@@ -69,8 +69,12 @@ export function SvgCoreFallback() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 flex justify-center items-start pt-[8vh] sm:items-center sm:pt-0"
       style={{
+        // TRANSPARENT base (was an opaque #0b0f19 that painted over the
+        // day-flipped CelestialSky/ParallaxBackdrop, forcing dark-on-dark in
+        // day mode). The atmosphere layers behind now carry the day/night bg;
+        // this fallback only adds the soft core glow over them.
         background:
-          "radial-gradient(circle at 50% 50%, rgba(79,156,255,0.08) 0%, rgba(11,15,25,0) 55%), #0b0f19",
+          "radial-gradient(circle at 50% 50%, rgba(79,156,255,0.06) 0%, rgba(11,15,25,0) 55%)",
         // CSS custom property consumed by the mobile-only rule below.
         ["--scf-scroll-fade" as string]: fadeVar
       } as React.CSSProperties}
@@ -232,6 +236,7 @@ export function SvgCoreFallback() {
         <g
           transform="translate(0, 232)"
           className="scf-online-label"
+          opacity="0.18"
           style={{ animation: "scf-text-pulse 3.6s ease-in-out infinite" }}
         >
           <text

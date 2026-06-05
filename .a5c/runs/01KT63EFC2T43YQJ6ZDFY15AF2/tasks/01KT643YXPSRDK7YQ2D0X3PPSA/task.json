@@ -1,0 +1,101 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "properties": {
+        "feedback": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pass": {
+          "type": "boolean"
+        },
+        "score": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pass",
+        "score",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "implementation": {
+          "filesChanged": [
+            "components/sections/ProjectsSection.tsx"
+          ],
+          "notes": "Gate moved from pre-existing 1024px to spec'd 768px. Pin target is an inner static div (not the section) since SectionFrame wraps with overflow-hidden+padding. Screenshot at scrollY ~6562 confirms mid-pin horizontal offset (slide 01 off-screen left, 03/04/05 visible, 04 centred+scaled) + bottom rail. Waited out the SYS.PRELOAD overlay before scrolling.",
+          "screenshotPath": "/tmp/ws3_projects.png",
+          "summary": "Implemented WS3 horizontal-scroll pin. Project cards render as a STATIC horizontal flex track inside a pin target (md:h-[100svh], md:overflow-hidden). useEffect after registerAll() runs a gsap.context() scoped to rootRef with gsap.matchMedia() guarded to '(min-width:768px) and (prefers-reduced-motion: no-preference)' — the only GSAP pin in the app. Tweens track x to -(track.scrollWidth - innerWidth), ease none, scrollTrigger { trigger pinRef, start top top, end +=amount, pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true }. onUpdate drives a bottom progress rail (scaleX) and per-slide entrance (scale 0.86->1, opacity 0.4->1 by distance from centre). matchMedia cleanup kills trigger/tween + clearProps; context reverted on unmount. Below 768px / reduced-motion = vertical stacked cards, no pin. Real project data reused from content/projects.ts.",
+          "typecheckPassed": true
+        },
+        "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+        "repoRoot": "/Users/pradiptajana/Portfolio",
+        "workstream": {
+          "detail": "In components/sections/ProjectsSection.tsx build a horizontal track of project slides. Pin the section with GSAP ScrollTrigger (pin:true, scrub:true) and translate the track x:-(trackWidth-viewport) over a scroll distance ~= trackWidth. Use gsap.matchMedia() to enable the pin only on (min-width:768px) and no reduced-motion; mobile/reduced-motion fall back to normal vertical stacked cards. Add per-slide entrance + a bottom progress rail. ACCEPTANCE: mid-scroll screenshot shows a horizontal slide offset from slide 1; pin works; mobile fallback intact; tsc clean; cleanup on unmount via gsap.context.",
+          "id": "WS3",
+          "title": "Projects: horizontal-scroll pin"
+        }
+      },
+      "instructions": [
+        "Read PARALLAX_OVERHAUL_PLAN.md and the changed files (components/sections/ProjectsSection.tsx).",
+        "View the screenshot at /tmp/ws3_projects.png using the Read tool and judge it visually against the workstream's acceptance criteria: In components/sections/ProjectsSection.tsx build a horizontal track of project slides. Pin the section with GSAP ScrollTrigger (pin:true, scrub:true) and translate the track x:-(trackWidth-viewport) over a scroll distance ~= trackWidth. Use gsap.matchMedia() to enable the pin only on (min-width:768px) and no reduced-motion; mobile/reduced-motion fall back to normal vertical stacked cards. Add per-slide entrance + a bottom progress rail. ACCEPTANCE: mid-scroll screenshot shows a horizontal slide offset from slide 1; pin works; mobile fallback intact; tsc clean; cleanup on unmount via gsap.context.",
+        "Verify guardrails were respected and `npx tsc --noEmit` passes (run it yourself to confirm).",
+        "Be strict but fair: pass=true only if the workstream's acceptance criteria are visibly and functionally met.",
+        "If pass=false, give specific, actionable feedback the implementer can act on next iteration.",
+        "Return ONLY the JSON result described in the output schema."
+      ],
+      "outputFormat": "JSON with pass (boolean), score (number 0-100), summary (string), feedback (string[])",
+      "role": "principal front-end reviewer with a high visual-design bar",
+      "task": "Review the implementation of workstream \"WS3 — Projects: horizontal-scroll pin\" against the plan and its acceptance criteria, including the captured screenshot."
+    }
+  },
+  "description": "Visual + code review of workstream WS3 against the plan.",
+  "io": {
+    "inputJsonPath": "tasks/01KT643YXPSRDK7YQ2D0X3PPSA/input.json",
+    "outputJsonPath": "tasks/01KT643YXPSRDK7YQ2D0X3PPSA/result.json"
+  },
+  "kind": "agent",
+  "labels": [
+    "agent",
+    "iteration-1",
+    "review",
+    "WS3"
+  ],
+  "title": "Review: Projects: horizontal-scroll pin (iter 1)",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT643YXPSRDK7YQ2D0X3PPSA",
+  "taskId": "review-workstream",
+  "invocationKey": "portfolio/parallax-overhaul:S000005:review-workstream",
+  "stepId": "S000005",
+  "inputs": {
+    "devUrl": "http://localhost:3000",
+    "implementation": {
+      "filesChanged": [
+        "components/sections/ProjectsSection.tsx"
+      ],
+      "notes": "Gate moved from pre-existing 1024px to spec'd 768px. Pin target is an inner static div (not the section) since SectionFrame wraps with overflow-hidden+padding. Screenshot at scrollY ~6562 confirms mid-pin horizontal offset (slide 01 off-screen left, 03/04/05 visible, 04 centred+scaled) + bottom rail. Waited out the SYS.PRELOAD overlay before scrolling.",
+      "screenshotPath": "/tmp/ws3_projects.png",
+      "summary": "Implemented WS3 horizontal-scroll pin. Project cards render as a STATIC horizontal flex track inside a pin target (md:h-[100svh], md:overflow-hidden). useEffect after registerAll() runs a gsap.context() scoped to rootRef with gsap.matchMedia() guarded to '(min-width:768px) and (prefers-reduced-motion: no-preference)' — the only GSAP pin in the app. Tweens track x to -(track.scrollWidth - innerWidth), ease none, scrollTrigger { trigger pinRef, start top top, end +=amount, pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true }. onUpdate drives a bottom progress rail (scaleX) and per-slide entrance (scale 0.86->1, opacity 0.4->1 by distance from centre). matchMedia cleanup kills trigger/tween + clearProps; context reverted on unmount. Below 768px / reduced-motion = vertical stacked cards, no pin. Real project data reused from content/projects.ts.",
+      "typecheckPassed": true
+    },
+    "iteration": 1,
+    "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+    "repoRoot": "/Users/pradiptajana/Portfolio",
+    "ws": {
+      "detail": "In components/sections/ProjectsSection.tsx build a horizontal track of project slides. Pin the section with GSAP ScrollTrigger (pin:true, scrub:true) and translate the track x:-(trackWidth-viewport) over a scroll distance ~= trackWidth. Use gsap.matchMedia() to enable the pin only on (min-width:768px) and no reduced-motion; mobile/reduced-motion fall back to normal vertical stacked cards. Add per-slide entrance + a bottom progress rail. ACCEPTANCE: mid-scroll screenshot shows a horizontal slide offset from slide 1; pin works; mobile fallback intact; tsc clean; cleanup on unmount via gsap.context.",
+      "id": "WS3",
+      "title": "Projects: horizontal-scroll pin"
+    }
+  }
+}

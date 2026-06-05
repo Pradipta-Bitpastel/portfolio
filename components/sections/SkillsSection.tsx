@@ -1,433 +1,330 @@
 "use client";
 
-import { memo, useRef } from "react";
-import type * as THREE from "three";
-import { useGSAP } from "@gsap/react";
-import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
-import { sceneStore, type ModuleId } from "@/lib/sceneStore";
-import { SkillBar } from "@/components/ui/SkillBar";
-import { skills, MODULE_ORDER } from "@/content/skills";
+import { useEffect, useRef } from "react";
+import { gsap, registerAll, SplitText } from "@/lib/gsap";
 import { SectionFrame } from "@/components/ui/SectionFrame";
-import { useDeviceCapabilities } from "@/lib/usePerfTier";
+import { skills, MODULE_ORDER } from "@/content/skills";
+
+// Theme-aware tokens (flip with data-theme). BONE/STEEL now read the
+// semantic CSS vars so night is identical and day stays readable.
+const BONE = "var(--bone)";
+const AMBER = "#ff7a1a"; // accent — reads on both themes, kept static
+const STEEL = "var(--ink-faint)";
 
 /**
- * Skills — "SYS.ACTIVATE // 03". Pinned, 5 sub-slides.
- * Layout: 3D docks LEFT, content HUD window on RIGHT.
- *
- * SceneDock owns the dock pose; we only drive per-module emissive,
- * scale boosts, and sub-slide content fades.
+ * SYS.ACTIVATION — the capability set as an editorial index. Each module
+ * is an oversized, hover-expanding dossier row: a vertical accent rail
+ * that fills on hover, an index numeral that snaps to the module's accent,
+ * and a choreographed reveal of the tagline + skill manifest. Desktop adds
+ * a pointer-driven 3D tilt; touch opens every row. No floating 3D —
+ * typographic interaction carries it.
  */
+export function SkillsSection() {
+  const rootRef = useRef<HTMLDivElement>(null);
 
-type ModuleAccent = {
-  id: ModuleId;
-  label: string;
-  accent: string;
-  tagline: string;
-  items: ReadonlyArray<string>;
-};
+  // Orchestrated reveals (headline line-clip + index rows) and the
+  // pointer-driven tilt. All scoped to the section and reverted on unmount.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    let cancelled = false;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
+    let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+    const splits: InstanceType<typeof SplitText>[] = [];
 
-function getMat(mesh: THREE.Mesh | null):
-  | (THREE.Material & { emissiveIntensity?: number })
-  | null {
-  if (!mesh) return null;
-  const raw = mesh.material;
-  const m = Array.isArray(raw) ? raw[0] : raw;
-  if (m && "emissiveIntensity" in m) {
-    return m as THREE.Material & { emissiveIntensity?: number };
-  }
-  return null;
-}
+    const boot = async () => {
+      await registerAll();
+      if (cancelled || !rootRef.current) return;
 
-function activate(activeId: ModuleId) {
-  MODULE_ORDER.forEach((id) => {
-    const mesh = sceneStore.modules[id].mesh;
-    const mat = getMat(mesh);
-    const isActive = id === activeId;
+      const reduced =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    if (mat) {
-      gsap.to(mat, {
-        emissiveIntensity: isActive ? 1.6 : 0.15,
-        duration: 0.6,
-        ease: "power2.out",
-        overwrite: "auto"
-      });
-    }
-
-    if (mesh) {
-      const target = isActive ? 1.4 : 0.85;
-      gsap.to(mesh.scale, {
-        x: target,
-        y: target,
-        z: target,
-        duration: 0.6,
-        ease: "back.out(1.4)",
-        overwrite: "auto"
-      });
-    }
-  });
-}
-
-function resetAllModules() {
-  MODULE_ORDER.forEach((id) => {
-    const mesh = sceneStore.modules[id].mesh;
-    const mat = getMat(mesh);
-    if (mat) {
-      gsap.to(mat, {
-        emissiveIntensity: 0.3,
-        duration: 0.6,
-        overwrite: "auto"
-      });
-    }
-    if (mesh) {
-      gsap.to(mesh.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration: 0.6,
-        overwrite: "auto"
-      });
-    }
-  });
-}
-
-function levelFor(idx: number): number {
-  return 60 + ((idx * 3) % 35);
-}
-
-function SkillsPanel({
-  module: m,
-  index,
-  total,
-  panelRef
-}: {
-  module: ModuleAccent;
-  index: number;
-  total: number;
-  panelRef: (el: HTMLDivElement | null) => void;
-}) {
-  const dots = Array.from({ length: total }, (_, i) => i);
-  return (
-    <div
-      ref={panelRef}
-      data-module-id={m.id}
-      data-index={index}
-      className="skills-panel pointer-events-none absolute inset-0 flex items-center justify-end px-6 opacity-0 md:px-16"
-    >
-      {/* Raw HUD window — not glass. Thick amber top border, mono labels. */}
-      <div
-        className="pointer-events-auto w-full max-w-xl border border-white/10 bg-[#05080f]/90 shadow-[0_0_60px_rgba(0,0,0,0.6)] backdrop-blur"
-      >
-        {/* Top amber strip */}
-        <div
-          className="flex items-center justify-between border-b border-white/10 px-5 py-2"
-          style={{ backgroundColor: `${m.accent}12` }}
-        >
-          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-            <span style={{ color: m.accent }}>MOD.{String(index + 1).padStart(2, "0")}</span>
-            <span className="opacity-40">{"//"}</span>
-            <span className="text-ink">{m.id.toUpperCase()}</span>
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#FF7A1A]">
-            ACTIVE
-          </div>
-        </div>
-
-        <div className="p-6 md:p-8">
-          <h3
-            className="font-display text-5xl leading-[0.9] tracking-[-0.03em] md:text-7xl"
-            style={{ color: m.accent, fontWeight: 800 }}
-          >
-            {m.label}
-          </h3>
-
-          <p className="mt-3 font-mono text-xs leading-relaxed text-ink-dim">
-            {m.tagline}
-          </p>
-
-          <ul className="skills-grid mt-6 flex flex-col gap-3">
-            {m.items.map((s, i) => (
-              <li key={s} className="skill-item">
-                <SkillBar name={s} level={levelFor(i)} color={m.accent} />
-              </li>
-            ))}
-          </ul>
-
-          {/* Sub-slide dots */}
-          <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-            <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-              [ {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")} ]
-            </div>
-            <div className="flex items-center gap-1.5">
-              {dots.map((d) => (
-                <span
-                  key={d}
-                  className="h-1.5 w-1.5 rounded-full"
-                  style={{
-                    background:
-                      d === index ? m.accent : "rgba(255,255,255,0.2)",
-                    boxShadow: d === index ? `0 0 8px ${m.accent}` : "none"
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SkillsSectionImpl() {
-  const rootRef = useRef<HTMLElement>(null);
-  const pinRef = useRef<HTMLDivElement>(null);
-  const panelsRef = useRef<Array<HTMLDivElement | null>>([]);
-  const caps = useDeviceCapabilities();
-  const isLowEnd = caps.isLowEnd;
-
-  useGSAP(
-    () => {
-      if (!rootRef.current || !pinRef.current) return;
-      let cancelled = false;
-
-      const boot = async () => {
-        await registerAll();
-        if (cancelled) return;
-
-        // Low-end: skip the pinned carousel entirely. The mobile
-        // vertical-stack layout is already in the DOM and visible at
-        // narrow widths; we just don't pin or scrub anything.
-        if (isLowEnd) return;
-
-        // Only run the pinned carousel on xl+ (was lg/1024px). On
-        // smaller screens the panels render as a static vertical
-        // stack — bump matches the lg:!h-[500vh] / xl:flex pairs.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const ST = (gsap as any).core?.globals?.()?.ScrollTrigger;
-        if (!ST || !ST.matchMedia || typeof window === "undefined" ||
-            !window.matchMedia("(min-width: 1280px)").matches) {
+      ctx = gsap.context(() => {
+        if (reduced) {
+          gsap.set(
+            ["[data-reveal]", "[data-headline]", "[data-row]"],
+            { opacity: 1, y: 0, yPercent: 0 }
+          );
+          gsap.set("[data-scan]", { scaleY: 1 });
           return;
         }
 
-        // Single master timeline for the whole carousel.
-        // Was: 1 master pin trigger + N per-panel scrub triggers (5
-        // separate ScrollTrigger instances all running every scroll
-        // tick). Now: 1 trigger that drives every panel via fromTo +
-        // stagger inside one timeline, plus discrete onEnter callbacks
-        // for the sceneStore module activation.
-        const panels = panelsRef.current.filter(
-          (p): p is HTMLDivElement => !!p
-        );
-        const total = panels.length;
-        if (total === 0) return;
-        const step = 1 / total;
-
-        // Pre-seed: only first panel visible at progress 0.
-        panels.forEach((panel, i) => {
-          gsap.set(panel, { autoAlpha: i === 0 ? 1 : 0 });
+        // Kicker + meta fade in.
+        gsap.from("[data-reveal]", {
+          opacity: 0,
+          y: 24,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "power3.out",
+          scrollTrigger: { trigger: rootRef.current, start: "top 80%", once: true },
         });
 
-        const master = gsap.timeline({
-          scrollTrigger: {
-            trigger: rootRef.current!,
-            start: "top top",
-            end: "bottom bottom",
-            pin: pinRef.current!,
-            pinSpacing: false,
-            scrub: 1,
-            snap: {
-              snapTo: Array.from({ length: total + 1 }, (_, i) => i / total),
-              duration: { min: 0.25, max: 0.55 },
-              delay: 0.08,
-              ease: "power2.inOut"
+        // Headline reveals line-by-line on a clip.
+        gsap.utils.toArray<HTMLElement>("[data-headline]").forEach((el) => {
+          const split = new SplitText(el, { type: "lines", linesClass: "split-line" });
+          splits.push(split);
+          gsap.set(split.lines, { overflow: "hidden" });
+          gsap.from(split.lines, {
+            yPercent: 115,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.1,
+            ease: "power4.out",
+            scrollTrigger: { trigger: el, start: "top 82%", once: true },
+          });
+        });
+
+        // The index rows rise + clear-clip in sequence.
+        gsap.utils.toArray<HTMLElement>("[data-row]").forEach((el, i) => {
+          gsap.from(el, {
+            opacity: 0,
+            yPercent: 60,
+            duration: 0.85,
+            delay: i * 0.07,
+            ease: "power4.out",
+            scrollTrigger: { trigger: el, start: "top 90%", once: true },
+          });
+        });
+
+        // Vertical scan-line draws down the index as you scroll through it.
+        gsap.fromTo(
+          "[data-scan]",
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: "none",
+            transformOrigin: "top",
+            scrollTrigger: {
+              trigger: "[data-index]",
+              start: "top 75%",
+              end: "bottom 65%",
+              scrub: 0.6,
             },
-            onUpdate: (self) => {
-              // Drive the integer "active panel" for sceneStore module
-              // emissive boost. Cheap — runs once per scroll tick.
-              const idx = Math.min(
-                total - 1,
-                Math.floor(self.progress * total)
-              );
-              const panel = panels[idx];
-              const moduleId = panel?.dataset.moduleId as ModuleId | undefined;
-              if (moduleId && (master as unknown as { _lastIdx?: number })
-                ._lastIdx !== idx) {
-                (master as unknown as { _lastIdx?: number })._lastIdx = idx;
-                activate(moduleId);
-                // Animate the just-revealed panel's skill-fill bars.
-                const fills = panel.querySelectorAll<HTMLElement>(
-                  ".skillbar-fill"
-                );
-                fills.forEach((el, fIdx) => {
-                  const lvl = Number(el.dataset.level ?? 0);
-                  gsap.fromTo(
-                    el,
-                    { width: "0%" },
-                    {
-                      width: `${lvl}%`,
-                      duration: 0.8,
-                      ease: "power3.out",
-                      delay: fIdx * 0.06,
-                      overwrite: "auto"
-                    }
-                  );
-                });
-              }
-            }
           }
-        });
+        );
+      }, rootRef.current);
 
-        // Per-panel cross-fades sequenced inside the one master
-        // timeline. Each panel fades out as the next fades in.
-        for (let i = 0; i < total - 1; i++) {
-          const at = (i + 0.6) * step;
-          master.to(
-            panels[i],
-            { autoAlpha: 0, duration: step * 0.4, ease: "none" },
-            at
-          );
-          master.fromTo(
-            panels[i + 1],
-            { autoAlpha: 0 },
-            { autoAlpha: 1, duration: step * 0.4, ease: "none" },
-            at
-          );
+      // Pointer-driven 3D tilt — desktop / fine-pointer only, no reduced motion.
+      mm = gsap.matchMedia();
+      mm.add(
+        "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+        () => {
+          const rows = gsap.utils.toArray<HTMLElement>("[data-tilt]");
+          const cleanups: Array<() => void> = [];
+
+          rows.forEach((row) => {
+            gsap.set(row, { transformPerspective: 1100, transformStyle: "preserve-3d" });
+            const qx = gsap.quickTo(row, "rotationY", { duration: 0.5, ease: "power3.out" });
+            const qy = gsap.quickTo(row, "rotationX", { duration: 0.5, ease: "power3.out" });
+            const glow = row.querySelector<HTMLElement>("[data-glow]");
+            const qgx = glow ? gsap.quickTo(glow, "xPercent", { duration: 0.4, ease: "power3.out" }) : null;
+            const qgy = glow ? gsap.quickTo(glow, "yPercent", { duration: 0.4, ease: "power3.out" }) : null;
+
+            const onMove = (e: PointerEvent) => {
+              const r = row.getBoundingClientRect();
+              const px = (e.clientX - r.left) / r.width - 0.5;
+              const py = (e.clientY - r.top) / r.height - 0.5;
+              qx(px * 7);
+              qy(-py * 5);
+              qgx?.(px * 16);
+              qgy?.(py * 26);
+            };
+            const onLeave = () => {
+              qx(0);
+              qy(0);
+              qgx?.(0);
+              qgy?.(0);
+            };
+
+            row.addEventListener("pointermove", onMove);
+            row.addEventListener("pointerleave", onLeave);
+            cleanups.push(() => {
+              row.removeEventListener("pointermove", onMove);
+              row.removeEventListener("pointerleave", onLeave);
+            });
+          });
+
+          return () => cleanups.forEach((fn) => fn());
         }
+      );
+    };
 
-        // Reset on leave section.
-        ScrollTrigger.create({
-          trigger: rootRef.current!,
-          start: "top top",
-          end: "bottom bottom",
-          onLeave: () => {
-            resetAllModules();
-          },
-          onLeaveBack: () => {
-            resetAllModules();
-          }
-        });
-      };
-
-      void boot();
-
-      return () => {
-        cancelled = true;
-        resetAllModules();
-      };
-    },
-    { scope: rootRef, dependencies: [isLowEnd] }
-  );
-
-  const accents: ModuleAccent[] = MODULE_ORDER.map((id) => ({
-    id,
-    label: skills[id].label,
-    accent: skills[id].accent,
-    tagline: skills[id].tagline,
-    items: skills[id].items
-  }));
+    void boot();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+      mm?.revert();
+      splits.forEach((s) => s.revert());
+    };
+  }, []);
 
   return (
-    <SectionFrame
-      id="skills"
-      ref={rootRef}
-      ariaLabelledBy="skills-heading"
-      bare
-      className="!px-0 !py-0 xl:!h-[500vh]"
-    >
-      {/* Mobile / tablet: simple vertical stack, no pin */}
-      <div className="flex flex-col gap-8 px-[clamp(16px,5vw,96px)] py-[clamp(32px,5vh,120px)] xl:hidden">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-          <span className="text-[#FF7A1A]">SYS.ACTIVATE // 03</span>
-          <span className="opacity-40">—</span>
-          <span>MODULES ONLINE</span>
-        </div>
-        <h2 id="skills-heading-mobile" className="sr-only">Skills</h2>
-        {accents.map((m, i) => (
-          <div
-            key={m.id}
-            className="w-full border border-white/10 bg-[#05080f]/90 backdrop-blur"
-          >
-            <div
-              className="flex items-center justify-between border-b border-white/10 px-5 py-2"
-              style={{ backgroundColor: `${m.accent}12` }}
-            >
-              <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-                <span style={{ color: m.accent }}>MOD.{String(i + 1).padStart(2, "0")}</span>
-                <span className="opacity-40">{"//"}</span>
-                <span className="text-ink">{m.id.toUpperCase()}</span>
-              </div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#FF7A1A]">ACTIVE</div>
-            </div>
-            <div className="p-5">
-              <h3
-                className="font-display text-4xl leading-[0.9] tracking-[-0.03em] sm:text-5xl"
-                style={{ color: m.accent, fontWeight: 800 }}
-              >
-                {m.label}
-              </h3>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-ink-dim">{m.tagline}</p>
-              <ul className="mt-5 flex flex-col gap-3">
-                {m.items.map((s, idx) => (
-                  <li key={s}>
-                    <SkillBar name={s} level={levelFor(idx)} color={m.accent} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ))}
+    <SectionFrame id="skills" ariaLabelledBy="skills-title" bare className="py-[clamp(80px,12vh,160px)]">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+        <div className="absolute left-[6%] bottom-[8%] h-[46vh] w-[46vh] rounded-full opacity-[0.10] blur-[130px]" style={{ background: AMBER }} />
+        <div className="absolute right-[10%] top-[14%] h-[34vh] w-[34vh] rounded-full opacity-[0.07] blur-[140px]" style={{ background: "#9b5cff" }} />
+        <div className="grid-bg absolute inset-0 opacity-[0.2]" />
       </div>
 
-      {/* lg+: pinned sub-slide carousel */}
-      <div
-        ref={pinRef}
-        className="sticky top-0 hidden h-[100svh] w-full items-center overflow-hidden px-[clamp(48px,6vw,96px)] py-[clamp(56px,7vh,120px)] xl:flex"
-      >
-        {/* Giant "03" top-left, amber — anchored inside the frame */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
-          style={{
-            color: "#FF7A1A",
-            letterSpacing: "-0.02em",
-            fontSize: "clamp(6rem,12vw,14rem)"
-          }}
-        >
-          03
+      <div ref={rootRef} className="relative mx-auto w-full max-w-6xl px-[clamp(16px,5vw,40px)]" style={{ color: BONE }}>
+        {/* kicker */}
+        <div data-reveal className="flex items-center justify-between border-t pt-3 font-mono text-[11px] uppercase tracking-[0.3em]" style={{ borderColor: "var(--line-strong)", color: STEEL }}>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: AMBER, boxShadow: `0 0 8px ${AMBER}` }} />
+            SYS.ACTIVATION · CAPABILITY INDEX
+          </span>
+          <span style={{ color: AMBER }}>03 / 06</span>
         </div>
 
-        {/* Top meta label — kept inside the section padding band */}
-        <div className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(56px,7vh,120px)] z-10 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-          <span className="text-[#FF7A1A]">SYS.ACTIVATE // 03</span>
-          <span className="opacity-40">—</span>
-          <span>MODULES ONLINE</span>
-          <span className="opacity-40">—</span>
-          <span>UPTIME 99.982%</span>
+        {/* headline + context */}
+        <div className="mt-8 grid items-end gap-8 md:grid-cols-[1.4fr_0.6fr]">
+          <h2 id="skills-title" data-headline className="font-grotesk leading-[0.82] tracking-[-0.03em]" style={{ fontWeight: 800, fontSize: "clamp(2.6rem,8.4vw,6.8rem)" }}>
+            Five modules.<br />
+            <span style={{ color: STEEL }}>One runtime.</span>
+          </h2>
+          <p data-reveal className="max-w-xs font-serif text-[clamp(1rem,1.6vw,1.3rem)] italic leading-snug md:pb-3" style={{ color: "var(--ink-dim)" }}>
+            Hover a layer to open its manifest — the full surface I ship across.
+          </p>
         </div>
 
-        {/* Heading: current module name rendered full-size in display */}
-        <h2
-          id="skills-heading"
-          className="sr-only"
-        >
-          Skills: five modules, one runtime
-        </h2>
-
-        {/* Stacked HUD panels; ScrollTrigger fades the active one in */}
-        {accents.map((m, i) => (
-          <SkillsPanel
-            key={m.id}
-            module={m}
-            index={i}
-            total={accents.length}
-            panelRef={(el) => {
-              panelsRef.current[i] = el;
+        {/* Index */}
+        <div data-index className="relative mt-14 border-t" style={{ borderColor: "var(--line-strong)" }}>
+          {/* scroll-driven scan line down the left edge */}
+          <span
+            data-scan
+            aria-hidden
+            className="pointer-events-none absolute left-0 top-0 hidden w-px md:block"
+            style={{
+              height: "100%",
+              transformOrigin: "top",
+              background: `linear-gradient(color-mix(in srgb, var(--bone) 33%, transparent), ${AMBER}aa, color-mix(in srgb, var(--bone) 0%, transparent))`,
             }}
           />
-        ))}
+
+          {MODULE_ORDER.map((id, i) => {
+            const m = skills[id];
+            return (
+              <div
+                key={id}
+                data-row
+                className="group/row relative border-b [perspective:1100px]"
+                style={{ borderColor: "var(--line)" }}
+              >
+                {/* vertical accent rail — grows from the index gutter on hover */}
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 transition-transform duration-500 ease-out group-hover/row:scale-y-100 max-md:scale-y-100"
+                  style={{ background: m.accent, boxShadow: `0 0 16px ${m.accent}` }}
+                />
+
+                <div data-tilt className="relative [transform-style:preserve-3d] [will-change:transform]">
+                  {/* hover wash + cursor-tracking glow */}
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 origin-left scale-x-0 transition-transform duration-[600ms] ease-out group-hover/row:scale-x-100"
+                    style={{ background: `linear-gradient(90deg, ${m.accent}14, transparent 65%)` }}
+                  />
+                  <span
+                    data-glow
+                    aria-hidden
+                    className="pointer-events-none absolute left-[18%] top-1/2 h-[140%] w-[40%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 blur-[70px] transition-opacity duration-500 group-hover/row:opacity-60"
+                    style={{ background: m.accent }}
+                  />
+
+                  <div className="relative flex items-center gap-5 py-6 pl-5 md:gap-8 md:pl-8">
+                    <span
+                      className="font-mono text-[12px] tabular-nums transition-all duration-300 group-hover/row:tracking-[0.2em]"
+                      style={{ color: STEEL }}
+                    >
+                      <span className="transition-colors duration-300 group-hover/row:text-[var(--acc)]" style={{ ["--acc" as string]: m.accent }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="opacity-40"> / 05</span>
+                    </span>
+
+                    <h3
+                      className="font-grotesk leading-none tracking-[-0.02em] transition-all duration-300 group-hover/row:translate-x-1"
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "clamp(1.9rem,5.4vw,4.2rem)",
+                        color: BONE,
+                        ["--acc" as string]: m.accent,
+                      }}
+                    >
+                      <span className="transition-colors duration-300 group-hover/row:text-[var(--acc)]">
+                        {m.label}
+                      </span>
+                    </h3>
+
+                    <span className="ml-auto flex shrink-0 items-center gap-4">
+                      <span className="hidden font-mono text-[11px] uppercase tracking-[0.22em] tabular-nums sm:block" style={{ color: STEEL }}>
+                        {m.items.length} skills
+                      </span>
+                      {/* expand indicator: rotates + colors on hover */}
+                      <span
+                        aria-hidden
+                        className="relative grid h-9 w-9 place-items-center rounded-full border transition-all duration-[400ms] group-hover/row:rotate-90 group-hover/row:border-transparent"
+                        style={{ borderColor: "var(--line-strong)", ["--acc" as string]: m.accent }}
+                      >
+                        <span
+                          className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-[400ms] group-hover/row:opacity-100"
+                          style={{ background: `${m.accent}1f` }}
+                        />
+                        <svg width="13" height="13" viewBox="0 0 13 13" className="relative transition-colors duration-300 group-hover/row:[color:var(--acc)]" style={{ color: STEEL }}>
+                          <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                        </svg>
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Expanding detail — hover on desktop, always open on touch */}
+                  <div className="grid grid-rows-[0fr] pl-5 transition-[grid-template-rows] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/row:grid-rows-[1fr] max-md:grid-rows-[1fr] md:pl-8">
+                    <div className="overflow-hidden">
+                      <div className="flex flex-col gap-5 pb-7 pt-1 md:flex-row md:items-end md:justify-between md:gap-10">
+                        <p className="max-w-md font-serif text-[clamp(1.1rem,1.9vw,1.5rem)] italic leading-snug" style={{ color: "var(--ink-dim)" }}>
+                          <span
+                            aria-hidden
+                            className="mr-3 inline-block h-[1px] w-8 translate-y-[-0.3em] align-middle"
+                            style={{ background: m.accent }}
+                          />
+                          {m.tagline}
+                        </p>
+                        <ul className="flex max-w-xl flex-wrap gap-2 md:justify-end">
+                          {m.items.map((item, j) => (
+                            <li
+                              key={item}
+                              className="translate-y-1 rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] opacity-0 transition-all duration-500 ease-out group-hover/row:translate-y-0 group-hover/row:opacity-100 max-md:translate-y-0 max-md:opacity-100"
+                              style={{
+                                borderColor: "var(--line-strong)",
+                                color: STEEL,
+                                transitionDelay: `${120 + j * 28}ms`,
+                              }}
+                            >
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* footer meta */}
+        <div data-reveal className="mt-8 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.26em]" style={{ color: STEEL }}>
+          <span>END · 05 MODULES INDEXED</span>
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: "#39ffa5", boxShadow: "0 0 8px #39ffa5" }} />
+            ALL SYSTEMS GO
+          </span>
+        </div>
       </div>
     </SectionFrame>
   );
 }
 
-export const SkillsSection = memo(SkillsSectionImpl);
 export default SkillsSection;

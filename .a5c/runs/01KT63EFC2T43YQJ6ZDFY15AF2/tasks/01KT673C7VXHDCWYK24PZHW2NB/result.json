@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KT673C7VXHDCWYK24PZHW2NB",
+  "taskId": "__sdk.breakpoint",
+  "invocationKey": "portfolio/parallax-overhaul:S000017:__sdk.breakpoint",
+  "status": "ok",
+  "result": {
+    "approved": true,
+    "decision": "complete",
+    "note": "Final review approved by user. All 5 workstreams (WS1 hero parallax, WS3 projects horizontal pin, WS2 traveling dev-laptop model, WS4 GSAP choreography, WS5 perf+polish) complete + verified. Closing the run."
+  },
+  "startedAt": "2026-06-03T07:45:47.268Z",
+  "finishedAt": "2026-06-03T07:45:47.268Z",
+  "value": {
+    "approved": true,
+    "decision": "complete",
+    "note": "Final review approved by user. All 5 workstreams (WS1 hero parallax, WS3 projects horizontal pin, WS2 traveling dev-laptop model, WS4 GSAP choreography, WS5 perf+polish) complete + verified. Closing the run."
+  }
+}

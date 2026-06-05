@@ -3,18 +3,55 @@
 @tailwind utilities;
 
 :root {
+  /* NIGHT (default) */
   --bg: #0b0f19;
   --bg-2: #0f1424;
   --ink: #e7ecf5;
   --ink-dim: #9aa4b8;
+  --ink-faint: #8b93a7; /* "steel" */
   --blue: #4f9cff;
   --purple: #9b5cff;
   --cyan: #00d4ff;
   --orange: #ff8a3c;
   --green: #39ffa5;
+  --bone: #ece7df;
+  --amber: #ff7a1a;
   --glass: rgba(255, 255, 255, 0.04);
   --glass-br: rgba(255, 255, 255, 0.08);
+  /* Semantic, theme-flippable surface tokens. Sections that read these
+     automatically work in BOTH day + night. */
+  --surface: rgba(255, 255, 255, 0.04); /* panel fill */
+  --surface-2: rgba(16, 20, 34, 0.55); /* stronger panel fill */
+  --line: rgba(231, 236, 245, 0.12); /* hairline / border */
+  --line-strong: rgba(231, 236, 245, 0.22);
+  --accent: var(--amber);
   --radius: 14px;
+}
+
+/* DAY — warm parchment light mode. Surfaces lighten, ink darkens; the bright
+   accents stay (they read on both). Sections that use the semantic tokens flip
+   automatically. */
+:root[data-theme="day"] {
+  /* GOLDEN-HOUR (warm-DARK) day. Was a bright gold bg, but the sections, the
+     star-dust particles and the hero's dark foreground are all designed for a
+     DARK field — so a bright bg left a "whiteish overlay" below the hero that
+     never blended. Day is now a warm DUSK: a dark warm-brown field so the hero
+     melts into the sections and the particles read as warm stars. Warmth comes
+     from the hero scene + amber accents + warm-tinted surfaces, not a light bg.
+     Mirrors night's light-on-dark token structure with warm tints. */
+  --bg: #14110b;
+  --bg-2: #1d1810;
+  --ink: #f3ecdd;
+  --ink-dim: #bcae95;
+  --ink-faint: #8d8167;
+  --bone: #f3ecdd;
+  --glass: rgba(255, 241, 216, 0.05);
+  --glass-br: rgba(255, 241, 216, 0.1);
+  --surface: rgba(255, 241, 216, 0.05);
+  --surface-2: rgba(42, 33, 20, 0.55);
+  --line: rgba(243, 236, 221, 0.13);
+  --line-strong: rgba(243, 236, 221, 0.24);
+  --accent: #ff8a3c;
 }
 
 html,
@@ -47,6 +84,40 @@ body {
 .font-display {
   font-family: var(--font-display), ui-sans-serif, sans-serif;
   letter-spacing: -0.02em;
+}
+
+/* Editorial "dossier" type — distinctive grotesque + elegant serif. */
+.font-grotesk {
+  font-family: var(--font-grotesk), ui-sans-serif, sans-serif;
+}
+.font-serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+/* Hairline crop-mark corners for framed editorial blocks. */
+.crop-frame {
+  position: relative;
+}
+.crop-frame::before,
+.crop-frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--bone, #ece7df);
+  opacity: 0.5;
+}
+.crop-frame::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+.crop-frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
 }
 
 * {
@@ -118,24 +189,11 @@ body {
   }
 }
 
-/* Optional: a single, gated SVG-noise atmosphere overlay. We attach it
-   to `body::after` so it always renders exactly once. The SVG data URI
-   is only rendered when the viewport is at least 1280px wide AND the
-   primary input is a real mouse — i.e. desktop. That avoids the
-   Firefox-mobile + Edge feTurbulence memory leak path entirely. */
-@media (min-width: 1280px) and (hover: hover) {
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    pointer-events: none;
-    opacity: 0.1;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27200%27%20height%3D%27200%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.9%27%20numOctaves%3D%272%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200.9%200%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23n)%27%2F%3E%3C%2Fsvg%3E");
-    background-size: 200px 200px;
-  }
-}
+/* DISABLED for performance: a full-screen `body::after` film-grain overlay
+   with `mix-blend-mode: overlay` forces the compositor to re-blend the whole
+   viewport against its backdrop every frame the scene moves (a major cause of
+   scroll flicker/jank, especially over the animated hero + WebGL canvas). The
+   grain is decorative and not worth that cost, so it is removed. */
 
 /* `@supports not (backdrop-filter)`: Firefox (until recently) and old
    Chromium/Edge versions ignored backdrop-filter entirely. When the
@@ -179,6 +237,227 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===================== Day / Night theme ===================== */
+/* The theme is carried mainly by the CelestialSky (moon/stars ↔ sun/clouds)
+   and the hero image swap. Surfaces stay dark for readability; we only warm
+   the page base a touch in day so the seams between sky and content feel
+   golden rather than cold. A slow transition makes the toggle a dawn/dusk. */
+html {
+  transition: background-color 900ms ease, color 900ms ease;
+}
+
+/* --- starfield --- */
+.sky-star {
+  background: #eaf2ff;
+  box-shadow: 0 0 4px rgba(200, 220, 255, 0.5);
+  opacity: var(--o, 0.6);
+  animation: sky-twinkle infinite ease-in-out;
+}
+@keyframes sky-twinkle {
+  0%, 100% { opacity: calc(var(--o, 0.6) * 0.35); }
+  50% { opacity: var(--o, 0.6); }
+}
+
+/* --- shooting stars --- */
+.sky-shooter {
+  position: absolute;
+  width: 150px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(210, 228, 255, 0.95) 100%);
+  border-radius: 2px;
+  transform: translate3d(0, 0, 0) rotate(20deg);
+  opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(180, 210, 255, 0.85));
+  animation: sky-shoot var(--shoot-every, 12s) ease-in infinite;
+}
+@keyframes sky-shoot {
+  0% { transform: translate3d(0, 0, 0) rotate(20deg); opacity: 0; }
+  1.5% { opacity: 1; }
+  9% { transform: translate3d(440px, 160px, 0) rotate(20deg); opacity: 0; }
+  100% { transform: translate3d(440px, 160px, 0) rotate(20deg); opacity: 0; }
+}
+
+/* --- moon --- */
+.sky-moon-disc {
+  width: 11vmin;
+  height: 11vmin;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 38% 34%, #fdfdff 0%, #e0e8f6 46%, #aab8d4 100%);
+  box-shadow:
+    0 0 48px 8px rgba(190, 210, 255, 0.32),
+    inset -6px -4px 14px rgba(80, 100, 140, 0.55);
+  animation: sky-moon-glow 8s ease-in-out infinite;
+}
+@keyframes sky-moon-glow {
+  0%, 100% { box-shadow: 0 0 44px 6px rgba(190, 210, 255, 0.28), inset -6px -4px 14px rgba(80, 100, 140, 0.55); }
+  50% { box-shadow: 0 0 66px 14px rgba(190, 210, 255, 0.46), inset -6px -4px 14px rgba(80, 100, 140, 0.55); }
+}
+
+/* --- sun --- */
+.sky-sun {
+  width: 13vmin;
+  height: 13vmin;
+}
+.sky-sun-disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff6da 0%, #ffd27a 46%, #ff9b4d 100%);
+  box-shadow: 0 0 80px 22px rgba(255, 180, 90, 0.5), 0 0 150px 60px rgba(255, 150, 70, 0.22);
+  animation: sky-sun-pulse 7s ease-in-out infinite;
+}
+@keyframes sky-sun-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.95; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+.sky-sun-rays {
+  position: absolute;
+  inset: -85%;
+  border-radius: 9999px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 205, 130, 0.16) 0deg 2.6deg,
+    rgba(255, 205, 130, 0) 2.6deg 13deg
+  );
+  -webkit-mask-image: radial-gradient(circle, #000 18%, rgba(0, 0, 0, 0) 62%);
+  mask-image: radial-gradient(circle, #000 18%, rgba(0, 0, 0, 0) 62%);
+  animation: orbit-spin 160s linear infinite;
+}
+
+/* --- clouds --- */
+.sky-cloud {
+  position: absolute;
+  left: -60vmin;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.42) 58%, rgba(255, 255, 255, 0) 76%);
+  filter: blur(6px);
+  animation: sky-cloud-drift linear infinite;
+}
+@keyframes sky-cloud-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(190vw, 0, 0); }
+}
+
+/* --- hero theme cross-dissolve (HeroSection) --- */
+/* The outgoing parallax set fades out on top of the freshly-swapped base so
+   the day/night recolor cross-fades instead of hard-cutting (the flicker). */
+@keyframes hero-theme-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.hero-fade-out {
+  animation: hero-theme-fade-out 1000ms ease forwards;
+  will-change: opacity;
+  pointer-events: none;
+}
+
+/* --- hero robot: floating emoji + HUD speech bubble --- */
+/* Each emoji bobs + tilts on its own delay/duration (set inline). The cluster
+   wrapper is translated/faded on scroll by the rAF loop, so these are pure
+   compositor transforms nested under it. Gated to no-reduced-motion (the whole
+   robot block only mounts on capable, non-reduced-motion devices anyway). */
+.hero-emoji {
+  will-change: transform;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+  animation-name: hero-emoji-bob;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes hero-emoji-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-5deg);
+  }
+  50% {
+    transform: translate3d(0, -13px, 0) rotate(5deg);
+  }
+}
+.hero-bubble {
+  will-change: transform;
+  animation: hero-bubble-float 4.2s ease-in-out infinite;
+}
+@keyframes hero-bubble-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.hero-bubble-text {
+  display: inline-block;
+  padding: 7px 13px;
+  border-radius: 14px 14px 14px 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: #eaf1ff;
+  /* Solid-ish fill — NO backdrop-filter: blurring the moving scene behind it
+     every frame was a major scroll-jank source. An opaque panel reads the
+     same and composites for free. */
+  background: rgba(13, 19, 38, 0.92);
+  border: 1px solid rgba(150, 180, 255, 0.3);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+.hero-bubble-text.hero-bubble-swap {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-emoji,
+  .hero-bubble {
+    animation: none;
+  }
+}
+
+/* --- theme-transition cloud reveal (ThemeTransitionOverlay) --- */
+.ttx-root {
+  overflow: hidden;
+}
+.ttx-wash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  /* A near-OPAQUE destination-coloured cover (filled, not fading to
+     transparent) so it fully hides the palette/image swap underneath. A subtle
+     radial highlight keeps it from reading as a flat block. */
+  background:
+    radial-gradient(120% 85% at 50% 26%, var(--ttx-hi, rgba(255, 255, 255, 0.12)), transparent 60%),
+    var(--ttx-wash, rgba(11, 15, 25, 0.99));
+  will-change: opacity;
+}
+.ttx-fog {
+  position: absolute;
+  inset: -12%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.ttx-fog svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ttx-cloud {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0;
+  background: radial-gradient(
+    closest-side,
+    var(--ttx-1, rgba(255, 255, 255, 0.95)),
+    var(--ttx-2, rgba(255, 255, 255, 0.45)) 56%,
+    transparent 78%
+  );
+  filter: blur(var(--ttx-blur, 20px));
+  will-change: transform, opacity, filter;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -233,6 +512,48 @@ body {
     -webkit-backdrop-filter: none;
     background: rgba(16, 20, 34, 0.78);
   }
+}
+
+/* ------------------------------------------------------------------ *
+ *  PERF: skip offscreen section paint during scroll.
+ *
+ *  While the user is at the HERO, every section below the fold is still
+ *  laid out + painted each frame the page composites — that paint work
+ *  competes with the hero's rAF parallax AND the always-on WebGL canvas
+ *  for the 16.7ms frame budget. `content-visibility: auto` lets the
+ *  browser skip rendering (style/layout/paint) of a section until it is
+ *  near the viewport, then promotes it automatically. `contain-intrinsic-
+ *  size` supplies a placeholder height so the scrollbar + scroll math
+ *  stay stable while a section is skipped (no jump when it renders).
+ *
+ *  Scope is deliberate: we EXCLUDE
+ *    - #hero      — sticky stage, always in view, owns its own rAF.
+ *    - #projects  — GSAP ScrollTrigger pin/scrub needs true measured
+ *                   geometry, which containment would defer.
+ *    - .marquee-band — ScrollTrigger-driven horizontal loop, same reason.
+ *  All other sections are plain content blocks that are safe to skip.
+ *  `contain-intrinsic-size: auto 100vh` uses the last-rendered size once
+ *  known, falling back to ~one viewport so reserved space is realistic.
+ * ------------------------------------------------------------------ */
+@media (min-width: 768px) {
+  main > section:not(#hero):not(#projects):not(.marquee-band) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 100vh;
+  }
+}
+
+/* Reticle cursor: when the custom crosshair is active (class added to
+   <html> by Reticle.tsx on fine-pointer desktops), hide the OS cursor.
+   Text fields keep a caret so typing in the terminal still feels right. */
+.cursor-reticle,
+.cursor-reticle * {
+  cursor: none;
+}
+.cursor-reticle input,
+.cursor-reticle textarea,
+.cursor-reticle select,
+.cursor-reticle [contenteditable="true"] {
+  cursor: text;
 }
 
 /* Accessibility: always show a clear focus ring on keyboard navigation.

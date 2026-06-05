@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KT63NC60S2FMCVT7MV1FT812",
+  "taskId": "review-workstream",
+  "invocationKey": "portfolio/parallax-overhaul:S000002:review-workstream",
+  "status": "ok",
+  "result": {
+    "feedback": [
+      "Baked-in FIREWATCH wordmark in the source art shows behind the title (cosmetic source-asset artifact); consider masking the art or nudging the title if a cleaner composition is wanted.",
+      "Only parallax0 is eager; consider eager/preload for parallax8 too to avoid a brief depth pop on first paint (defer to WS5).",
+      "9 full-bleed 7000x2076 images: watch decode/memory in the WS5 perf pass; consider downscaled/responsive sources."
+    ],
+    "pass": true,
+    "score": 92,
+    "summary": "WS1 meets all acceptance criteria. HeroSection.tsx renders the 9 real Firewatch photographic PNG layers (parallax0 sky/back .. parallax8 trees/front) as <img> elements (not SVG), z-stacked 0..8 in correct depth order. The rAF engine exclusively owns each layer's inline transform (wrappers oversize via -inset-[5%], no transform utility classes), honoring the guardrail. Mouse + scroll parallax wired via single rAF reading native scrollY (capped) + pointermove; no Lenis, no GSAP pin. Reduced-motion returns early. PRADIPTA JANA overlays at z-20, legible with drop-shadow. Role-cycler span has no React children (no textContent crash). tsc --noEmit exits 0."
+  },
+  "startedAt": "2026-06-03T06:46:37.165Z",
+  "finishedAt": "2026-06-03T06:46:37.165Z",
+  "value": {
+    "feedback": [
+      "Baked-in FIREWATCH wordmark in the source art shows behind the title (cosmetic source-asset artifact); consider masking the art or nudging the title if a cleaner composition is wanted.",
+      "Only parallax0 is eager; consider eager/preload for parallax8 too to avoid a brief depth pop on first paint (defer to WS5).",
+      "9 full-bleed 7000x2076 images: watch decode/memory in the WS5 perf pass; consider downscaled/responsive sources."
+    ],
+    "pass": true,
+    "score": 92,
+    "summary": "WS1 meets all acceptance criteria. HeroSection.tsx renders the 9 real Firewatch photographic PNG layers (parallax0 sky/back .. parallax8 trees/front) as <img> elements (not SVG), z-stacked 0..8 in correct depth order. The rAF engine exclusively owns each layer's inline transform (wrappers oversize via -inset-[5%], no transform utility classes), honoring the guardrail. Mouse + scroll parallax wired via single rAF reading native scrollY (capped) + pointermove; no Lenis, no GSAP pin. Reduced-motion returns early. PRADIPTA JANA overlays at z-20, legible with drop-shadow. Role-cycler span has no React children (no textContent crash). tsc --noEmit exits 0."
+  }
+}

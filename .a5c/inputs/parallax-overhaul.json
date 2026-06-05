@@ -1,0 +1,33 @@
+{
+  "repoRoot": "/Users/pradiptajana/Portfolio",
+  "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+  "devUrl": "http://localhost:3000",
+  "maxRefine": 2,
+  "workstreams": [
+    {
+      "id": "WS1",
+      "title": "Hero: real Firewatch parallax",
+      "detail": "Replace the SVG mountains in components/sections/HeroSection.tsx with the 9 real PNG layers public/images/parallax/parallax0.png (back/sky) .. parallax8.png (front/trees), stacked z-0..z-8, object-cover, oversized via wrapper (NOT a transform class). Reuse the existing rAF parallax engine: translate3d(mouseX*depth, min(scrollY,vh)*speed, 0) with back layers slow (speed~0) ramping to front fast (speed~0.55), and depth ramping back~2 to front~26. Keep PRADIPTA JANA identity + role cycler overlaid above the layers, fading on scroll. Reduced-motion = static first frame. ACCEPTANCE: screenshot shows the real Firewatch sunset photo layers (not SVG), correct depth stacking, title legible above; tsc clean; mouse+scroll parallax wired."
+    },
+    {
+      "id": "WS3",
+      "title": "Projects: horizontal-scroll pin",
+      "detail": "In components/sections/ProjectsSection.tsx build a horizontal track of project slides. Pin the section with GSAP ScrollTrigger (pin:true, scrub:true) and translate the track x:-(trackWidth-viewport) over a scroll distance ~= trackWidth. Use gsap.matchMedia() to enable the pin only on (min-width:768px) and no reduced-motion; mobile/reduced-motion fall back to normal vertical stacked cards. Add per-slide entrance + a bottom progress rail. ACCEPTANCE: mid-scroll screenshot shows a horizontal slide offset from slide 1; pin works; mobile fallback intact; tsc clean; cleanup on unmount via gsap.context."
+    },
+    {
+      "id": "WS2",
+      "title": "Traveling 3D model",
+      "detail": "Reintroduce a single persistent 3D model that travels through sections driven by sceneStore.progress. Extend lib/scenePoses.ts ScenePose with pos[x,y,z], rot[x,y,z], scale per section. Create components/three/TravelerModel.tsx (drei useGLTF, lazy+Suspense) loading public/models/DamagedHelmet.glb (already present) OR download a thematic GLB (drone/robot, e.g. three.js examples RobotExpressive.glb) into public/models. Damp the model toward samplePose(progress) each frame (same pattern as the camera) + subtle idle bob/rotation. Mount it in the existing scene canvas. Pause its frameloop on the portfolio:bg-pause event when Showcase is in view. Keep low-tier/touch/reduced-motion fallback. ACCEPTANCE: screenshots at 2-3 scroll positions show the model in clearly different poses/positions per section; tsc clean; one WebGL canvas active at a time."
+    },
+    {
+      "id": "WS4",
+      "title": "GSAP choreography: About / Skills / Experience / Contact",
+      "detail": "Add GSAP ScrollTrigger choreography: About = line-by-line clip/y reveal + depth parallax on dossier panels; Skills = staggered reveal + hover 3D tilt on rows; Experience = SVG timeline line that draws on scroll (strokeDashoffset scrub) with entries sliding in; Contact/KineticReveal = upgrade clip-path word wipes + final CTA flourish. All wrapped in gsap.context() + matchMedia, cleaned on unmount, reduced-motion guarded. ACCEPTANCE: screenshots of each section show the intended effect (or its settled end-state); tsc clean; no pin on per-state re-rendering sections."
+    },
+    {
+      "id": "WS5",
+      "title": "Perf + reduced-motion + final polish",
+      "detail": "Whole-site pass: verify one WebGL canvas active at a time, transforms-only parallax with will-change, hero LCP layer eager + rest lazy, model lazy via next/dynamic. Re-check reduced-motion + touch fallbacks on every new effect. Confirm `npx tsc --noEmit` clean and dev server renders top-to-bottom without console errors. ACCEPTANCE: full-page top/mid/bottom screenshots look cohesive; no regressions to guardrails."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "breakpoint",
+  "metadata": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "passed": true,
+        "reviewSummary": "WS3 Projects horizontal-scroll pin fully meets the plan. Section pins a static track via a single GSAP ScrollTrigger (pin:true, scrub:1) translating x to -(scrollWidth-innerWidth); gsap.matchMedia() gates the pin to (min-width:768px)+no-preference with a vertical stacked-card fallback below; per-slide scale/opacity entrance + bottom progress rail driven by horizontal progress; cleanup via matchMedia teardown + gsap.context().revert(). Mid-scroll screenshot shows real horizontal offset (Admin Dashboard centred, neighbours clipped). tsc clean. Only GSAP pin; pinned subtree never re-renders.",
+        "screenshot": "/tmp/ws3_projects.png",
+        "workstreamId": "WS3"
+      },
+      "question": "\"Projects: horizontal-scroll pin\" finished after 1 iteration(s), pass=true. Review the screenshot and approve to continue to the next workstream?",
+      "title": "Workstream complete: Projects: horizontal-scroll pin"
+    },
+    "requestedAt": "2026-06-03T06:54:37.656Z"
+  },
+  "title": "breakpoint",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT646FJS822K283C92TJJ4RA",
+  "taskId": "__sdk.breakpoint",
+  "invocationKey": "portfolio/parallax-overhaul:S000006:__sdk.breakpoint",
+  "stepId": "S000006",
+  "inputs": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "passed": true,
+        "reviewSummary": "WS3 Projects horizontal-scroll pin fully meets the plan. Section pins a static track via a single GSAP ScrollTrigger (pin:true, scrub:1) translating x to -(scrollWidth-innerWidth); gsap.matchMedia() gates the pin to (min-width:768px)+no-preference with a vertical stacked-card fallback below; per-slide scale/opacity entrance + bottom progress rail driven by horizontal progress; cleanup via matchMedia teardown + gsap.context().revert(). Mid-scroll screenshot shows real horizontal offset (Admin Dashboard centred, neighbours clipped). tsc clean. Only GSAP pin; pinned subtree never re-renders.",
+        "screenshot": "/tmp/ws3_projects.png",
+        "workstreamId": "WS3"
+      },
+      "question": "\"Projects: horizontal-scroll pin\" finished after 1 iteration(s), pass=true. Review the screenshot and approve to continue to the next workstream?",
+      "title": "Workstream complete: Projects: horizontal-scroll pin"
+    },
+    "requestedAt": "2026-06-03T06:54:37.656Z"
+  }
+}

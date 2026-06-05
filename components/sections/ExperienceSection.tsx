@@ -1,644 +1,385 @@
 "use client";
 
-import { memo, useRef } from "react";
-import type * as THREE from "three";
-import { useGSAP } from "@gsap/react";
-import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
-import { sceneStore } from "@/lib/sceneStore";
-import { experience } from "@/content/experience";
+import { useEffect, useRef } from "react";
+import { gsap, registerAll } from "@/lib/gsap";
 import { SectionFrame } from "@/components/ui/SectionFrame";
-import { KineticTitle } from "@/components/ui/KineticTitle";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { useReveal } from "@/lib/useReveal";
+import { experience } from "@/content/experience";
+import { getSection } from "@/lib/sections";
+
+const EXPERIENCE = getSection("experience")!;
+const GREEN = EXPERIENCE.color; // #39ffa5
+
+// Theme-aware tokens (flip with data-theme via globals.css). For alpha-blended
+// surfaces/borders we mix the semantic token toward transparent so both themes
+// stay readable.
+const INK = "var(--ink)";
+const STEEL = "var(--ink-faint)";
+const BG = "var(--bg)";
+const inkA = (pct: number) => `color-mix(in srgb, var(--ink) ${pct}%, transparent)`;
+const steelA = (pct: number) => `color-mix(in srgb, var(--ink-faint) ${pct}%, transparent)`;
 
 /**
- * Experience — "SYS.TIMELINE // 05".
+ * Experience / SYS.TIMELINE — an operative deployment log.
  *
- * The left rail is a full-height animated SVG timeline:
- *   - a faint dashed base line (always visible)
- *   - a bright amber progress fill whose height tracks scroll via a
- *     scrub ScrollTrigger
- *   - a glowing "scan pulse" dot that rides the progress front,
- *     leaving a brief trail
- *   - a hex node at each entry's y-position that snaps bright + pulses
- *     when the scan crosses it
- *
- * Each entry is a card with corner brackets that draw in as SVG
- * stroke-dashoffset tweens, a horizontal laser sweep that wipes across
- * before content fades in, a role title that slides from behind a
- * mask, and bullets that reveal with a scanning gradient mask. All
- * entry-local animations are scrubbed off the entry's OWN bounding box
- * so staggered scrolling reads as individually-triggered events.
- *
- * No external GSAP Club plugins required — draw effects use
- * stroke-dasharray math, text wipes use CSS clip-path + mask-image.
+ * A vertical timeline whose spine draws itself in (DrawSVG, scrubbed to
+ * scroll) past a live "playhead" while each role decrypts into a dossier
+ * card on entry. The newest role reads LIVE; older roles read ARCHIVED.
+ * Reduced motion shows the full spine + all cards with no motion.
  */
+export function ExperienceSection() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const spineRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  useReveal(rootRef);
 
-function ExperienceSectionImpl() {
-  const rootRef = useRef<HTMLElement>(null);
-  const railRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const scanRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const spine = spineRef.current;
+    if (!spine) return;
+    let cancelled = false;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
 
-  useGSAP(
-    () => {
-      if (!rootRef.current) return;
-      let cancelled = false;
+    const boot = async () => {
+      await registerAll();
+      if (cancelled || !rootRef.current) return;
+      const reduced =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const boot = async () => {
-        await registerAll();
-        if (cancelled) return;
+      ctx = gsap.context(() => {
+        if (reduced) {
+          // Visible end-state: full spine, playhead hidden, every card shown.
+          gsap.set(spine, { scaleY: 1 });
+          if (headRef.current) gsap.set(headRef.current, { opacity: 0 });
+          gsap.set("[data-entry]", { opacity: 1, x: 0, y: 0 });
+          gsap.set("[data-node]", { scale: 1, opacity: 1 });
+          gsap.set("[data-hl]", { opacity: 1, x: 0 });
+          return;
+        }
 
-        const root = rootRef.current!;
-
-        /* ---------- 3D timeline ring fade (unchanged contract) ---- */
-        const ring = sceneStore.timelineRing.ref;
-        if (ring) {
-          ring.visible = true;
-
-          const torus = ring.children.find(
-            (c) =>
-              (c as THREE.Mesh).isMesh &&
-              (c as THREE.Mesh).geometry.type === "TorusGeometry"
-          ) as THREE.Mesh | undefined;
-          const nodes = ring.children.filter(
-            (c) =>
-              (c as THREE.Mesh).isMesh &&
-              (c as THREE.Mesh).geometry.type === "SphereGeometry"
-          ) as THREE.Mesh[];
-          const torusMat = torus?.material as
-            | (THREE.Material & { opacity?: number })
-            | undefined;
-
-          const tl = gsap.timeline({
+        // Timeline spine draws itself in (scaleY — transform-only, smooth),
+        // scrubbed to scroll.
+        gsap.fromTo(
+          spine,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: "none",
             scrollTrigger: {
-              trigger: root,
-              start: "top bottom",
-              end: "top 30%",
-              scrub: 1,
-              onLeaveBack: () => {
-                if (ring) ring.visible = false;
-              },
-              onEnter: () => {
-                if (ring) ring.visible = true;
-              }
-            }
-          });
-          if (torusMat && "opacity" in torusMat) {
-            tl.fromTo(
-              torusMat,
-              { opacity: 0 },
-              { opacity: 0.9, ease: "none" },
-              0
-            );
+              trigger: rootRef.current,
+              start: "top 68%",
+              end: "bottom 82%",
+              scrub: 0.6,
+            },
           }
-          nodes.forEach((node, i) => {
-            const mat = node.material as
-              | (THREE.Material & { opacity?: number })
-              | undefined;
-            if (mat && "opacity" in mat) {
-              tl.fromTo(
-                mat,
-                { opacity: 0 },
-                { opacity: 1, ease: "none" },
-                0 + i * 0.05
-              );
-            }
-          });
-        }
+        );
 
-        /* ---------- Rail progress fill + scan pulse (scrubbed) ---- */
-        const rail = railRef.current;
-        const progress = progressRef.current;
-        const scan = scanRef.current;
-        const listEl = root.querySelector<HTMLDivElement>(".exp-list");
-
-        if (rail && progress && scan && listEl) {
-          // Seed initial state.
-          gsap.set(progress, { scaleY: 0, transformOrigin: "top center" });
-          gsap.set(scan, { y: 0, opacity: 0 });
-
-          gsap.timeline({
-            scrollTrigger: {
-              trigger: listEl,
-              start: "top 70%",
-              end: "bottom 40%",
-              scrub: 1,
-              onEnter: () => gsap.to(scan, { opacity: 1, duration: 0.3 }),
-              onLeaveBack: () => gsap.to(scan, { opacity: 0, duration: 0.3 }),
-              onLeave: () => gsap.to(scan, { opacity: 0, duration: 0.3 }),
-              onEnterBack: () => gsap.to(scan, { opacity: 1, duration: 0.3 })
-            }
-          })
-            .to(progress, { scaleY: 1, ease: "none" }, 0)
-            .to(
-              scan,
-              {
-                y: () => listEl.getBoundingClientRect().height - 8,
-                ease: "none"
+        // A crisp glowing dot rides DOWN the spine. It's a fixed-size DOM dot
+        // translated by the track's pixel height (re-measured on refresh) — no
+        // SVG scaling distortion. xPercent keeps it centred while GSAP owns y.
+        const track = trackRef.current;
+        if (headRef.current && track) {
+          gsap.set(headRef.current, { xPercent: -50 });
+          gsap.fromTo(
+            headRef.current,
+            { y: 0 },
+            {
+              y: () => track.offsetHeight - 12,
+              ease: "none",
+              scrollTrigger: {
+                trigger: rootRef.current,
+                start: "top 68%",
+                end: "bottom 82%",
+                scrub: 0.6,
+                invalidateOnRefresh: true,
               },
-              0
-            );
-        }
-
-        /* ---------- Per-entry: node activation + card reveal ----- */
-        const entries = root.querySelectorAll<HTMLElement>(".exp-entry");
-
-        entries.forEach((entry) => {
-          const node = entry.querySelector<HTMLElement>(".exp-node");
-          const nodeFill = entry.querySelector<HTMLElement>(".exp-node-fill");
-          const nodeRing = entry.querySelector<HTMLElement>(".exp-node-ring");
-          const branch = entry.querySelector<HTMLElement>(".exp-branch");
-          const bracketPaths = entry.querySelectorAll<SVGPathElement>(
-            ".exp-bracket-path"
+            }
           );
-          const sweep = entry.querySelector<HTMLElement>(".exp-sweep");
-          const period = entry.querySelector<HTMLElement>(".exp-period");
-          const title = entry.querySelector<HTMLElement>(".exp-title");
-          const bullets = entry.querySelectorAll<HTMLElement>(".exp-bullet");
+        }
 
-          // Seed corner-bracket stroke-dash so they "draw" in.
-          bracketPaths.forEach((p) => {
-            const len = p.getTotalLength?.() ?? 40;
-            p.style.strokeDasharray = `${len}`;
-            p.style.strokeDashoffset = `${len}`;
+        // Each role reveals: card slides + fades, node pops, highlights cascade.
+        gsap.utils.toArray<HTMLElement>("[data-entry]").forEach((el) => {
+          const node = el.querySelector<HTMLElement>("[data-node]");
+          const hls = el.querySelectorAll<HTMLElement>("[data-hl]");
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: el, start: "top 80%", once: true },
           });
-
-          // Node: pulse when entry hits the activation line (top 65%).
-          if (node && nodeFill && nodeRing) {
-            gsap.set(nodeFill, { scale: 0, transformOrigin: "center" });
-            gsap.set(nodeRing, { scale: 1, opacity: 0 });
-            ScrollTrigger_onEnter(entry, "top 65%", () => {
-              gsap.to(nodeFill, {
-                scale: 1,
-                duration: 0.35,
-                ease: "back.out(2.2)"
-              });
-              gsap.fromTo(
-                nodeRing,
-                { scale: 1, opacity: 0.9 },
-                { scale: 2.4, opacity: 0, duration: 0.7, ease: "power2.out" }
-              );
-              gsap.to(node, {
-                rotation: "+=60",
-                duration: 0.6,
-                ease: "power2.out"
-              });
-            });
+          tl.from(el, { opacity: 0, x: -40, y: 14, duration: 0.85, ease: "power3.out" });
+          if (node) {
+            tl.from(
+              node,
+              { scale: 0, opacity: 0, duration: 0.6, ease: "back.out(2.4)" },
+              0.1
+            );
           }
-
-          // Branch connector from rail to card — grows from 0 to full.
-          if (branch) {
-            gsap.set(branch, { scaleX: 0, transformOrigin: "left center" });
-            ScrollTrigger_onEnter(entry, "top 65%", () => {
-              gsap.to(branch, {
-                scaleX: 1,
-                duration: 0.45,
-                ease: "power2.out"
-              });
-            });
-          }
-
-          // Corner brackets draw in with stagger.
-          if (bracketPaths.length > 0) {
-            ScrollTrigger_onEnter(entry, "top 72%", () => {
-              gsap.to(bracketPaths, {
-                strokeDashoffset: 0,
-                duration: 0.55,
-                stagger: 0.06,
-                ease: "power2.out"
-              });
-            });
-          }
-
-          // Laser sweep — a bright amber line moves top→bottom across
-          // the card, leaving content visible behind it.
-          if (sweep) {
-            gsap.set(sweep, { yPercent: -100, opacity: 0 });
-            ScrollTrigger_onEnter(entry, "top 70%", () => {
-              gsap
-                .timeline()
-                .to(sweep, {
-                  opacity: 1,
-                  duration: 0.08,
-                  ease: "power2.out"
-                })
-                .to(
-                  sweep,
-                  {
-                    yPercent: 120,
-                    duration: 0.7,
-                    ease: "power2.inOut"
-                  },
-                  0
-                )
-                .to(sweep, { opacity: 0, duration: 0.2 }, ">-0.15");
-            });
-          }
-
-          // Period + title + bullets reveal — each uses a different
-          // technique so the cascade feels composed, not uniform.
-          if (period) {
-            gsap.set(period, {
-              opacity: 0,
-              y: 6,
-              filter: "blur(6px)"
-            });
-            ScrollTrigger_onEnter(entry, "top 72%", () => {
-              gsap.to(period, {
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                duration: 0.5,
-                ease: "power2.out",
-                delay: 0.15
-              });
-            });
-          }
-
-          if (title) {
-            gsap.set(title, { clipPath: "inset(0 100% 0 0)" });
-            ScrollTrigger_onEnter(entry, "top 72%", () => {
-              gsap.to(title, {
-                clipPath: "inset(0 0% 0 0)",
-                duration: 0.9,
-                ease: "power3.out",
-                delay: 0.2
-              });
-            });
-          }
-
-          if (bullets.length > 0) {
-            gsap.set(bullets, {
-              opacity: 0,
-              x: -14,
-              clipPath: "inset(0 100% 0 0)"
-            });
-            ScrollTrigger_onEnter(entry, "top 70%", () => {
-              gsap.to(bullets, {
-                opacity: 1,
-                x: 0,
-                clipPath: "inset(0 0% 0 0)",
-                duration: 0.55,
-                stagger: 0.09,
-                ease: "power2.out",
-                delay: 0.35
-              });
-            });
+          if (hls.length) {
+            tl.from(
+              hls,
+              { opacity: 0, x: -14, duration: 0.5, stagger: 0.06, ease: "power2.out" },
+              0.18
+            );
           }
         });
-      };
+      }, rootRef.current);
+    };
+    void boot();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
+  }, []);
 
-      void boot();
-
-      return () => {
-        cancelled = true;
-        const ring = sceneStore.timelineRing.ref;
-        if (ring) ring.visible = false;
-      };
-    },
-    { scope: rootRef, dependencies: [] }
-  );
+  const total = experience.length;
 
   return (
-    <SectionFrame
-      id="experience"
-      ref={rootRef}
-      ariaLabelledBy="experience-heading"
-      bare
-      style={{ minHeight: "150svh" }}
-    >
-      {/* Giant "05" top-right, amber */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
-        style={{
-          color: "#FF7A1A",
-          letterSpacing: "-0.02em",
-          fontSize: "clamp(6rem,12vw,14rem)"
-        }}
-      >
-        05
+    <SectionFrame id="experience" ariaLabelledBy="experience-title">
+      {/* Local atmosphere: green telemetry wash + baseline grid (transparent). */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+        <div
+          className="absolute left-[-6%] top-[20%] h-[46vh] w-[46vh] rounded-full opacity-[0.10] blur-[130px]"
+          style={{ background: GREEN }}
+        />
+        <div
+          className="absolute right-[4%] bottom-[10%] h-[30vh] w-[30vh] rounded-full opacity-[0.05] blur-[120px]"
+          style={{ background: "#4f9cff" }}
+        />
+        <div className="grid-bg absolute inset-0 opacity-[0.18]" />
       </div>
 
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 hidden bg-gradient-to-l from-[#0b0f19] via-[#0b0f19]/60 to-transparent md:block"
-      />
-
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <div className="mb-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-          <span className="text-[#FF7A1A]">SYS.TIMELINE // 05</span>
-          <span className="opacity-40">—</span>
-          <span>SHORT HISTORY OF SHIPPING</span>
-        </div>
-        <KineticTitle
-          id="experience-heading"
-          text="CAREER"
-          subtitle=".LOG"
-          triggerId="experience"
-          className="mb-14"
-          titleClassName="text-5xl md:text-7xl"
+      <div ref={rootRef} className="relative mx-auto w-full max-w-4xl">
+        <SectionHeader
+          eyebrow={EXPERIENCE.eyebrow}
+          title={EXPERIENCE.title}
+          subtitle={EXPERIENCE.subtitle}
+          color={EXPERIENCE.color}
+          index="05"
         />
 
-        {/* ───────── Timeline ───────── */}
-        <div className="relative max-w-[46rem]">
-          {/* Rail — full-height animated SVG progress bar on the left. */}
+        {/* Deployment-log meta strip */}
+        <div
+          data-reveal
+          className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-y py-2.5 font-mono text-[10px] uppercase tracking-[0.26em]"
+          style={{ borderColor: inkA(8), color: STEEL }}
+        >
+          <span className="flex items-center gap-2" style={{ color: GREEN }}>
+            <span
+              className="inline-block h-1.5 w-1.5 animate-pulse rounded-full"
+              style={{ background: GREEN, boxShadow: `0 0 8px ${GREEN}` }}
+            />
+            DEPLOY LOG
+          </span>
+          <span>
+            ENTRIES <b style={{ color: INK, fontWeight: 600 }}>{String(total).padStart(2, "0")}</b>
+          </span>
+          <span className="hidden sm:inline">SORT <b style={{ color: INK, fontWeight: 600 }}>NEWEST</b></span>
+          <span className="ml-auto hidden md:inline" style={{ color: steelA(60) }}>
+            REF · PKJ-TL05
+          </span>
+        </div>
+
+        <div className="relative mt-10 pl-12 md:pl-16">
+          {/* Drawn spine + playhead — a DOM track aligned to the node centres
+              (node center = 11px mobile / 27px md). No SVG scaling distortion. */}
           <div
-            ref={railRef}
+            ref={trackRef}
             aria-hidden
-            className="pointer-events-none absolute bottom-2 left-0 top-2 w-[22px]"
+            className="absolute left-[11px] top-2 bottom-2 w-[2px] -translate-x-1/2 md:left-[27px]"
           >
-            {/* Dashed base line — faint, always visible */}
+            {/* faint full-height track */}
             <div
-              className="absolute left-[10px] top-0 h-full w-px"
+              className="absolute inset-0 rounded-full"
+              style={{ background: inkA(10) }}
+            />
+            {/* drawn spine — scaleY 0→1 from the top */}
+            <div
+              ref={spineRef}
+              className="absolute inset-0 origin-top rounded-full"
               style={{
-                backgroundImage:
-                  "repeating-linear-gradient(180deg, rgba(255,122,26,0.35) 0 4px, transparent 4px 10px)"
+                background: `linear-gradient(${GREEN}, ${GREEN}88)`,
+                boxShadow: `0 0 8px ${GREEN}55`,
               }}
             />
-            {/* Bright amber progress fill — scaleY from 0 to 1. The
-                gradient makes the head of the fill a hot bloom. */}
+            {/* crisp glowing playhead dot */}
             <div
-              ref={progressRef}
-              className="absolute left-[9px] top-0 h-full w-[3px]"
+              ref={headRef}
+              className="absolute left-1/2 top-0 h-3 w-3 rounded-full"
               style={{
-                backgroundImage:
-                  "linear-gradient(180deg, rgba(255,213,150,0.0) 0%, rgba(255,122,26,0.95) 40%, #FF7A1A 100%)",
-                boxShadow: "0 0 8px rgba(255,122,26,0.75)",
-                borderRadius: "2px"
+                background: GREEN,
+                boxShadow: `0 0 10px ${GREEN}, 0 0 22px ${GREEN}88`,
               }}
             />
-            {/* Scan pulse — rides the progress front. */}
-            <div
-              ref={scanRef}
-              className="absolute left-[4px] top-0 h-[14px] w-[14px]"
-            >
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(255,213,150,1) 0%, rgba(255,122,26,0.7) 40%, rgba(255,122,26,0) 75%)",
-                  filter: "drop-shadow(0 0 10px rgba(255,122,26,0.95))"
-                }}
-              />
-              <div
-                className="absolute inset-[4px] rounded-full"
-                style={{
-                  background: "#FFE0BD",
-                  boxShadow:
-                    "0 0 6px #FFD7A8, 0 0 14px rgba(255,122,26,0.95)"
-                }}
-              />
-            </div>
-            {/* Top cap — a small bracket so the rail reads as a tool,
-                not just a line. */}
-            <svg
-              className="absolute -top-[2px] left-0"
-              width="22"
-              height="10"
-              viewBox="0 0 22 10"
-              fill="none"
-            >
-              <path
-                d="M0 1 L10 1 L10 9 M22 1 L13 1 L13 9"
-                stroke="rgba(255,122,26,0.7)"
-                strokeWidth="1"
-              />
-            </svg>
-            {/* Bottom cap */}
-            <svg
-              className="absolute -bottom-[2px] left-0"
-              width="22"
-              height="10"
-              viewBox="0 0 22 10"
-              fill="none"
-            >
-              <path
-                d="M0 9 L10 9 L10 1 M22 9 L13 9 L13 1"
-                stroke="rgba(255,122,26,0.7)"
-                strokeWidth="1"
-              />
-            </svg>
           </div>
 
-          {/* Entries — pl shrinks on narrow viewports so the card body
-              has breathing room on 375/414px. Rail still sits at the
-              left edge of the section. */}
-          <ul className="exp-list flex flex-col gap-14 pl-[44px] sm:pl-[70px]">
-            {experience.map((e, i) => (
-              <li
-                key={e.company}
-                className="exp-entry group relative"
-              >
-                {/* Branch connector — short horizontal amber line that
-                    grows from rail to the card's left edge. */}
-                <div
-                  className="exp-branch pointer-events-none absolute left-[-60px] top-[30px] h-px w-[56px]"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(255,122,26,0.0) 0%, rgba(255,122,26,0.85) 25%, rgba(255,122,26,0.85) 100%)",
-                    boxShadow: "0 0 6px rgba(255,122,26,0.5)"
-                  }}
-                />
-
-                {/* Hex node — perched on the rail at the branch join */}
-                <div
-                  className="exp-node pointer-events-none absolute left-[-69px] top-[22px] h-[18px] w-[18px]"
-                >
-                  <svg
-                    viewBox="-1.2 -1.2 2.4 2.4"
-                    className="h-full w-full overflow-visible"
-                  >
-                    {/* Outer ring — pulses out at activation */}
-                    <polygon
-                      className="exp-node-ring"
-                      points="0,-1 0.866,-0.5 0.866,0.5 0,1 -0.866,0.5 -0.866,-0.5"
-                      fill="none"
-                      stroke="#FF7A1A"
-                      strokeWidth={0.12}
-                      style={{
-                        filter: "drop-shadow(0 0 4px rgba(255,122,26,1))"
-                      }}
-                    />
-                    {/* Base hex — faint outline */}
-                    <polygon
-                      points="0,-1 0.866,-0.5 0.866,0.5 0,1 -0.866,0.5 -0.866,-0.5"
-                      fill="#0b0f19"
-                      stroke="rgba(255,122,26,0.55)"
-                      strokeWidth={0.08}
-                    />
-                    {/* Filled hex — scales up when active */}
-                    <polygon
-                      className="exp-node-fill"
-                      points="0,-0.72 0.62,-0.36 0.62,0.36 0,0.72 -0.62,0.36 -0.62,-0.36"
-                      fill="#FF7A1A"
-                      style={{
-                        filter: "drop-shadow(0 0 6px rgba(255,122,26,1))"
-                      }}
-                    />
-                  </svg>
-                </div>
-
-                {/* Card body — corner brackets + sweep + content */}
-                <div
-                  className="relative overflow-hidden rounded-sm border border-[#FF7A1A]/10 bg-[#0b0f19]/35 px-7 pb-8 pt-6 backdrop-blur-[2px] transition-colors duration-300 group-hover:border-[#FF7A1A]/40"
-                >
-                  {/* Corner brackets */}
-                  <svg
+          <ol className="space-y-10 md:space-y-14">
+            {experience.map((job, i) => {
+              const live = i === 0;
+              const idx = total - i; // newest = highest index
+              return (
+                <li key={job.company} data-entry className="relative">
+                  {/* Timeline node: concentric ring + connector tick into the card. */}
+                  <span
+                    data-node
                     aria-hidden
-                    className="pointer-events-none absolute inset-0 h-full w-full"
-                    preserveAspectRatio="none"
-                    viewBox="0 0 100 100"
+                    className="absolute top-1.5 grid place-items-center"
+                    style={{ left: "-46px", width: 18, height: 18 }}
                   >
-                    {/* Top-left */}
-                    <path
-                      className="exp-bracket-path"
-                      d="M 0 10 L 0 0 L 10 0"
-                      vectorEffect="non-scaling-stroke"
-                      stroke="#FF7A1A"
-                      strokeWidth="1.4"
-                      fill="none"
+                    <span
+                      className="absolute inset-0 rounded-full"
                       style={{
-                        filter:
-                          "drop-shadow(0 0 3px rgba(255,122,26,0.8))"
+                        border: `1px solid ${live ? GREEN : inkA(20)}`,
+                        background: BG,
                       }}
                     />
-                    {/* Top-right */}
-                    <path
-                      className="exp-bracket-path"
-                      d="M 90 0 L 100 0 L 100 10"
-                      vectorEffect="non-scaling-stroke"
-                      stroke="#FF7A1A"
-                      strokeWidth="1.4"
-                      fill="none"
+                    <span
+                      className="absolute h-2 w-2 rounded-full"
                       style={{
-                        filter:
-                          "drop-shadow(0 0 3px rgba(255,122,26,0.8))"
+                        background: live ? GREEN : `${STEEL}`,
+                        boxShadow: live ? `0 0 12px ${GREEN}` : "none",
                       }}
                     />
-                    {/* Bottom-right */}
-                    <path
-                      className="exp-bracket-path"
-                      d="M 100 90 L 100 100 L 90 100"
-                      vectorEffect="non-scaling-stroke"
-                      stroke="#FF7A1A"
-                      strokeWidth="1.4"
-                      fill="none"
-                      style={{
-                        filter:
-                          "drop-shadow(0 0 3px rgba(255,122,26,0.8))"
-                      }}
-                    />
-                    {/* Bottom-left */}
-                    <path
-                      className="exp-bracket-path"
-                      d="M 10 100 L 0 100 L 0 90"
-                      vectorEffect="non-scaling-stroke"
-                      stroke="#FF7A1A"
-                      strokeWidth="1.4"
-                      fill="none"
-                      style={{
-                        filter:
-                          "drop-shadow(0 0 3px rgba(255,122,26,0.8))"
-                      }}
-                    />
-                  </svg>
-
-                  {/* Laser sweep — amber gradient bar that wipes top→bottom once */}
-                  <div
+                    {live ? (
+                      <span
+                        className="absolute inset-0 animate-ping rounded-full"
+                        style={{ border: `1px solid ${GREEN}`, opacity: 0.5 }}
+                      />
+                    ) : null}
+                  </span>
+                  {/* hairline connector from node to card */}
+                  <span
+                    data-node
                     aria-hidden
-                    className="exp-sweep pointer-events-none absolute inset-x-0 h-[40%]"
+                    className="absolute top-[14px] hidden h-px md:block"
                     style={{
-                      top: 0,
-                      background:
-                        "linear-gradient(180deg, rgba(255,122,26,0) 0%, rgba(255,122,26,0.12) 50%, rgba(255,213,150,0.35) 95%, rgba(255,255,255,0.9) 100%)",
-                      mixBlendMode: "screen"
+                      left: "-36px",
+                      width: 22,
+                      background: `linear-gradient(90deg, ${live ? GREEN : inkA(20)}, transparent)`,
                     }}
                   />
 
-                  {/* Meta row: period + index */}
-                  <div className="flex items-baseline justify-between gap-4">
-                    <div
-                      className="exp-period flex min-w-0 flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[#FF7A1A] sm:tracking-[0.32em]"
-                    >
-                      {i === 0 && (
+                  {/* Dossier card */}
+                  <article
+                    className="group relative overflow-hidden rounded-lg border p-5 transition-colors duration-300 md:p-6"
+                    style={{
+                      borderColor: live ? `${GREEN}33` : inkA(7),
+                      background: live
+                        ? `linear-gradient(180deg, ${GREEN}0c, var(--surface))`
+                        : "var(--surface)",
+                    }}
+                  >
+                    {/* left accent rail */}
+                    <span
+                      aria-hidden
+                      className="absolute inset-y-0 left-0 w-px"
+                      style={{
+                        background: `linear-gradient(${live ? GREEN : inkA(25)}, transparent)`,
+                        opacity: live ? 0.9 : 0.5,
+                      }}
+                    />
+
+                    {/* Top row: period chip + status tag */}
+                    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                      <span
+                        className="inline-flex items-center gap-2 rounded-sm border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.22em] tabular-nums"
+                        style={{
+                          borderColor: `${GREEN}3a`,
+                          color: GREEN,
+                          background: `${GREEN}0d`,
+                        }}
+                      >
+                        {job.period}
+                      </span>
+                      <span
+                        className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.24em]"
+                        style={{ color: live ? GREEN : steelA(80) }}
+                      >
                         <span
-                          aria-hidden
-                          className="inline-block h-[6px] w-[6px] rounded-full bg-[#FF7A1A]"
+                          className="inline-block h-1.5 w-1.5 rounded-full"
                           style={{
-                            boxShadow: "0 0 8px #FF7A1A",
-                            animation: "pulse-glow 1.8s ease-in-out infinite"
+                            background: live ? GREEN : STEEL,
+                            boxShadow: live ? `0 0 8px ${GREEN}` : "none",
                           }}
                         />
-                      )}
-                      <span>{e.period}</span>
-                      {i === 0 && (
-                        <span className="text-[9px] opacity-70">{"// ACTIVE"}</span>
-                      )}
+                        {live ? "ACTIVE" : "ARCHIVED"}
+                      </span>
                     </div>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim/70">
-                      {String(i + 1).padStart(2, "0")} /{" "}
-                      {String(experience.length).padStart(2, "0")}
-                    </span>
-                  </div>
 
-                  {/* Title — clip-path wipe reveals the whole heading. */}
-                  <h3
-                    className="exp-title mt-3 font-display text-2xl leading-tight tracking-[-0.02em] text-ink md:text-3xl"
-                    style={{ fontWeight: 700 }}
-                  >
-                    {e.role}
-                    <span className="text-ink-dim"> · {e.company}</span>
-                  </h3>
-
-                  {/* Bullets — each wipes in left→right behind a clip-path */}
-                  <ul className="mt-5 space-y-2.5">
-                    {e.highlights.map((h, bi) => (
-                      <li
-                        key={h}
-                        className="exp-bullet flex min-w-0 gap-3 font-mono text-[12px] leading-relaxed text-ink-dim"
+                    {/* Title block */}
+                    <div className="mt-4 flex items-start gap-4">
+                      <span
+                        aria-hidden
+                        className="select-none font-grotesk tabular-nums leading-none"
+                        style={{
+                          color: live ? `${GREEN}77` : inkA(12),
+                          fontWeight: 800,
+                          fontSize: "clamp(2.2rem,6vw,3.4rem)",
+                        }}
                       >
-                        <span className="mt-1 shrink-0 font-mono text-[10px] text-[#FF7A1A]/85">
-                          {String(bi + 1).padStart(2, "0")}
-                        </span>
-                        <span
-                          aria-hidden
-                          className="mt-[7px] h-px w-3 shrink-0 bg-[#FF7A1A]/60"
-                        />
-                        <span className="min-w-0 flex-1 break-words">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            ))}
-          </ul>
+                        {String(idx).padStart(2, "0")}
+                      </span>
+                      <div className="min-w-0 pt-1">
+                        <h3
+                          className="font-display leading-[0.95] tracking-[-0.02em]"
+                          style={{
+                            color: INK,
+                            fontWeight: 700,
+                            fontSize: "clamp(1.35rem,3.4vw,2rem)",
+                          }}
+                        >
+                          {job.role}
+                        </h3>
+                        <p
+                          className="mt-1.5 font-mono text-[12px] uppercase tracking-[0.22em]"
+                          style={{ color: STEEL }}
+                        >
+                          {job.company}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Highlights as a structured log */}
+                    <ul className="mt-5 space-y-2.5 border-t pt-4" style={{ borderColor: inkA(6) }}>
+                      {job.highlights.map((h, hi) => (
+                        <li
+                          key={h}
+                          data-hl
+                          className="flex gap-3 text-[14px] leading-relaxed"
+                          style={{ color: "var(--ink-dim)" }}
+                        >
+                          <span
+                            aria-hidden
+                            className="mt-0.5 font-mono text-[10px] tabular-nums tracking-[0.1em]"
+                            style={{ color: live ? GREEN : `${STEEL}` }}
+                          >
+                            {String(hi + 1).padStart(2, "0")}
+                          </span>
+                          <span className="min-w-0">{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </article>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* Terminator: where the spine ends. */}
+          <div
+            data-reveal
+            className="mt-8 flex items-center gap-3 pl-1 font-mono text-[10px] uppercase tracking-[0.26em]"
+            style={{ color: steelA(60) }}
+          >
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full"
+              style={{ background: STEEL }}
+            />
+            EOF · LOG STREAM
+          </div>
         </div>
       </div>
     </SectionFrame>
   );
 }
 
-/**
- * Helper: one-shot ScrollTrigger firing at a given start position.
- * Lives here because we use it many times and it would pollute the
- * component body otherwise.
- */
-function ScrollTrigger_onEnter(
-  trigger: Element,
-  start: string,
-  cb: () => void
-) {
-  let fired = false;
-  ScrollTrigger.create({
-    trigger,
-    start,
-    onEnter: () => {
-      if (fired) return;
-      fired = true;
-      cb();
-    }
-  });
-}
-
-export const ExperienceSection = memo(ExperienceSectionImpl);
 export default ExperienceSection;

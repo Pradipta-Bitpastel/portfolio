@@ -1,0 +1,18 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-06-03T07:05:06.284Z",
+  "data": {
+    "effectId": "01KT64SNEDJ97TB3B650BNZDSS",
+    "invocationKey": "portfolio/parallax-overhaul:S000009:__sdk.breakpoint",
+    "invocationHash": "8c8f1cc4a261500f5f09409bf014beac1f7cc209a4637141e5969c35838086df",
+    "stepId": "S000009",
+    "taskId": "__sdk.breakpoint",
+    "kind": "breakpoint",
+    "label": "breakpoint",
+    "taskDefRef": "tasks/01KT64SNEDJ97TB3B650BNZDSS/task.json",
+    "labels": [
+      "breakpoint"
+    ]
+  },
+  "checksum": "a51de98d0e5443f6b5053e4e83f5e3cee8f55d1d6d671521792ba9923a1ed0bc"
+}

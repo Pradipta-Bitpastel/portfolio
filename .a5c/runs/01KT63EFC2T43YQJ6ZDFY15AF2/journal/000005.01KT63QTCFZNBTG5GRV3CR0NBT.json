@@ -1,0 +1,12 @@
+{
+  "type": "EFFECT_RESOLVED",
+  "recordedAt": "2026-06-03T06:46:37.200Z",
+  "data": {
+    "effectId": "01KT63NC60S2FMCVT7MV1FT812",
+    "status": "ok",
+    "resultRef": "tasks/01KT63NC60S2FMCVT7MV1FT812/result.json",
+    "startedAt": "2026-06-03T06:46:37.165Z",
+    "finishedAt": "2026-06-03T06:46:37.165Z"
+  },
+  "checksum": "e16a35e9653667b393965c11d5e047fa2b2477f7762c5ecb65dfccb17073e14c"
+}

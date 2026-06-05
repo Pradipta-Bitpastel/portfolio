@@ -1,234 +1,52 @@
 "use client";
 
-import { useEffect } from "react";
-import type * as THREE from "three";
-import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
-import { sceneStore } from "@/lib/sceneStore";
+import { useSceneScrollDriver } from "@/lib/useScrollProgress";
 import HeroSection from "./HeroSection";
+import TerminalSection from "./TerminalSection";
 import AboutSection from "./AboutSection";
+import EmojiConvergeSection from "./EmojiConvergeSection";
+import MetricsSection from "./MetricsSection";
+import StackMarquee from "./StackMarquee";
 import SkillsSection from "./SkillsSection";
 import ProjectsSection from "./ProjectsSection";
+import ShowcaseSection from "./ShowcaseSection";
 import ExperienceSection from "./ExperienceSection";
+import KineticRevealSection from "./KineticRevealSection";
 import ContactSection from "./ContactSection";
-import SceneDock from "@/components/three/SceneDock";
-import { useDeviceCapabilities } from "@/lib/usePerfTier";
 
 /**
- * Wraps all 6 sections and layers the section-boundary CINEMATIC BEAT
- * on top. There is no DOM overlay / modal — the "transition" lives
- * entirely inside the 3D scene. Each time a boundary is crossed we
- * play a short, composited beat:
- *
- *   1. Camera push-in + settle — cinematicOffset tween (z dip + z
- *      snap-back) simulates a snap-zoom toward the subject.
- *   2. FOV punch — +3° then snap back, paired with the push-in for
- *      the classic "film punch" feel.
- *   3. Chromatic aberration pulse — sharp, short; reinforces the cut.
- *   4. Core light kick — laptop point light flares amber.
- *   5. Connection-line flash — web illuminates for a beat.
- *   6. Module scale pulse — each module briefly scales up 6%.
- *
- * All beats overlap in a ~420ms envelope so the crossing reads as a
- * single cinematic event, not a sequence.
+ * Renders the six sections and mounts the single scroll-progress driver
+ * that feeds the 3D scene. The scene reacts to `sceneStore.progress` in
+ * its own render loop — there is no per-section choreography here, which
+ * is exactly what keeps the scroll smooth.
  */
-
-const SECTION_IDS = ["hero", "about", "skills", "projects", "experience", "contact"] as const;
-
 export function SectionOrchestrator() {
-  const caps = useDeviceCapabilities();
-  const isLowEnd = caps.isLowEnd;
-
-  useEffect(() => {
-    // On low-end devices skip the cinematic boundary BEAT entirely.
-    // The IrisTransition at the same boundary already carries enough
-    // visual weight; stacking 6+ overlapping tweens on top regularly
-    // saturates integrated GPUs at the moment of crossing.
-    if (isLowEnd) return;
-
-    let cancelled = false;
-    const killers: Array<() => void> = [];
-
-    // Cache connection materials ONCE at boot — was a `traverse()`
-    // walk on every boundary cross (5 boundaries × N children each
-    // time). Now: traverse once, hold the array.
-    const connMats: Array<THREE.Material & { opacity?: number }> = [];
-    const collectConnMats = () => {
-      const conn = sceneStore.connections.ref;
-      if (!conn) return;
-      conn.traverse((child) => {
-        const obj = child as THREE.Object3D & {
-          material?:
-            | (THREE.Material & { opacity?: number })
-            | THREE.Material[];
-        };
-        const raw = obj.material;
-        const mat = (Array.isArray(raw) ? raw[0] : raw) as
-          | (THREE.Material & { opacity?: number })
-          | undefined;
-        if (mat && typeof mat.opacity === "number") connMats.push(mat);
-      });
-    };
-
-    const boot = async () => {
-      await registerAll();
-      if (cancelled) return;
-      collectConnMats();
-
-      SECTION_IDS.forEach((id, idx) => {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        const beat = () => {
-          // Direction-aware push: alternate z-dip vs. y-rise so
-          // section crosses don't all feel identical. Hero + about
-          // + skills dip forward (z-); projects + experience + contact
-          // lift up (y+). Gives each cut its own flavor.
-          const dipZ = idx % 2 === 0 ? -0.85 : -0.5;
-          const liftY = idx % 2 === 0 ? 0.0 : 0.35;
-
-          // 1) Camera push-in — cinematicOffset composites with the
-          //    GSAP-driven basePos in CameraController.
-          gsap.fromTo(
-            sceneStore.camera.cinematicOffset,
-            { x: 0, y: 0, z: 0 },
-            {
-              x: 0,
-              y: liftY,
-              z: dipZ,
-              duration: 0.18,
-              ease: "power3.out",
-              yoyo: true,
-              repeat: 1,
-              overwrite: "auto"
-            }
-          );
-
-          // 2) FOV punch — adds on top of the scroll-driven fov.
-          gsap.fromTo(
-            sceneStore.camera,
-            { fovPulse: 0 },
-            {
-              fovPulse: 3.4,
-              duration: 0.18,
-              ease: "power2.out",
-              yoyo: true,
-              repeat: 1,
-              overwrite: "auto"
-            }
-          );
-
-          // 3) Chromatic pulse — short + sharp.
-          gsap.fromTo(
-            sceneStore.fx,
-            { chromaticIntensity: 0 },
-            {
-              chromaticIntensity: 0.55,
-              duration: 0.14,
-              ease: "power2.out",
-              yoyo: true,
-              repeat: 1,
-              overwrite: "auto"
-            }
-          );
-
-          // 4) Core light kick.
-          const glow = sceneStore.core.glow;
-          if (glow) {
-            gsap.fromTo(
-              glow,
-              { intensity: glow.intensity },
-              {
-                intensity: 8.5,
-                duration: 0.22,
-                ease: "power3.out",
-                yoyo: true,
-                repeat: 1,
-                overwrite: "auto"
-              }
-            );
-          }
-
-          // 5) Connection-line web flash.
-          //    Uses the materials cached at boot (single traversal)
-          //    so this no longer walks the scene graph every cross.
-          if (connMats.length > 0) {
-            gsap.fromTo(
-              connMats,
-              { opacity: "+=0" },
-              {
-                opacity: "+=0.4",
-                duration: 0.16,
-                ease: "power2.out",
-                yoyo: true,
-                repeat: 1,
-                overwrite: false
-              }
-            );
-          }
-
-          // 6) Module scale pulse — each module briefly bumps up.
-          (["frontend", "backend", "devops", "cloud", "mobile"] as const).forEach(
-            (mid, i) => {
-              const grp = sceneStore.modules[mid].ref;
-              if (!grp) return;
-              const base = grp.scale.x;
-              gsap.fromTo(
-                grp.scale,
-                { x: base, y: base, z: base },
-                {
-                  x: base * 1.06,
-                  y: base * 1.06,
-                  z: base * 1.06,
-                  duration: 0.16,
-                  delay: i * 0.015,
-                  ease: "power2.out",
-                  yoyo: true,
-                  repeat: 1,
-                  overwrite: "auto"
-                }
-              );
-            }
-          );
-        };
-
-        const t = ScrollTrigger.create({
-          trigger: el,
-          start: "top 60%",
-          end: "bottom 40%",
-          onEnter: beat,
-          onEnterBack: beat
-        });
-        killers.push(() => {
-          try {
-            t.kill();
-          } catch {
-            /* ignore */
-          }
-        });
-      });
-    };
-
-    void boot();
-    return () => {
-      cancelled = true;
-      killers.forEach((k) => k());
-      sceneStore.fx.chromaticIntensity = 0;
-      sceneStore.camera.cinematicOffset.set(0, 0, 0);
-      sceneStore.camera.fovPulse = 0;
-    };
-  }, [isLowEnd]);
+  useSceneScrollDriver();
 
   return (
     <>
-      {/* Master timeline that docks the DevStation + camera across
-          all 6 sections. Mounted once, owns core transforms. */}
-      <SceneDock />
+      {/* The HERO stays at z-auto — BELOW the ambient canvas (z-10) — so the
+          single traveling robot is VISIBLE composited over the Firewatch hero
+          (it's already playing "Wave" at progress 0, a natural greeting). */}
       <HeroSection />
-      <AboutSection />
-      <SkillsSection />
-      <ProjectsSection />
-      <ExperienceSection />
-      <ContactSection />
+      {/* Everything BELOW the hero is lifted into one stacking context at
+          z-20, ABOVE the canvas, so the SAME robot keeps drifting BEHIND each
+          section's content (transparent backgrounds let it show through) —
+          identical to before. Only `position + z-index` here (no transform),
+          so sticky/pinned descendants keep referencing the viewport. */}
+      <div className="relative z-20">
+        <TerminalSection />
+        <AboutSection />
+        <EmojiConvergeSection />
+        <MetricsSection />
+        <StackMarquee />
+        <SkillsSection />
+        <ProjectsSection />
+        <ShowcaseSection />
+        <ExperienceSection />
+        <KineticRevealSection />
+        <ContactSection />
+      </div>
     </>
   );
 }

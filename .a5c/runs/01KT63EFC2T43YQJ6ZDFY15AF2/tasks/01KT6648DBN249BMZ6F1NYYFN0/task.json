@@ -1,0 +1,103 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "properties": {
+        "feedback": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pass": {
+          "type": "boolean"
+        },
+        "score": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pass",
+        "score",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "implementation": {
+          "filesChanged": [
+            "components/sections/ProjectsSection.tsx",
+            "components/sections/AboutSection.tsx"
+          ],
+          "notes": "Screenshots verified: ws5_top (hero blue-hour parallax), ws5_mid (Projects execution cards), ws5_bottom (Contact Signal + CTA + real links), ws5_rm_hero (reduced-motion static hero, full content), ws5_rm_about (reduced-motion About with stat figures 3+/5/2). 3D model absent headless (SwiftShader->SVG fallback) = expected. PERF RECOMMENDATION (not actioned, do not touch files): the 9 PNGs are 7000x2076 -> decode to ~58MB RGBA each (~520MB texture footprint across layers) despite tiny on-disk size; recommend offline pre-scaling sources to ~3000-3500px wide to cut decode memory ~4x on low-RAM devices.",
+          "screenshotPath": "/tmp/ws5_top.png",
+          "summary": "WS5 perf + reduced-motion + final polish. PERF: hero PNGs ~108-382KB on disk (~2MB total), only parallax0 eager/high-priority, rest lazy; will-change:transform correctly placed on rAF layers only. ONE WEBGL CANVAS: verified portfolio:bg-pause wiring intact (ShowcaseSection IntersectionObserver dispatches; _Scene.tsx flips frameloop to 'never' + Page Visibility; resumes on exit). REDUCED-MOTION+TOUCH: all guards verified - Hero static first frame; Projects pin matchMedia-gated (>=768px + no-preference) with stacked fallback; Traveler/3D gated to SvgCoreFallback via SceneContainer; WS4 reveals visible end-states. FIXED projects edge case: added MIN_PIN_TRAVEL=80px guard so a near-zero horizontal distance skips the pin (clears entrance props, normal flow). CONSOLE: zero pageerrors + zero console errors in normal AND reduced-motion passes. Bonus: reduced-motion About count-up now writes real figures (3+/5/2) instead of 0 placeholders. tsc clean.",
+          "typecheckPassed": true
+        },
+        "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+        "repoRoot": "/Users/pradiptajana/Portfolio",
+        "workstream": {
+          "detail": "Whole-site pass: verify one WebGL canvas active at a time, transforms-only parallax with will-change, hero LCP layer eager + rest lazy, model lazy via next/dynamic. Re-check reduced-motion + touch fallbacks on every new effect. Confirm `npx tsc --noEmit` clean and dev server renders top-to-bottom without console errors. ACCEPTANCE: full-page top/mid/bottom screenshots look cohesive; no regressions to guardrails.",
+          "id": "WS5",
+          "title": "Perf + reduced-motion + final polish"
+        }
+      },
+      "instructions": [
+        "Read PARALLAX_OVERHAUL_PLAN.md and the changed files (components/sections/ProjectsSection.tsx, components/sections/AboutSection.tsx).",
+        "View the screenshot at /tmp/ws5_top.png using the Read tool and judge it visually against the workstream's acceptance criteria: Whole-site pass: verify one WebGL canvas active at a time, transforms-only parallax with will-change, hero LCP layer eager + rest lazy, model lazy via next/dynamic. Re-check reduced-motion + touch fallbacks on every new effect. Confirm `npx tsc --noEmit` clean and dev server renders top-to-bottom without console errors. ACCEPTANCE: full-page top/mid/bottom screenshots look cohesive; no regressions to guardrails.",
+        "Verify guardrails were respected and `npx tsc --noEmit` passes (run it yourself to confirm).",
+        "Be strict but fair: pass=true only if the workstream's acceptance criteria are visibly and functionally met.",
+        "If pass=false, give specific, actionable feedback the implementer can act on next iteration.",
+        "Return ONLY the JSON result described in the output schema."
+      ],
+      "outputFormat": "JSON with pass (boolean), score (number 0-100), summary (string), feedback (string[])",
+      "role": "principal front-end reviewer with a high visual-design bar",
+      "task": "Review the implementation of workstream \"WS5 — Perf + reduced-motion + final polish\" against the plan and its acceptance criteria, including the captured screenshot."
+    }
+  },
+  "description": "Visual + code review of workstream WS5 against the plan.",
+  "io": {
+    "inputJsonPath": "tasks/01KT6648DBN249BMZ6F1NYYFN0/input.json",
+    "outputJsonPath": "tasks/01KT6648DBN249BMZ6F1NYYFN0/result.json"
+  },
+  "kind": "agent",
+  "labels": [
+    "agent",
+    "iteration-1",
+    "review",
+    "WS5"
+  ],
+  "title": "Review: Perf + reduced-motion + final polish (iter 1)",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT6648DBN249BMZ6F1NYYFN0",
+  "taskId": "review-workstream",
+  "invocationKey": "portfolio/parallax-overhaul:S000014:review-workstream",
+  "stepId": "S000014",
+  "inputs": {
+    "devUrl": "http://localhost:3000",
+    "implementation": {
+      "filesChanged": [
+        "components/sections/ProjectsSection.tsx",
+        "components/sections/AboutSection.tsx"
+      ],
+      "notes": "Screenshots verified: ws5_top (hero blue-hour parallax), ws5_mid (Projects execution cards), ws5_bottom (Contact Signal + CTA + real links), ws5_rm_hero (reduced-motion static hero, full content), ws5_rm_about (reduced-motion About with stat figures 3+/5/2). 3D model absent headless (SwiftShader->SVG fallback) = expected. PERF RECOMMENDATION (not actioned, do not touch files): the 9 PNGs are 7000x2076 -> decode to ~58MB RGBA each (~520MB texture footprint across layers) despite tiny on-disk size; recommend offline pre-scaling sources to ~3000-3500px wide to cut decode memory ~4x on low-RAM devices.",
+      "screenshotPath": "/tmp/ws5_top.png",
+      "summary": "WS5 perf + reduced-motion + final polish. PERF: hero PNGs ~108-382KB on disk (~2MB total), only parallax0 eager/high-priority, rest lazy; will-change:transform correctly placed on rAF layers only. ONE WEBGL CANVAS: verified portfolio:bg-pause wiring intact (ShowcaseSection IntersectionObserver dispatches; _Scene.tsx flips frameloop to 'never' + Page Visibility; resumes on exit). REDUCED-MOTION+TOUCH: all guards verified - Hero static first frame; Projects pin matchMedia-gated (>=768px + no-preference) with stacked fallback; Traveler/3D gated to SvgCoreFallback via SceneContainer; WS4 reveals visible end-states. FIXED projects edge case: added MIN_PIN_TRAVEL=80px guard so a near-zero horizontal distance skips the pin (clears entrance props, normal flow). CONSOLE: zero pageerrors + zero console errors in normal AND reduced-motion passes. Bonus: reduced-motion About count-up now writes real figures (3+/5/2) instead of 0 placeholders. tsc clean.",
+      "typecheckPassed": true
+    },
+    "iteration": 1,
+    "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+    "repoRoot": "/Users/pradiptajana/Portfolio",
+    "ws": {
+      "detail": "Whole-site pass: verify one WebGL canvas active at a time, transforms-only parallax with will-change, hero LCP layer eager + rest lazy, model lazy via next/dynamic. Re-check reduced-motion + touch fallbacks on every new effect. Confirm `npx tsc --noEmit` clean and dev server renders top-to-bottom without console errors. ACCEPTANCE: full-page top/mid/bottom screenshots look cohesive; no regressions to guardrails.",
+      "id": "WS5",
+      "title": "Perf + reduced-motion + final polish"
+    }
+  }
+}

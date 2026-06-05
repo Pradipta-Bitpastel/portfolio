@@ -1,793 +1,527 @@
 "use client";
 
-import { memo, useRef } from "react";
-import * as THREE from "three";
-import { useGSAP } from "@gsap/react";
-import { gsap, registerAll, ScrollTrigger } from "@/lib/gsap";
-import { sceneStore } from "@/lib/sceneStore";
-import { projects } from "@/content/projects";
+import { useEffect, useRef } from "react";
+import { gsap, registerAll, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { SectionFrame } from "@/components/ui/SectionFrame";
-import { KineticTitle } from "@/components/ui/KineticTitle";
-import { PROJECT_VISUALS } from "@/components/ui/ProjectVisuals";
-import { useDeviceCapabilities } from "@/lib/usePerfTier";
+import { projects } from "@/content/projects";
+import { getSection } from "@/lib/sections";
+
+const PROJECTS = getSection("projects")!;
+const ACCENT = PROJECTS.color; // amber/orange
 
 /**
- * Projects — "SYS.EXEC // 04" — pinned scroll-scrubbed feature
- * rotator. One project at a time is "featured":
+ * Projects / SYS.EXECUTION.
  *
- *   - LEFT pane: a large animated SVG visual unique to the project.
- *     All 5 visuals are mounted at once and crossfaded via opacity +
- *     scale as the user scrolls. Each one also rotates into view with
- *     a brief hex-mask reveal.
- *   - RIGHT pane: name, tagline, description, stack chips. Each
- *     project's info block is its own absolutely-positioned layer so
- *     they crossfade the same way.
- *   - TOP HUD: section meta + kinetic title.
- *   - BOTTOM HUD: progress bar, clickable nav dots, frame ticker.
+ * On desktop (>=768px, no reduced-motion) the project cards live in a
+ * STATIC horizontal track that is pinned and scrubbed sideways as you
+ * scroll — vertical scroll drives the track's `x`. A progress rail at
+ * the bottom tracks horizontal travel, and each slide gets a small
+ * scale/opacity entrance tied to the same horizontal progress.
  *
- * Scroll math: the section is pinned for (N-1) viewports of scroll —
- * one viewport per "slide". `scrub: 1` smooths the active-index drive.
- * ScrollTrigger's `progress` is the single source of truth; all
- * tweens compose off it via a scrubbed timeline.
+ * On smaller / touch screens or with reduced-motion, the same track
+ * stacks vertically and scrolls natively — no pin, no horizontal motion.
  *
- * The previous tilted-carousel implementation is gone. This one's
- * explicitly pinned + scrub-driven, which gives a tighter link
- * between scroll distance and state than the horizontal x-slide did.
+ * GUARDRAILS: this is the ONLY GSAP `pin` in the app. The pinned
+ * subtree (`trackRef`) is fully static — it never re-renders or
+ * reparents per state, which previously caused removeChild crashes.
+ * Everything is scoped to a `gsap.context()` and reverted on unmount.
  */
+export function ProjectsSection() {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+  const railPosRef = useRef<HTMLSpanElement>(null);
 
-function ProjectsSectionImpl() {
-  const rootRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const counterRef = useRef<HTMLDivElement>(null);
-  const dotsRef = useRef<HTMLDivElement>(null);
-  const caps = useDeviceCapabilities();
-  const isLowEnd = caps.isLowEnd;
+  // ── Header reveal (independent of the pin; native ScrollTrigger reveal).
+  useEffect(() => {
+    const root = headRef.current;
+    if (!root) return;
+    let cancelled = false;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
+    let split: InstanceType<typeof SplitText> | null = null;
 
-  useGSAP(
-    () => {
-      if (!rootRef.current || !stageRef.current) return;
-      let cancelled = false;
-      const mmHandlers: Array<() => void> = [];
+    const boot = async () => {
+      await registerAll();
+      if (cancelled || !headRef.current) return;
+      const reduced =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const boot = async () => {
-        await registerAll();
-        if (cancelled) return;
-
-        // On low-end devices: skip the desktop pinned rotator entirely
-        // and rely on the mobile grid below. The clipPath morph + 5
-        // viewports of pin is the single biggest scroll-CPU cost on
-        // integrated GPUs.
-        if (isLowEnd) {
-          const cards = rootRef.current!.querySelectorAll<HTMLElement>(
-            ".proj-mobile-card"
+      ctx = gsap.context(() => {
+        if (reduced) {
+          gsap.set(
+            ["[data-pj-eyebrow]", "[data-pj-meta]", "[data-pj-rule]"],
+            { opacity: 1, y: 0, scaleX: 1 }
           );
-          gsap.fromTo(
-            cards,
-            { y: 40, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
-              stagger: 0.12,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: rootRef.current,
-                start: "top 70%"
-              }
-            }
-          );
-          try {
-            ScrollTrigger.refresh();
-          } catch {
-            /* ignore */
-          }
           return;
         }
 
-        /* ---- 3D scene: amber connection line breath (scrub) ---- */
-        const connGroup = sceneStore.connections.ref;
-        if (connGroup) {
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: rootRef.current,
-              start: "top 60%",
-              end: "top 10%",
-              scrub: 1
-            }
+        gsap.from("[data-pj-eyebrow]", {
+          opacity: 0, y: -10, duration: 0.6, ease: "power3.out",
+          scrollTrigger: { trigger: root, start: "top 82%", once: true },
+        });
+
+        const titleEl = root.querySelector<HTMLElement>("[data-pj-title]");
+        if (titleEl) {
+          split = new SplitText(titleEl, { type: "chars" });
+          gsap.from(split.chars, {
+            yPercent: 118, opacity: 0, rotateX: -55,
+            duration: 0.85, ease: "power4.out", stagger: 0.03,
+            scrollTrigger: { trigger: root, start: "top 80%", once: true },
           });
-          const pulseTargets: Array<
-            THREE.Material & { opacity?: number }
-          > = [];
-          connGroup.traverse((child) => {
-            const obj = child as THREE.Object3D & {
-              material?:
-                | (THREE.Material & { opacity?: number })
-                | THREE.Material[];
-            };
-            const raw = obj.material;
-            const mat = (Array.isArray(raw) ? raw[0] : raw) as
-              | (THREE.Material & { opacity?: number })
-              | undefined;
-            if (mat && "opacity" in mat) {
-              const isOuter =
-                (mat as unknown as { blending?: THREE.Blending })
-                  .blending === THREE.AdditiveBlending;
-              const target = isOuter ? 0.35 : 1.0;
-              tl.fromTo(
-                mat,
-                { opacity: 0 },
-                { opacity: target, ease: "none" },
-                0
-              );
-              pulseTargets.push(mat);
-            }
-          });
-          if (pulseTargets.length > 0) {
-            gsap.to(pulseTargets, {
-              opacity: "+=0.15",
-              duration: 1.4,
-              ease: "sine.inOut",
-              repeat: -1,
-              yoyo: true,
-              overwrite: false
-            });
-          }
         }
 
-        /* ---- Desktop pinned rotator ----
-           Bumped threshold from 1024px → 1280px so low-spec laptops
-           (1024-1279px) fall through to the mobile grid path; the
-           clipPath polygon morph is the single biggest CPU paint cost
-           on integrated GPUs. */
+        gsap.from("[data-pj-rule]", {
+          scaleX: 0, transformOrigin: "left center",
+          duration: 1.1, ease: "power3.inOut",
+          scrollTrigger: { trigger: root, start: "top 80%", once: true },
+        });
+
+        gsap.from("[data-pj-meta]", {
+          opacity: 0, y: 16, duration: 0.7, stagger: 0.08, ease: "power3.out",
+          scrollTrigger: { trigger: root, start: "top 76%", once: true },
+        });
+      }, root);
+    };
+
+    void boot();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+      split?.revert();
+    };
+  }, []);
+
+  // ── Pinned horizontal scrub (THE one allowed pin). Unchanged logic.
+  useEffect(() => {
+    let cancelled = false;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
+
+    const boot = async () => {
+      await registerAll();
+      if (cancelled || !rootRef.current) return;
+
+      ctx = gsap.context(() => {
         const mm = gsap.matchMedia();
-        mm.add("(min-width: 1280px)", () => {
-          const stage = stageRef.current!;
-          const visuals = stage.querySelectorAll<HTMLElement>(".proj-visual");
-          const infos = stage.querySelectorAll<HTMLElement>(".proj-info");
-          const dots = dotsRef.current?.querySelectorAll<HTMLElement>(
-            ".proj-dot"
-          );
 
-          if (visuals.length === 0 || infos.length === 0) return;
+        mm.add(
+          "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+          () => {
+            const track = trackRef.current;
+            const pin = pinRef.current;
+            const rail = railRef.current;
+            if (!track || !pin) return;
 
-          // Seed initial state. Each slide is a stacked layer:
-          // - slide 0 fully visible at rest position
-          // - slides 1..N hidden below with autoAlpha:0 (visibility
-          //   hidden = removed from compositing, no paint cost) and
-          //   pre-positioned where they will enter FROM
-          //
-          // We use `autoAlpha` (not raw opacity) because it pairs
-          // visibility:hidden with opacity:0 — hidden slides are
-          // truly off the GPU compositor, won't intercept any
-          // pointer events, and won't paint if a parent rerender
-          // happens to wipe inline styles. autoAlpha + transform
-          // ONLY (no clip-path string interpolation) keeps the scrub
-          // tween's interpolation purely numeric and robust against
-          // playhead jumps.
-          visuals.forEach((v, i) => {
-            gsap.set(v, {
-              autoAlpha: i === 0 ? 1 : 0,
-              y: i === 0 ? 0 : 80,
-              scale: i === 0 ? 1 : 0.92
-            });
-          });
-          infos.forEach((inf, i) => {
-            gsap.set(inf, {
-              autoAlpha: i === 0 ? 1 : 0,
-              y: i === 0 ? 0 : 64
-            });
-          });
-          dots?.forEach((d, i) => {
-            d.classList.toggle("is-active", i === 0);
-          });
-          // Seed progress bar at 0; driven via scrollTrigger.onUpdate
-          // below so it tracks scroll progress 1:1 with slide position.
-          if (progressRef.current) {
-            gsap.set(progressRef.current, {
-              scaleX: 0,
-              transformOrigin: "left center"
-            });
-          }
+            const slides = gsap.utils.toArray<HTMLElement>(
+              track.querySelectorAll("[data-slide]")
+            );
+            const amount = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
-          const total = projects.length;
-          // Each slide gets ~2.4 viewports of scroll so the new
-          // tactile reveal (translate-up + clip-path mask) has room to
-          // breathe AND there is a meaningful "locked" dwell on each
-          // project before the next one takes over. + tail on the last
-          // slide for a real settle before un-pinning.
-          const scrollDistance = (total - 1) * 240 + 120;
-
-          // Snap points — one per slide. Progress 0 = slide 1, 0.25 =
-          // slide 2, ..., 1.0 = slide 5. A big scroll flick settles
-          // onto the nearest slide instead of flying past.
-          const snapPoints = Array.from(
-            { length: total },
-            (_, i) => i / (total - 1)
-          );
-
-          const tl = gsap.timeline({
-            defaults: { ease: "power2.inOut" },
-            scrollTrigger: {
-              trigger: rootRef.current,
-              start: "top top",
-              end: `+=${scrollDistance}%`,
-              pin: stageRef.current,
-              // Dropped 1.5 → 1: less CPU overshoot smoothing per frame.
-              scrub: 1,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-              snap: {
-                snapTo: snapPoints,
-                duration: { min: 0.3, max: 0.7 },
-                delay: 0.15,
-                ease: "power2.inOut"
-              },
-              onUpdate: (self) => {
-                // Drive the integer "activeIdx" for dot highlighting
-                // + counter text. We snap to the nearest slide.
-                const raw = self.progress * (total - 1);
-                const idx = Math.round(raw);
-                dots?.forEach((d, i) => {
-                  d.classList.toggle("is-active", i === idx);
-                });
-                if (counterRef.current) {
-                  counterRef.current.textContent = `${String(
-                    idx + 1
-                  ).padStart(2, "0")} / ${String(total).padStart(2, "0")}`;
-                }
-                // Progress bar tracks scroll 1:1 — at slide N (of M),
-                // the bar reads (N-1)/(M-1). Driving it here instead
-                // of via a timeline tween avoids GSAP's default 0.5s
-                // duration filling the bar before the last slide.
-                if (progressRef.current) {
-                  gsap.set(progressRef.current, { scaleX: self.progress });
-                }
-              }
+            // EDGE CASE: on very wide viewports (or with few cards) the track
+            // can be narrower than the viewport, so `amount()` is 0 — pinning
+            // then would lock the page for a zero-distance scrub (a dead pin
+            // that just freezes scroll). Skip the pin entirely below this
+            // threshold and leave the track in normal centered flow.
+            const MIN_PIN_TRAVEL = 80; // px
+            if (amount() < MIN_PIN_TRAVEL) {
+              gsap.set(slides, { clearProps: "scale,opacity,transformOrigin" });
+              return;
             }
-          });
 
-          // Build transition segments: from slide i to i+1. The new
-          // tactile reveal replaces the soft crossfade. Each segment
-          // is split into 4 phases (timestamps relative to seg start):
-          //
-          //   0.00 — 0.10·seg : pre-exit dwell (slide i still locked,
-          //                     subtle parallax y drift continues)
-          //   0.10·seg — 0.45·seg : OUTGOING — slide i translates UP
-          //                     (-72px), clip-path collapses bottom-up
-          //                     (inset 0→100% top), scale 1→0.94. Uses
-          //                     power2.in so it accelerates out of frame.
-          //   0.40·seg — 0.85·seg : INCOMING — slide i+1 translates UP
-          //                     from +60px → 0, clip-path opens
-          //                     top-down (inset 100%→0% bottom), scale
-          //                     0.96→1. Uses expo.out so it SNAPS into
-          //                     a locked rest position.
-          //   0.85·seg — 1.00·seg : post-entry dwell (slide i+1 locked,
-          //                     subtle scale-breath parallax 1→1.025)
-          //
-          // The brief overlap at 0.40-0.45·seg (outgoing tail meeting
-          // incoming head) is the only moment two slides are both
-          // visible — a clean handoff, not a floaty crossfade.
-          const seg = 1 / (total - 1);
+            gsap.set(slides, { transformOrigin: "center center" });
 
-          for (let i = 0; i < total - 1; i++) {
-            const at = i * seg;
+            const railTotal = slides.length;
 
-            // ── OUTGOING: slide i translates UP and out ─────────────
-            // Decisive `power2.in` ease so the slab accelerates out of
-            // frame rather than drifting. autoAlpha (visibility+opacity)
-            // ensures the layer is fully removed from the compositor
-            // once the tween completes.
-            tl.to(
-              visuals[i],
-              {
-                y: -80,
-                scale: 0.92,
-                autoAlpha: 0,
-                duration: seg * 0.35,
-                ease: "power2.in"
-              },
-              at + seg * 0.10
-            );
-            tl.to(
-              infos[i],
-              {
-                y: -64,
-                autoAlpha: 0,
-                duration: seg * 0.32,
-                ease: "power2.in"
-              },
-              at + seg * 0.10
-            );
-
-            // ── INCOMING: slide i+1 translates UP from below ────────
-            // `expo.out` ease so the slab SNAPS into a locked rest
-            // position (large initial velocity, decisive arrival).
-            // The translateY (80→0) + scale (0.92→1) combination is
-            // what gives the slab its "physical push" — not a fade.
-            tl.to(
-              visuals[i + 1],
-              {
-                y: 0,
-                scale: 1,
-                autoAlpha: 1,
-                duration: seg * 0.45,
-                ease: "expo.out"
-              },
-              at + seg * 0.40
-            );
-            tl.to(
-              infos[i + 1],
-              {
-                y: 0,
-                autoAlpha: 1,
-                duration: seg * 0.42,
-                ease: "expo.out"
-              },
-              at + seg * 0.43
-            );
-
-            // ── LOCKED DWELL parallax: subtle scale-breath on the
-            //    newly-arrived visual. Sells the "alive but anchored"
-            //    feel without distracting from the content.
-            tl.to(
-              visuals[i + 1],
-              {
-                scale: 1.025,
-                duration: seg * 0.15,
-                ease: "sine.inOut"
-              },
-              at + seg * 0.85
-            );
-          }
-
-          // Clickable dots — jump to that slide's scroll offset.
-          const stInst = tl.scrollTrigger;
-          dots?.forEach((d, i) => {
-            const onClick = () => {
-              if (!stInst) return;
-              const targetProgress = i / (total - 1);
-              const startPx = stInst.start;
-              const endPx = stInst.end;
-              const y = startPx + (endPx - startPx) * targetProgress;
-              // Lenis-smooth if present, else native.
-              window.scrollTo({ top: y, behavior: "smooth" });
+            // PERF: cache each slide's static center (offsetLeft/Width are
+            // layout positions, unaffected by the `x` transform) instead of
+            // re-reading them every frame — those reads forced a synchronous
+            // reflow per scroll tick and were the source of the jank. We
+            // re-measure only on refresh (resize / font load / layout change).
+            let centers: number[] = [];
+            const measure = () => {
+              centers = slides.map((s) => s.offsetLeft + s.offsetWidth / 2);
             };
-            d.addEventListener("click", onClick);
-            mmHandlers.push(() =>
-              d.removeEventListener("click", onClick)
-            );
-          });
 
-          return () => {
-            // gsap.matchMedia cleanup also kills the timeline.
-          };
-        });
+            // PERF: quickSetters write straight to the transform cache, far
+            // cheaper than gsap.set() in the hot path.
+            const setScale = slides.map((s) => gsap.quickSetter(s, "scale"));
+            const setOpacity = slides.map((s) => gsap.quickSetter(s, "opacity"));
+            const setRail = rail ? gsap.quickSetter(rail, "scaleX") : null;
+            let lastIdx = -1;
 
-        /* ---- Mobile / low-spec: grid fallback fade-in stagger ---- */
-        mm.add("(max-width: 1279px)", () => {
-          const cards = rootRef.current!.querySelectorAll<HTMLElement>(
-            ".proj-mobile-card"
-          );
-          gsap.fromTo(
-            cards,
-            { y: 40, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
-              stagger: 0.12,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: rootRef.current,
-                start: "top 70%"
+            // Single place that maps progress → all visual state, so the
+            // pin-engage frame matches the pre-pin frame exactly (no snap).
+            const apply = (p: number) => {
+              if (setRail) setRail(p);
+              if (railPosRef.current) {
+                const idx = Math.min(
+                  railTotal,
+                  Math.max(1, Math.round(p * (railTotal - 1)) + 1)
+                );
+                if (idx !== lastIdx) {
+                  railPosRef.current.textContent = String(idx).padStart(2, "0");
+                  lastIdx = idx;
+                }
               }
-            }
-          );
-        });
+              const total = amount();
+              if (total <= 0) return;
+              const offset = p * total;
+              const w = window.innerWidth;
+              const half = w / 2;
+              for (let i = 0; i < slides.length; i++) {
+                const center = centers[i] - offset;
+                const dist = Math.abs(center - half) / w; // 0 = centered
+                const k = dist >= 1 ? 0 : 1 - dist;
+                setScale[i](0.9 + 0.1 * k);
+                setOpacity[i](0.42 + 0.58 * k);
+              }
+            };
 
-        try {
-          ScrollTrigger.refresh();
-        } catch {
-          /* ignore */
-        }
+            const tween = gsap.to(track, {
+              x: () => -amount(),
+              ease: "none",
+              scrollTrigger: {
+                trigger: pin,
+                start: "top top",
+                end: () => "+=" + amount(),
+                pin: true,
+                pinSpacing: true,
+                scrub: 0.6,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                // Re-measure after every refresh, THEN re-apply current
+                // progress so the cached geometry and visuals stay correct
+                // across resizes without a one-frame flash.
+                onRefresh: (self) => {
+                  measure();
+                  apply(self.progress);
+                },
+                onUpdate: (self) => apply(self.progress),
+              },
+            });
 
-        mmHandlers.push(() => mm.revert());
-      };
+            // Pre-paint the start state before the pin is ever reached so the
+            // first pinned frame is identical — kills the enter/exit flicker.
+            measure();
+            apply(0);
 
-      void boot();
+            return () => {
+              tween.scrollTrigger?.kill();
+              tween.kill();
+              gsap.set(track, { clearProps: "x" });
+              gsap.set(slides, { clearProps: "scale,opacity,transformOrigin" });
+              if (rail) gsap.set(rail, { clearProps: "scaleX" });
+            };
+          }
+        );
+      }, rootRef);
 
-      return () => {
-        cancelled = true;
-        mmHandlers.forEach((h) => h());
-      };
-    },
-    { scope: rootRef, dependencies: [] }
-  );
+      ScrollTrigger.refresh();
+    };
+
+    void boot();
+
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
+  }, []);
+
+  const total = String(projects.length).padStart(2, "0");
 
   return (
     <SectionFrame
       id="projects"
-      ref={rootRef}
-      ariaLabelledBy="projects-heading"
+      ariaLabelledBy="projects-title"
       bare
-      style={{ minHeight: "100svh" }}
+      className="relative pt-[clamp(64px,10vh,140px)]"
     >
-      {/* Giant "04" background */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.08] md:block"
-        style={{
-          color: "#FF7A1A",
-          letterSpacing: "-0.02em",
-          fontSize: "clamp(6rem,12vw,14rem)"
-        }}
-      >
-        04
+      {/* Local atmosphere: a soft amber wash anchored to the section. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+        <div
+          className="absolute right-[6%] top-[18%] h-[44vh] w-[44vh] rounded-full opacity-[0.10] blur-[140px]"
+          style={{ background: ACCENT }}
+        />
+        <div
+          className="absolute left-[4%] bottom-[10%] h-[30vh] w-[30vh] rounded-full opacity-[0.06] blur-[130px]"
+          style={{ background: "#4f9cff" }}
+        />
       </div>
 
-      {/* =========== Desktop: pinned rotator =========== */}
-      <div
-        ref={stageRef}
-        className="relative hidden h-[100svh] w-full overflow-hidden xl:block"
-      >
-        {/* HUD top bar */}
-        <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 flex items-start justify-between px-12 pt-12">
-          <div>
-            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-              <span className="text-[#FF7A1A]">SYS.EXEC // 04</span>
-              <span className="opacity-40">—</span>
-              <span>FEATURED PROJECTS</span>
-            </div>
-            <KineticTitle
-              id="projects-heading"
-              text="EXECUTION"
-              subtitle=".LAYER"
-              triggerId="projects"
-              className="mt-2"
-              titleClassName="text-5xl md:text-6xl"
-            />
-          </div>
+      <div ref={rootRef} className="relative w-full">
+        {/* ── Section header ─────────────────────────────────────────── */}
+        <div
+          ref={headRef}
+          className="mx-auto w-full max-w-6xl px-[clamp(16px,5vw,96px)] mb-10 md:mb-14"
+        >
           <div
-            ref={counterRef}
-            className="font-display text-5xl font-extrabold leading-none tracking-[-0.02em] text-[#FF7A1A]"
-            style={{
-              textShadow:
-                "0 0 14px rgba(255,122,26,0.65), 0 0 30px rgba(255,122,26,0.25)"
-            }}
+            data-pj-eyebrow
+            className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.32em]"
+            style={{ color: ACCENT }}
           >
-            01 / {String(projects.length).padStart(2, "0")}
+            <span
+              aria-hidden
+              className="inline-block h-1.5 w-1.5 animate-pulse rounded-full"
+              style={{ background: ACCENT, boxShadow: `0 0 10px ${ACCENT}` }}
+            />
+            {PROJECTS.eyebrow}
           </div>
-        </div>
 
-        {/* Main stage
-            Layout: LEFT col-span-6 = info content; RIGHT col-span-6 =
-            BIG project-specific SVG visual (~500px square). Each
-            project has its own SVG diorama (NeuralNet / OrbitRings /
-            Pipeline / BarStack / ModuleGrid), shown one at a time and
-            hex-clip-crossfaded by the scroll timeline. The 3D laptop
-            is pushed into the background in the scene pose so the
-            SVG visual is the featured right-side subject. */}
-        <div className="absolute inset-x-0 top-[min(200px,24vh)] bottom-[120px] flex items-center">
-          <div className="mx-auto grid w-full max-w-10xl grid-cols-12 gap-10 px-12">
-            {/* ───── INFO PANE (LEFT, col-span-6) ───── */}
-            <div className="relative col-span-6 flex min-h-[480px] items-center">
-              <div className="relative w-full">
-                {projects.map((p, i) => (
-                  <div
-                    key={p.id}
-                    className="proj-info absolute inset-0 flex flex-col justify-center"
-                    style={{
-                      pointerEvents: i === 0 ? "auto" : "none"
-                    }}
-                  >
-                    {/* Index + accent bar */}
-                    <div className="mb-4 flex items-center gap-4">
-                      <span
-                        className="font-mono text-[11px] uppercase tracking-[0.32em]"
-                        style={{ color: p.color }}
-                      >
-                        [ {String(i + 1).padStart(3, "0")} ]
-                      </span>
-                      <span
-                        className="h-[3px] flex-1 max-w-[240px]"
-                        style={{
-                          background: `linear-gradient(90deg, ${p.color} 0%, ${p.color}00 100%)`
-                        }}
-                      />
-                    </div>
-                    <h3
-                      className="font-display text-4xl leading-[0.95] tracking-[-0.02em] text-ink md:text-5xl lg:text-6xl"
-                      style={{ fontWeight: 800 }}
-                    >
-                      {p.name}
-                    </h3>
-                    <p
-                      className="mt-5 font-mono text-[12px] uppercase leading-relaxed tracking-[0.22em]"
-                      style={{ color: p.color }}
-                    >
-                      {p.tagline}
-                    </p>
-                    <div
-                      className="my-6 h-px w-full max-w-md"
-                      style={{
-                        backgroundImage:
-                          "repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0 6px, transparent 6px 12px)"
-                      }}
-                    />
-                    <p className="max-w-xl font-mono text-[13px] leading-relaxed text-ink-dim">
-                      {p.description}
-                    </p>
-                    <div className="mt-6 flex max-w-xl flex-wrap gap-2">
-                      {p.stack.map((s) => (
-                        <span
-                          key={s}
-                          className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-dim transition-colors"
-                          style={{
-                            padding: "5px 12px",
-                            border: `1px solid ${p.color}55`,
-                            background: `${p.color}10`,
-                            borderRadius: 0
-                          }}
-                        >
-                          [ {s} ]
-                        </span>
-                      ))}
-                    </div>
-                    <div className="mt-8 flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.28em] text-ink-dim/70">
-                      <span>{p.id}</span>
-                      <span className="h-px flex-1 bg-white/10" />
-                      <span
-                        className="inline-flex items-center gap-2"
-                        style={{ color: p.color }}
-                      >
-                        <span>&#9654; VIEW CASE</span>
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="mt-5 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="overflow-hidden">
+              <h2
+                id="projects-title"
+                data-pj-title
+                className="font-display leading-[0.82] tracking-[-0.04em] text-ink"
+                style={{ fontWeight: 800, fontSize: "clamp(3rem,9vw,7.5rem)" }}
+              >
+                EXECUTION
+              </h2>
             </div>
 
-            {/* ───── BIG SVG VISUAL PANE (RIGHT, col-span-6) ─────
-                Capped to min(460px, 50vh) square — slightly smaller
-                than before so the decorative -inset dashed ring and
-                corner brackets can live OUTSIDE the SVG area without
-                getting clipped by the stage's overflow-hidden or the
-                HudFrame's bottom matte.
-                `overflow-visible` ensures the dashed outer ring never
-                gets cropped even when it extends past the column. */}
-            <div
-              className="relative col-span-6 aspect-square w-full max-w-full self-center justify-self-center"
-              style={{
-                maxWidth: "min(380px, 42vh)",
-                maxHeight: "min(380px, 42vh)",
-                overflow: "visible"
-              }}
-            >
-              {/* Subtle pane backdrop — a very faint radial so the
-                  square boundary is visually obvious and the SVG
-                  content isn't swimming in a starfield. Reads as a
-                  "display panel" without dominating. */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(ellipse at 50% 50%, rgba(255,122,26,0.06) 0%, rgba(255,122,26,0.02) 55%, rgba(255,122,26,0) 85%)"
-                }}
-              />
-              {/* 1px inset border — gives the pane a crisp visible
-                  rectangle so you can see where the SVG "ends" and
-                  the empty viewport begins. */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  border: "1px solid rgba(255,122,26,0.28)"
-                }}
-              />
-              {/* Outer dashed ring — static decorative. */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -inset-4 rounded-full"
-                style={{
-                  border: "1px dashed rgba(255,122,26,0.35)"
-                }}
-              />
-              {/* Corner brackets */}
-              {[
-                { top: -10, left: -10, rot: 0 },
-                { top: -10, right: -10, rot: 90 },
-                { bottom: -10, right: -10, rot: 180 },
-                { bottom: -10, left: -10, rot: 270 }
-              ].map((pos, bi) => (
-                <svg
-                  key={bi}
-                  aria-hidden
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  className="pointer-events-none absolute"
-                  style={{
-                    ...pos,
-                    transform: `rotate(${pos.rot}deg)`,
-                    color: "#FF7A1A"
-                  }}
-                >
-                  <path
-                    d="M0 0 L10 0 M0 0 L0 10"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    fill="none"
-                  />
-                </svg>
-              ))}
-
-              {/* Five SVGs stacked, one visible at a time */}
-              {projects.map((p) => {
-                const Visual = PROJECT_VISUALS[p.id];
-                return (
-                  <div
-                    key={p.id}
-                    data-id={p.id}
-                    className="proj-visual absolute inset-0 flex items-center justify-center"
-                  >
-                    {Visual && <Visual color={p.color} />}
-                  </div>
-                );
-              })}
+            {/* Right-aligned meta block: lead line + scroll affordance. */}
+            <div data-pj-meta className="md:max-w-xs md:pb-2 md:text-right">
+              <p className="font-serif text-[clamp(1.05rem,2vw,1.5rem)] italic leading-[1.3] text-ink/85">
+                Selected work across web, mobile and cloud.
+              </p>
+              <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.26em] text-ink-faint">
+                {total} dossiers · scroll to traverse
+              </p>
             </div>
           </div>
-        </div>
 
-        {/* HUD bottom: progress bar + nav dots.
-            Sits above the global HudFrame's bottom-left LAT/LON +
-            bottom-right SID labels (anchored at bottom-8). Bumped down
-            from bottom-32 → bottom-20 so it never collides with the
-            HudFrame at heights <820px. */}
-        <div className="pointer-events-none absolute bottom-40 left-12 right-12 z-20">
-          <div className="flex items-end justify-between gap-8">
-            {/* Progress bar */}
-            <div className="flex flex-1 flex-col gap-3">
-              <div className="flex items-baseline justify-between font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-                <span className="text-[#FF7A1A]">SCROLL //</span>
-                <span>TRANSMISSION</span>
-              </div>
-              <div className="relative h-[4px] w-full bg-white/10">
-                <div
-                  ref={progressRef}
-                  className="absolute inset-y-0 left-0 w-full origin-left"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, rgba(255,215,160,1) 0%, #FF7A1A 100%)",
-                    boxShadow:
-                      "0 0 12px rgba(255,122,26,0.9), 0 0 20px rgba(255,122,26,0.5)"
-                  }}
-                />
-              </div>
-            </div>
-            {/* Nav dots */}
-            <div
-              ref={dotsRef}
-              className="pointer-events-auto flex items-center gap-3"
-            >
-              {projects.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  aria-label={`Jump to ${p.name}`}
-                  className="proj-dot group relative flex h-11 w-11 items-center justify-center"
-                  style={
-                    {
-                      "--dot-color": p.color
-                    } as React.CSSProperties
-                  }
-                >
-                  <span
-                    className="absolute inset-0 border border-white/15 transition-colors group-[.is-active]:border-[var(--dot-color)]"
-                    style={{
-                      clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
-                      WebkitClipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)"
-                    }}
-                  />
-                  <span
-                    className="h-[6px] w-[6px] bg-white/30 transition-all group-[.is-active]:scale-150 group-[.is-active]:bg-[var(--dot-color)]"
-                    style={{
-                      clipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)",
-                      WebkitClipPath: "polygon(50% 0, 100% 50%, 50% 100%, 0 50%)"
-                    }}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* =========== Mobile / tablet: grid fallback =========== */}
-      <div className="xl:hidden">
-        <div className="mx-auto mb-10 max-w-7xl px-[clamp(16px,5vw,48px)]">
-          <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-            <span className="text-[#FF7A1A]">SYS.EXEC // 04</span>
-            <span className="opacity-40">—</span>
-            <span>FEATURED PROJECTS</span>
-          </div>
-          <KineticTitle
-            id="projects-heading-mobile"
-            text="EXECUTION"
-            subtitle=".LAYER"
-            triggerId="projects"
-            className="mt-3"
-            titleClassName="text-5xl md:text-6xl"
+          <div
+            data-pj-rule
+            className="mt-7 h-px w-full origin-left"
+            style={{
+              background: `linear-gradient(90deg, ${ACCENT}, ${ACCENT}22 60%, transparent)`,
+            }}
           />
         </div>
 
-        <ul className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-8 px-[clamp(16px,5vw,48px)] sm:grid-cols-2">
-          {projects.map((p, i) => {
-            const Visual = PROJECT_VISUALS[p.id];
-            return (
-              <li
-                key={p.id}
-                className="proj-mobile-card relative border bg-[#05080f]/70 p-6 backdrop-blur-sm"
-                style={{
-                  borderColor: `${p.color}44`,
-                  boxShadow: `0 0 30px ${p.color}22`
-                }}
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-[0.32em]"
-                    style={{ color: p.color }}
-                  >
-                    [ {String(i + 1).padStart(3, "0")} ]
-                  </span>
-                  <span
-                    className="h-[2px] w-16"
-                    style={{ background: p.color }}
-                  />
-                </div>
-                <div className="mb-4 aspect-square w-full">
-                  {Visual && <Visual color={p.color} />}
-                </div>
-                <h3
-                  className="font-display text-2xl leading-tight tracking-[-0.02em] text-ink"
-                  style={{ fontWeight: 800 }}
+        {/* ── Pin target — 100svh viewport on desktop, auto on mobile ── */}
+        <div
+          ref={pinRef}
+          className="relative flex items-center md:h-[100svh] md:overflow-hidden"
+          // Keep the pinned element on its own compositor layer at all times.
+          // GSAP pins via position:fixed on native scroll; without a stable
+          // layer the browser creates/destroys one at the fixed switch, which
+          // is the repaint flash seen on pin-IN and pin-OUT. translateZ(0)
+          // pre-promotes it so the switch no longer reshuffles layers.
+          style={{ transform: "translateZ(0)" }}
+        >
+          {/* Static horizontal track — pinned subtree, never re-renders. */}
+          <div
+            ref={trackRef}
+            className="flex w-full flex-col gap-7 px-[clamp(16px,5vw,96px)] will-change-transform md:w-auto md:flex-row md:items-center md:gap-10 md:px-[8vw]"
+          >
+            {/* Leading rail-card: anchors the slide rhythm + frames intent. */}
+            <div
+              data-slide
+              className="relative hidden shrink-0 flex-col justify-between md:flex md:h-[64vh] md:w-[280px]"
+            >
+              <div>
+                <span
+                  className="font-mono text-[11px] uppercase tracking-[0.3em]"
+                  style={{ color: ACCENT }}
                 >
-                  {p.name}
-                </h3>
-                <p
-                  className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em]"
-                  style={{ color: p.color }}
-                >
-                  {p.tagline}
+                  index
+                </span>
+                <p className="mt-4 font-display text-[clamp(2rem,3vw,3rem)] leading-[0.9] tracking-[-0.03em] text-ink" style={{ fontWeight: 800 }}>
+                  The work,
+                  <br />
+                  <span className="text-ink/55">on the record.</span>
                 </p>
-                <p className="mt-4 font-mono text-[12px] leading-relaxed text-ink-dim">
-                  {p.description}
+                <p className="mt-5 max-w-[24ch] text-sm leading-relaxed text-ink-dim">
+                  Five representative builds — each a self-contained dossier of
+                  scope, stack and shipping outcome.
                 </p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {p.stack.slice(0, 5).map((s) => (
+              </div>
+
+              <ul className="mt-8 flex flex-col gap-2.5 font-mono text-[11px] uppercase tracking-[0.16em]">
+                {projects.map((p, i) => (
+                  <li key={p.id} className="flex items-center gap-3 text-ink-faint">
+                    <span style={{ color: p.color }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
                     <span
-                      key={s}
-                      className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-dim"
+                      aria-hidden
+                      className="h-px flex-1"
+                      style={{ background: `${p.color}33` }}
+                    />
+                    <span className="truncate text-ink/70">{p.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {projects.map((p, i) => {
+              const num = String(i + 1).padStart(2, "0");
+              return (
+                <article
+                  key={p.id}
+                  data-slide
+                  className="group relative flex shrink-0 flex-col overflow-hidden rounded-[20px] border border-line transition-[border-color,box-shadow] duration-500 hover:border-line-strong md:h-[64vh] md:w-[460px]"
+                  style={
+                    {
+                      // Near-opaque, theme-aware panel fill. Replaces the old
+                      // `bg-surface` (4% alpha) + `backdrop-blur-[2px]`, which
+                      // forced the GPU to blur the MOVING 3D scene behind every
+                      // card on every scrub frame — the section's main lag
+                      // source. A solid-ish fill composites for free.
+                      background: "color-mix(in srgb, var(--bg) 88%, transparent)",
+                      boxShadow: `0 24px 60px -28px ${p.color}33, inset 0 0 0 1px ${p.color}1a`,
+                      ["--pc" as string]: p.color,
+                    } as React.CSSProperties
+                  }
+                >
+                  {/* accent edge-glow that intensifies on hover */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 rounded-[20px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                    style={{ boxShadow: `inset 0 0 80px -30px ${p.color}` }}
+                  />
+
+                  {/* ── Imagery zone: a procedural "viewport" panel ─────── */}
+                  <div className="relative h-[40%] shrink-0 overflow-hidden">
+                    {/* tinted gradient field */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-0"
                       style={{
-                        padding: "3px 8px",
-                        border: `1px solid ${p.color}55`,
-                        background: `${p.color}10`
+                        background: `radial-gradient(120% 120% at 78% 18%, ${p.color}38, transparent 58%), linear-gradient(160deg, ${p.color}1f, transparent 70%)`,
+                      }}
+                    />
+                    {/* blueprint grid */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-0 opacity-[0.5]"
+                      style={{
+                        backgroundImage: `linear-gradient(${p.color}14 1px, transparent 1px), linear-gradient(90deg, ${p.color}14 1px, transparent 1px)`,
+                        backgroundSize: "34px 34px",
+                        maskImage:
+                          "radial-gradient(120% 100% at 70% 20%, #000 40%, transparent 100%)",
+                        WebkitMaskImage:
+                          "radial-gradient(120% 100% at 70% 20%, #000 40%, transparent 100%)",
+                      }}
+                    />
+                    {/* drifting accent orb */}
+                    <div
+                      aria-hidden
+                      className="absolute -right-10 -top-12 h-44 w-44 rounded-full blur-[36px] transition-transform duration-700 group-hover:scale-110"
+                      style={{ background: `${p.color}55` }}
+                    />
+                    {/* giant ghost numeral */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -left-2 bottom-[-2.4rem] select-none font-display leading-none"
+                      style={{
+                        fontWeight: 800,
+                        fontSize: "11rem",
+                        color: p.color,
+                        opacity: 0.12,
                       }}
                     >
-                      [ {s} ]
+                      {num}
                     </span>
-                  ))}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                    {/* window chrome / status bar */}
+                    <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 py-4">
+                      <span className="flex items-center gap-1.5" aria-hidden>
+                        <span className="h-2 w-2 rounded-full bg-line-strong" />
+                        <span className="h-2 w-2 rounded-full bg-line-strong" />
+                        <span
+                          className="h-2 w-2 rounded-full"
+                          style={{ background: p.color, boxShadow: `0 0 8px ${p.color}` }}
+                        />
+                      </span>
+                      <span
+                        className="font-mono text-[10px] uppercase tracking-[0.28em]"
+                        style={{ color: `${p.color}` }}
+                      >
+                        run // {num}
+                      </span>
+                    </div>
+                    {/* bottom fade so type sits cleanly below */}
+                    <div
+                      aria-hidden
+                      className="absolute inset-x-0 bottom-0 h-16"
+                      style={{
+                        background:
+                          "linear-gradient(transparent, color-mix(in srgb, var(--bg) 90%, transparent))",
+                      }}
+                    />
+                  </div>
+
+                  {/* ── Body: metadata + copy + tags ───────────────────── */}
+                  <div className="relative flex min-h-0 flex-1 flex-col px-6 pb-6 pt-5">
+                    <h3
+                      className="font-display text-[1.7rem] leading-[1.05] tracking-[-0.01em] text-ink md:text-[1.9rem]"
+                      style={{ fontWeight: 700 }}
+                    >
+                      {p.name}
+                    </h3>
+                    <p className="mt-2 font-serif text-[15px] italic leading-snug text-ink/80">
+                      {p.tagline}
+                    </p>
+
+                    <p className="mt-4 text-[13.5px] leading-relaxed text-ink-dim line-clamp-3 md:line-clamp-4">
+                      {p.description}
+                    </p>
+
+                    {/* stack tags pinned to the card bottom */}
+                    <ul className="mt-auto flex flex-wrap gap-2 pt-4">
+                      {p.stack.map((s) => (
+                        <li
+                          key={s}
+                          className="rounded-full border px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-[0.08em] text-ink/75 transition-colors duration-300 group-hover:text-ink"
+                          style={{
+                            borderColor: `${p.color}33`,
+                            background: `${p.color}0d`,
+                          }}
+                        >
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* bottom accent ticker that wipes in on hover */}
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                    style={{ background: p.color }}
+                  />
+                </article>
+              );
+            })}
+
+            {/* Trailing end-cap to give the last card breathing room. */}
+            <div data-slide aria-hidden className="hidden shrink-0 md:block md:w-[6vw]" />
+          </div>
+
+          {/* ── Bottom progress rail — only while pinned (desktop) ────── */}
+          <div className="pointer-events-none absolute inset-x-[8vw] bottom-8 hidden items-center gap-4 md:flex">
+            <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-ink-faint">
+              <span ref={railPosRef}>01</span>
+              <span className="text-ink/40"> / {total}</span>
+            </span>
+            <div className="relative h-px flex-1 overflow-hidden rounded-full bg-line">
+              <div
+                ref={railRef}
+                className="h-full w-full origin-left scale-x-0 rounded-full"
+                style={{ background: `linear-gradient(90deg, ${ACCENT}, #4f9cff)` }}
+              />
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-ink-faint/70">
+              traverse →
+            </span>
+          </div>
+        </div>
       </div>
     </SectionFrame>
   );
 }
 
-export const ProjectsSection = memo(ProjectsSectionImpl);
 export default ProjectsSection;

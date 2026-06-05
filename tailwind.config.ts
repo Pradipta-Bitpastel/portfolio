@@ -11,10 +11,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "#0b0f19",
-        "bg-2": "#0f1424",
-        ink: "#e7ecf5",
-        "ink-dim": "#9aa4b8",
+        bg: "var(--bg)",
+        "bg-2": "var(--bg-2)",
+        ink: "var(--ink)",
+        "ink-dim": "var(--ink-dim)",
+        "ink-faint": "var(--ink-faint)",
+        bone: "var(--bone)",
+        line: "var(--line)",
+        "line-strong": "var(--line-strong)",
+        surface: "var(--surface)",
+        "surface-2": "var(--surface-2)",
+        accent: "var(--accent)",
         blue: "#4f9cff",
         purple: "#9b5cff",
         cyan: "#00d4ff",

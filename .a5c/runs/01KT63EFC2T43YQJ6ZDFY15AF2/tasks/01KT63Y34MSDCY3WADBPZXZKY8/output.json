@@ -1,0 +1,7 @@
+{
+  "filesChanged": ["components/sections/ProjectsSection.tsx"],
+  "summary": "Implemented WS3 horizontal-scroll pin. Project cards render as a STATIC horizontal flex track inside a pin target (md:h-[100svh], md:overflow-hidden). useEffect after registerAll() runs a gsap.context() scoped to rootRef with gsap.matchMedia() guarded to '(min-width:768px) and (prefers-reduced-motion: no-preference)' — the only GSAP pin in the app. Tweens track x to -(track.scrollWidth - innerWidth), ease none, scrollTrigger { trigger pinRef, start top top, end +=amount, pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true }. onUpdate drives a bottom progress rail (scaleX) and per-slide entrance (scale 0.86->1, opacity 0.4->1 by distance from centre). matchMedia cleanup kills trigger/tween + clearProps; context reverted on unmount. Below 768px / reduced-motion = vertical stacked cards, no pin. Real project data reused from content/projects.ts.",
+  "typecheckPassed": true,
+  "screenshotPath": "/tmp/ws3_projects.png",
+  "notes": "Gate moved from pre-existing 1024px to spec'd 768px. Pin target is an inner static div (not the section) since SectionFrame wraps with overflow-hidden+padding. Screenshot at scrollY ~6562 confirms mid-pin horizontal offset (slide 01 off-screen left, 03/04/05 visible, 04 centred+scaled) + bottom rail. Waited out the SYS.PRELOAD overlay before scrolling."
+}

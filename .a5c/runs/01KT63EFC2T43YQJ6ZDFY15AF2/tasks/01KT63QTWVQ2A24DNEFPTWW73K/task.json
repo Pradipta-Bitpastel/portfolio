@@ -1,0 +1,37 @@
+{
+  "kind": "breakpoint",
+  "metadata": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "passed": true,
+        "reviewSummary": "WS1 meets all acceptance criteria. HeroSection.tsx renders the 9 real Firewatch photographic PNG layers (parallax0 sky/back .. parallax8 trees/front) as <img> elements (not SVG), z-stacked 0..8 in correct depth order. The rAF engine exclusively owns each layer's inline transform (wrappers oversize via -inset-[5%], no transform utility classes), honoring the guardrail. Mouse + scroll parallax wired via single rAF reading native scrollY (capped) + pointermove; no Lenis, no GSAP pin. Reduced-motion returns early. PRADIPTA JANA overlays at z-20, legible with drop-shadow. Role-cycler span has no React children (no textContent crash). tsc --noEmit exits 0.",
+        "screenshot": "/tmp/ws1_hero.png",
+        "workstreamId": "WS1"
+      },
+      "question": "\"Hero: real Firewatch parallax\" finished after 1 iteration(s), pass=true. Review the screenshot and approve to continue to the next workstream?",
+      "title": "Workstream complete: Hero: real Firewatch parallax"
+    },
+    "requestedAt": "2026-06-03T06:46:37.723Z"
+  },
+  "title": "breakpoint",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT63QTWVQ2A24DNEFPTWW73K",
+  "taskId": "__sdk.breakpoint",
+  "invocationKey": "portfolio/parallax-overhaul:S000003:__sdk.breakpoint",
+  "stepId": "S000003",
+  "inputs": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "passed": true,
+        "reviewSummary": "WS1 meets all acceptance criteria. HeroSection.tsx renders the 9 real Firewatch photographic PNG layers (parallax0 sky/back .. parallax8 trees/front) as <img> elements (not SVG), z-stacked 0..8 in correct depth order. The rAF engine exclusively owns each layer's inline transform (wrappers oversize via -inset-[5%], no transform utility classes), honoring the guardrail. Mouse + scroll parallax wired via single rAF reading native scrollY (capped) + pointermove; no Lenis, no GSAP pin. Reduced-motion returns early. PRADIPTA JANA overlays at z-20, legible with drop-shadow. Role-cycler span has no React children (no textContent crash). tsc --noEmit exits 0.",
+        "screenshot": "/tmp/ws1_hero.png",
+        "workstreamId": "WS1"
+      },
+      "question": "\"Hero: real Firewatch parallax\" finished after 1 iteration(s), pass=true. Review the screenshot and approve to continue to the next workstream?",
+      "title": "Workstream complete: Hero: real Firewatch parallax"
+    },
+    "requestedAt": "2026-06-03T06:46:37.723Z"
+  }
+}

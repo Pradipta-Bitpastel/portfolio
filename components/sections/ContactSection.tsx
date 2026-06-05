@@ -1,350 +1,534 @@
 "use client";
 
-import { memo, useRef, type FormEvent } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, registerAll } from "@/lib/gsap";
-import { sceneStore } from "@/lib/sceneStore";
+import { useEffect, useRef } from "react";
+import { gsap, registerAll, SplitText } from "@/lib/gsap";
+import { SectionFrame } from "@/components/ui/SectionFrame";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { profile } from "@/content/profile";
-import { SectionFrame } from "@/components/ui/SectionFrame";
+import { getSection } from "@/lib/sections";
+
+const CONTACT = getSection("contact")!;
+
+// Theme-aware semantic tokens (flip with data-theme via globals.css).
+const BONE = "var(--bone)";
+const INK = "var(--ink)";
+const STEEL = "var(--ink-faint)";
+// Hairline borders / faint fills derived from the theme line token.
+const HAIRLINE = "var(--line)";
+const HAIRLINE_STRONG = "var(--line-strong)";
+const FAINT_FILL = "var(--surface)";
+// Accents read on BOTH themes — kept static.
+const BLUE = "#4f9cff";
+const CYAN = "#00d4ff";
+const GREEN = "#39ffa5";
+
+type Channel = {
+  idx: string;
+  label: string;
+  handle: string;
+  href: string;
+  external: boolean;
+};
+
+const CHANNELS: ReadonlyArray<Channel> = [
+  {
+    idx: "01",
+    label: "GITHUB",
+    handle: "Pradipta-Bitpastel",
+    href: profile.socials.github,
+    external: true,
+  },
+  {
+    idx: "02",
+    label: "LINKEDIN",
+    handle: "in/pradipta-kumar-jana",
+    href: profile.socials.linkedin,
+    external: true,
+  },
+  {
+    idx: "03",
+    label: "EMAIL",
+    handle: profile.socials.email,
+    href: `mailto:${profile.socials.email}`,
+    external: false,
+  },
+];
 
 /**
- * Contact — "SYS.TRANSMIT // 06". Brutalist center-column.
- * Terminal-style form (not glass). Amber "06" top-left.
- *
- * Scene: glow pulse + module disperse (core position owned by
- * SceneDock → center-small).
+ * Beacon — the signature finale graphic. A horizontal "transmission"
+ * line with a packet pulse traveling left→right toward the contact
+ * channels, plus a soft expanding ring at the emitter. Drawn on an SVG
+ * via GSAP so it shares the site's render cadence; static under
+ * reduced motion (the pulse parks at the emitter).
  */
+function Beacon() {
+  const ref = useRef<SVGSVGElement>(null);
 
-function ContactSectionImpl() {
-  const rootRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const linksRef = useRef<HTMLDivElement>(null);
-  const ringsRef = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const svg = ref.current;
+    if (!svg) return;
+    let cancelled = false;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
 
-  useGSAP(
-    () => {
-      if (!rootRef.current) return;
-      let cancelled = false;
+    const boot = async () => {
+      await registerAll();
+      if (cancelled || !ref.current) return;
+      const reduced =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
 
-      const boot = async () => {
-        await registerAll();
-        if (cancelled) return;
-
-        // Headline reveal — simple fade. Per-char split caused "P" to drop
-        // because the SplitText plugin path interacted badly with the literal
-        // " // " (space-slash-slash-space) tokenization. Plain block-level
-        // fade is reliable and the headline is short enough that staggered
-        // chars do not add meaningful polish here.
-        const headline = headlineRef.current;
-        if (headline) {
+      ctx = gsap.context(() => {
+        const packet = svg.querySelector<SVGCircleElement>("[data-packet]");
+        const tracer = svg.querySelector<SVGCircleElement>("[data-tracer]");
+        const ring = svg.querySelector<SVGCircleElement>("[data-ring]");
+        if (packet) {
           gsap.fromTo(
-            headline,
-            { y: 28, opacity: 0 },
+            packet,
+            { attr: { cx: 8 }, opacity: 1 },
             {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
+              attr: { cx: 312 },
+              opacity: 0,
+              duration: 2.2,
+              ease: "power1.in",
+              repeat: -1,
+              repeatDelay: 0.4,
+            }
+          );
+        }
+        if (tracer) {
+          gsap.fromTo(
+            tracer,
+            { attr: { cx: 8 } },
+            {
+              attr: { cx: 312 },
+              duration: 2.2,
+              ease: "power1.in",
+              repeat: -1,
+              repeatDelay: 0.4,
+            }
+          );
+        }
+        if (ring) {
+          gsap.fromTo(
+            ring,
+            { attr: { r: 3 }, opacity: 0.7 },
+            {
+              attr: { r: 16 },
+              opacity: 0,
+              duration: 1.6,
               ease: "power2.out",
-              scrollTrigger: {
-                trigger: rootRef.current,
-                start: "top 70%"
-              }
+              repeat: -1,
+              repeatDelay: 0.4,
             }
           );
         }
+      }, svg);
+    };
 
-        // Links stagger
-        const links = linksRef.current?.querySelectorAll(".contact-link");
-        if (links && links.length > 0) {
-          gsap.fromTo(
-            links,
-            { y: 20, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.5,
-              stagger: 0.08,
-              ease: "back.out(1.5)",
-              scrollTrigger: {
-                trigger: rootRef.current,
-                start: "top 65%"
-              }
-            }
+    void boot();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+    };
+  }, []);
+
+  return (
+    <svg
+      ref={ref}
+      viewBox="0 0 320 24"
+      className="h-6 w-full"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id="beam-fade" x1="0" x2="1">
+          <stop offset="0" stopColor={CYAN} stopOpacity="0.9" />
+          <stop offset="0.6" stopColor={BLUE} stopOpacity="0.5" />
+          <stop offset="1" stopColor={BLUE} stopOpacity="0.05" />
+        </linearGradient>
+      </defs>
+      <line
+        x1="8"
+        y1="12"
+        x2="312"
+        y2="12"
+        stroke="url(#beam-fade)"
+        strokeWidth="1"
+        strokeDasharray="2 4"
+      />
+      {/* emitter */}
+      <circle cx="8" cy="12" r="2.4" fill={CYAN} />
+      <circle data-ring cx="8" cy="12" r="3" fill="none" stroke={CYAN} strokeWidth="1" />
+      {/* traveling packet + soft tracer glow */}
+      <circle
+        data-tracer
+        cx="8"
+        cy="12"
+        r="6"
+        fill={CYAN}
+        opacity="0.18"
+        style={{ filter: "blur(2px)" }}
+      />
+      <circle data-packet cx="8" cy="12" r="2.2" fill={INK} />
+    </svg>
+  );
+}
+
+/**
+ * Contact / SYS.SIGNAL. The closing transmission of the dossier: a
+ * confident editorial headline, a live "open channel" beacon, the real
+ * contact channels as numbered dossier rows, and a magnetic SEND SIGNAL
+ * CTA wired to mailto. No fake form — every link is real.
+ */
+export function ContactSection() {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    let cancelled = false;
+    let ctx: ReturnType<typeof gsap.context> | null = null;
+    const splits: InstanceType<typeof SplitText>[] = [];
+
+    const boot = async () => {
+      await registerAll();
+      if (cancelled || !rootRef.current) return;
+      const reduced =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      ctx = gsap.context(() => {
+        if (reduced) {
+          gsap.set(
+            [
+              "[data-kicker]",
+              "[data-head-line]",
+              "[data-rise]",
+              "[data-channel]",
+              "[data-cta]",
+              "[data-rule]",
+            ],
+            { opacity: 1, y: 0, x: 0, yPercent: 0, scaleX: 1, scale: 1 }
           );
+          return;
         }
 
-        // Glow spike (scene-enter) — position handled by SceneDock.
-        const glow = sceneStore.core.glow;
-        if (glow) {
-          gsap.fromTo(
-            glow,
-            { intensity: 4 },
-            {
-              intensity: 12,
-              ease: "power2.inOut",
-              scrollTrigger: {
-                trigger: rootRef.current,
-                start: "top 60%",
-                end: "top 10%",
-                scrub: 1
-              }
-            }
-          );
-        }
+        gsap.from("[data-kicker]", {
+          opacity: 0,
+          y: -12,
+          duration: 0.7,
+          ease: "power3.out",
+          scrollTrigger: { trigger: rootRef.current, start: "top 82%", once: true },
+        });
 
-        // Modules contract then disperse (visual finale).
-        const moduleIds = [
-          "frontend",
-          "backend",
-          "devops",
-          "cloud",
-          "mobile"
-        ] as const;
-        moduleIds.forEach((id, i) => {
-          const g = sceneStore.modules[id].ref;
-          if (!g) return;
-          const angle = (i / 5) * Math.PI * 2;
-          gsap.to(g.position, {
-            x: Math.cos(angle) * 0.6,
-            y: 0,
-            z: Math.sin(angle) * 0.6,
-            ease: "power2.inOut",
-            scrollTrigger: {
-              trigger: rootRef.current,
-              start: "top 70%",
-              end: "top 20%",
-              scrub: 1
-            }
+        // Hairline rule draws across as the section enters.
+        gsap.from("[data-rule]", {
+          scaleX: 0,
+          transformOrigin: "left center",
+          duration: 1.1,
+          ease: "power3.inOut",
+          scrollTrigger: { trigger: rootRef.current, start: "top 82%", once: true },
+        });
+
+        // Headline lines clip up from their masks, one after another.
+        gsap.utils.toArray<HTMLElement>("[data-head-line]").forEach((line) => {
+          const split = new SplitText(line, { type: "chars" });
+          splits.push(split);
+          gsap.from(split.chars, {
+            yPercent: 120,
+            opacity: 0,
+            duration: 0.9,
+            stagger: 0.02,
+            ease: "power4.out",
+            scrollTrigger: { trigger: line, start: "top 88%", once: true },
           });
         });
 
-        // Ping rings
-        const svg = ringsRef.current;
-        if (svg) {
-          const circles = svg.querySelectorAll<SVGCircleElement>(
-            ".ping-ring"
-          );
-          circles.forEach((c, i) => {
-            gsap.fromTo(
-              c,
-              { attr: { r: 20 }, opacity: 0.9 },
-              {
-                attr: { r: 180 },
-                opacity: 0,
-                duration: 2.4,
-                ease: "power2.out",
-                repeat: -1,
-                delay: i * 0.8
-              }
-            );
+        gsap.from("[data-rise]", {
+          opacity: 0,
+          y: 26,
+          duration: 0.8,
+          stagger: 0.08,
+          ease: "power3.out",
+          scrollTrigger: { trigger: rootRef.current, start: "top 70%", once: true },
+        });
+
+        // Channels populate like rows of a connecting log.
+        gsap.from("[data-channel]", {
+          opacity: 0,
+          x: 24,
+          duration: 0.6,
+          stagger: 0.09,
+          ease: "power3.out",
+          scrollTrigger: { trigger: "[data-channels]", start: "top 86%", once: true },
+        });
+
+        // CTA pops with a back-ease and a single expanding focus ring.
+        const cta = rootRef.current?.querySelector<HTMLElement>("[data-cta]");
+        if (cta) {
+          gsap.from(cta, {
+            opacity: 0,
+            scale: 0.86,
+            duration: 0.7,
+            ease: "back.out(2)",
+            scrollTrigger: { trigger: cta, start: "top 90%", once: true },
           });
+          gsap.fromTo(
+            cta,
+            { boxShadow: "0 0 0 0 rgba(0,212,255,0.45)" },
+            {
+              boxShadow: "0 0 0 18px rgba(0,212,255,0)",
+              duration: 1.2,
+              ease: "power2.out",
+              delay: 0.5,
+              clearProps: "boxShadow",
+              scrollTrigger: { trigger: cta, start: "top 90%", once: true },
+            }
+          );
         }
-      };
+      }, rootRef.current);
+    };
 
-      void boot();
-
-      return () => {
-        cancelled = true;
-      };
-    },
-    { scope: rootRef, dependencies: [] }
-  );
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-    // eslint-disable-next-line no-console
-    console.log("[contact] signal payload", {
-      name: data.get("name"),
-      email: data.get("email"),
-      message: data.get("message")
-    });
-  };
-
-  const termLinks = [
-    { label: "github.com/Pradipta-Bitpastel", href: profile.socials.github },
-    { label: "linkedin.com/in/pradipta-kumar-jana", href: profile.socials.linkedin },
-    { label: "pradiptajana.co@gmail.com", href: `mailto:${profile.socials.email}` }
-  ];
+    void boot();
+    return () => {
+      cancelled = true;
+      ctx?.revert();
+      splits.forEach((s) => s.revert());
+    };
+  }, []);
 
   return (
-    <SectionFrame
-      id="contact"
-      ref={rootRef}
-      ariaLabelledBy="contact-heading"
-      className="flex-col justify-center"
-    >
-      {/* Giant "06" top-left, amber — inside the frame */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-[clamp(48px,6vw,96px)] top-[clamp(64px,8vh,140px)] z-0 hidden select-none font-mono font-bold leading-none opacity-[0.95] md:block"
-        style={{
-          color: "#FF7A1A",
-          letterSpacing: "-0.02em",
-          fontSize: "clamp(6rem,12vw,14rem)"
-        }}
-      >
-        06
+    <SectionFrame id="contact" ariaLabelledBy="contact-title" className="overflow-visible">
+      {/* local atmosphere: a cool blue/cyan signal wash + baseline grid */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
+        <div
+          className="absolute left-1/2 top-[18%] h-[60vh] w-[60vh] -translate-x-1/2 rounded-full opacity-[0.10] blur-[150px]"
+          style={{ background: BLUE }}
+        />
+        <div
+          className="absolute right-[6%] bottom-[10%] h-[34vh] w-[34vh] rounded-full opacity-[0.07] blur-[120px]"
+          style={{ background: CYAN }}
+        />
+        <div className="grid-bg absolute inset-0 opacity-[0.18]" />
       </div>
 
-      {/* Ping rings — fluid sizing so it never clips on 375px viewports.
-          aspect-square + max-w-md keeps the rings centered and uniform. */}
-      <svg
-        ref={ringsRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-full max-w-md -translate-x-1/2 -translate-y-1/2 opacity-60"
-        viewBox="0 0 420 420"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g fill="none" stroke="#FF7A1A" strokeWidth="1.2">
-          <circle className="ping-ring" cx="210" cy="210" r="20" />
-          <circle className="ping-ring" cx="210" cy="210" r="20" />
-          <circle className="ping-ring" cx="210" cy="210" r="20" />
-        </g>
-      </svg>
-
-      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center">
-        <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.32em] text-ink-dim">
-          <span className="text-[#FF7A1A]">SYS.TRANSMIT // 06</span>
-          <span className="opacity-40">—</span>
-          <span>AWAITING_SIGNAL...</span>
+      <div ref={rootRef} className="relative mx-auto w-full max-w-6xl" style={{ color: BONE }}>
+        {/* Kicker rule — dossier closing transmission */}
+        <div
+          data-kicker
+          className="flex items-center justify-between border-t pt-3 font-mono text-[11px] uppercase tracking-[0.3em]"
+          style={{ borderColor: HAIRLINE_STRONG, color: STEEL }}
+        >
+          <span className="flex items-center gap-2">
+            <span
+              className="inline-block h-1.5 w-1.5 animate-pulse rounded-full"
+              style={{ background: GREEN, boxShadow: `0 0 8px ${GREEN}` }}
+            />
+            SYS.SIGNAL · OPEN CHANNEL
+          </span>
+          <span className="hidden items-center gap-3 sm:flex">
+            <span style={{ color: STEEL }}>REF · PKJ-0X9</span>
+            <span style={{ color: BLUE }}>06 / 06</span>
+          </span>
+          <span style={{ color: BLUE }} className="sm:hidden">
+            06 / 06
+          </span>
         </div>
 
-        {/* Headline. At 375px the previous clamp(2.75rem, 10vw, …) was
-            still too big and "THE_CORE" wrapped mid-word ("THE_CO\nRE")
-            because the splitChars routine puts every character into a
-            non-breaking inline-block. We now:
-              - drop the lower clamp bound so it shrinks to ~2rem on
-                <380px viewports,
-              - replace the whitespace around "//" with non-breaking
-                spaces so "PING" and "THE_CORE" stay atomic and the
-                line breaks ONLY between the two words if at all,
-              - hint hyphens/word-break to keep the "THE_CORE" token
-                indivisible. */}
-        <h2
-          ref={headlineRef}
-          id="contact-heading"
-          className="font-display leading-[0.88] tracking-[-0.035em] text-ink"
-          style={{
-            fontWeight: 800,
-            fontSize: "clamp(1.75rem,7vw,5rem)",
-            overflowWrap: "normal",
-            hyphens: "manual"
-          }}
-        >
-          {"PING // THE_CORE"}
-        </h2>
+        <div className="mt-10 grid items-end gap-10 md:mt-16 md:grid-cols-[1.25fr_0.75fr] md:gap-16">
+          {/* Left: the headline + lead */}
+          <div>
+            <span
+              data-rise
+              className="mb-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.32em]"
+              style={{ color: CYAN }}
+            >
+              <span
+                aria-hidden
+                className="inline-block h-1.5 w-1.5 rounded-full"
+                style={{ background: CYAN, boxShadow: `0 0 10px ${CYAN}` }}
+              />
+              {CONTACT.eyebrow}
+            </span>
 
-        <p className="max-w-[50ch] font-mono text-sm leading-relaxed text-ink-dim">
-          Open to full-stack and 3D-web roles. Happy to chat about hard UI,
-          infra, and everything between.
-        </p>
+            <h2
+              id="contact-title"
+              className="font-grotesk leading-[0.82] tracking-[-0.04em]"
+              style={{ fontWeight: 800, fontSize: "clamp(2.9rem,9.5vw,7.5rem)" }}
+            >
+              <span className="block overflow-hidden">
+                <span data-head-line className="inline-block">
+                  LET&apos;S BUILD
+                </span>
+              </span>
+              <span className="block overflow-hidden">
+                <span
+                  data-head-line
+                  className="inline-block font-serif italic"
+                  style={{ fontWeight: 400, color: BLUE }}
+                >
+                  something real.
+                </span>
+              </span>
+            </h2>
 
-        {/* Terminal-style form */}
-        <div
-          className="w-full max-w-xl text-left"
-          style={{
-            background: "#0d1320",
-            border: "1px solid #FF7A1A66",
-            boxShadow: "0 0 60px rgba(255,122,26,0.12)"
-          }}
-        >
-          {/* Terminal top bar */}
-          <div className="flex items-center justify-between border-b border-[#FF7A1A]/30 px-4 py-2">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-[#ff5f57]" />
-              <span className="h-2 w-2 rounded-full bg-[#febc2e]" />
-              <span className="h-2 w-2 rounded-full bg-[#28c840]" />
+            <p
+              data-rise
+              className="mt-7 max-w-md text-[15px] leading-[1.78]"
+              style={{ color: STEEL }}
+            >
+              Open to full-stack, 3D-web and cloud-infra roles. Bring me a hard
+              UI, a deploy path that needs owning, or a product that has to ship —
+              the line below is live.
+            </p>
+
+            {/* CTA + status */}
+            <div data-rise className="mt-10 flex flex-wrap items-center gap-5">
+              <MagneticButton
+                href={`mailto:${profile.socials.email}`}
+                strength={22}
+                data-cta
+                className="group relative isolate overflow-hidden rounded-full px-9 py-4 font-mono text-sm uppercase tracking-[0.26em]"
+                style={{
+                  color: "#06121f",
+                  background: `linear-gradient(105deg, ${CYAN}, ${BLUE})`,
+                  boxShadow: `0 10px 40px -10px ${CYAN}66`,
+                }}
+              >
+                {/* sweep highlight on hover */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 -translate-x-full bg-white/30 transition-transform duration-700 ease-out group-hover:translate-x-full"
+                  style={{ mixBlendMode: "overlay" }}
+                />
+                <span className="relative z-10 flex items-center gap-2 font-semibold">
+                  SEND SIGNAL
+                  <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
+              </MagneticButton>
+
+              <span
+                className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.26em]"
+                style={{ color: STEEL }}
+              >
+                <span
+                  className="inline-block h-1.5 w-1.5 animate-pulse rounded-full"
+                  style={{ background: GREEN, boxShadow: `0 0 8px ${GREEN}` }}
+                />
+                avg reply &lt; 24h
+              </span>
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#FF7A1A]">
-              signal.tx
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-ink-dim/70">
-              T+00:02:47
-            </span>
           </div>
 
-          <form onSubmit={onSubmit} className="flex flex-col gap-4 p-5 md:p-7">
-            <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#FF7A1A]">
-                &gt; NAME_
-              </span>
-              <input
-                required
-                type="text"
-                name="name"
-                autoComplete="name"
-                className="border-b border-[#FF7A1A]/40 bg-transparent px-0 py-3 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#FF7A1A]">
-                &gt; EMAIL_
-              </span>
-              <input
-                required
-                type="email"
-                name="email"
-                autoComplete="email"
-                className="border-b border-[#FF7A1A]/40 bg-transparent px-0 py-3 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#FF7A1A]">
-                &gt; PAYLOAD_
-              </span>
-              <textarea
-                required
-                name="message"
-                rows={4}
-                className="resize-none border-b border-[#FF7A1A]/40 bg-transparent px-0 py-3 font-mono text-sm text-ink outline-none transition focus:border-[#FF7A1A]"
-              />
-            </label>
-            <div className="pt-2">
-              <MagneticButton
-                type="submit"
-                className="inline-flex min-h-[48px] items-center gap-2 bg-[#FF7A1A] px-5 py-3 font-mono text-[11px] uppercase tracking-[0.28em] text-black transition hover:bg-[#ff8f3f]"
+          {/* Right: live beacon + channels */}
+          <div className="flex flex-col gap-5">
+            <div
+              data-rise
+              className="crop-frame border p-5"
+              style={{ borderColor: HAIRLINE_STRONG, background: FAINT_FILL }}
+            >
+              <div
+                className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.28em]"
+                style={{ color: STEEL }}
               >
-                SEND SIGNAL
-                <span aria-hidden>→</span>
-              </MagneticButton>
+                <span>transmission</span>
+                <span className="flex items-center gap-1.5" style={{ color: CYAN }}>
+                  <span
+                    className="inline-block h-1.5 w-1.5 animate-pulse rounded-full"
+                    style={{ background: CYAN, boxShadow: `0 0 6px ${CYAN}` }}
+                  />
+                  live
+                </span>
+              </div>
+              <div className="mt-4">
+                <Beacon />
+              </div>
+              <div
+                className="mt-4 grid grid-cols-2 gap-3 border-t pt-3 font-mono text-[10px] uppercase tracking-[0.14em]"
+                style={{ borderColor: HAIRLINE, color: STEEL }}
+              >
+                <span className="flex flex-col gap-0.5">
+                  LATENCY <b style={{ color: BONE, letterSpacing: "0.06em" }}>~24h</b>
+                </span>
+                <span className="flex flex-col gap-0.5">
+                  REGION <b style={{ color: BONE, letterSpacing: "0.06em" }}>IN · UTC+5:30</b>
+                </span>
+              </div>
             </div>
-          </form>
+
+            <ul data-channels className="font-mono text-[12px]">
+              {CHANNELS.map((c) => (
+                <li key={c.label} data-channel>
+                  <a
+                    href={c.href}
+                    target={c.external ? "_blank" : undefined}
+                    rel={c.external ? "noreferrer" : undefined}
+                    className="group flex items-center gap-3 border-b py-3.5 transition-colors"
+                    style={{ borderColor: HAIRLINE }}
+                  >
+                    <span
+                      className="tabular-nums transition-colors"
+                      style={{ color: `${CYAN}99` }}
+                    >
+                      {c.idx}
+                    </span>
+                    <span
+                      className="w-[78px] shrink-0 uppercase tracking-[0.22em] transition-colors group-hover:text-[--ch-hover]"
+                      style={
+                        {
+                          color: STEEL,
+                          ["--ch-hover" as string]: CYAN,
+                        } as React.CSSProperties
+                      }
+                    >
+                      {c.label}
+                    </span>
+                    <span
+                      className="min-w-0 flex-1 truncate text-right transition-colors"
+                      style={{ color: INK }}
+                    >
+                      {c.handle}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="inline-block -translate-x-1 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                      style={{ color: CYAN }}
+                    >
+                      ↗
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* Mono links row */}
-        <div
-          ref={linksRef}
-          className="mt-3 flex flex-wrap items-center justify-center gap-4 font-mono text-[12px] uppercase tracking-[0.2em] text-ink-dim"
-        >
-          {termLinks.map((l, i) => (
-            <span key={l.label} className="contact-link flex items-center gap-4">
-              <a
-                href={l.href}
-                target="_blank"
-                rel="noreferrer"
-                className="text-ink-dim transition hover:text-[#FF7A1A] hover:underline hover:underline-offset-4"
-                style={{ textDecorationColor: "#FF7A1A" }}
-              >
-                {l.label}
-              </a>
-              {i < termLinks.length - 1 && (
-                <span className="text-[#FF7A1A]">▸</span>
-              )}
+        {/* Closing signature rule */}
+        <div className="relative mt-16 md:mt-24">
+          <div
+            data-rule
+            className="absolute left-0 right-0 top-0 h-px"
+            style={{ background: HAIRLINE_STRONG }}
+          />
+          <div
+            data-rise
+            className="flex flex-col gap-2 pt-5 font-mono text-[10px] uppercase tracking-[0.3em] sm:flex-row sm:items-center sm:justify-between"
+            style={{ color: STEEL }}
+          >
+            <span style={{ color: BONE }}>{profile.name}</span>
+            <span className="flex items-center gap-3">
+              <span>NEXT.JS · R3F · GSAP</span>
+              <span style={{ color: STEEL }}>·</span>
+              <span>© {new Date().getFullYear()}</span>
             </span>
-          ))}
+          </div>
         </div>
       </div>
-
-      <footer className="relative z-10 mt-20 flex w-full max-w-4xl flex-col items-center gap-1 font-mono text-[10px] uppercase tracking-[0.28em] text-ink-dim/70">
-        <span>&copy; {new Date().getFullYear()} {profile.name} — DEV.OS v14.2.0</span>
-        <span>SID:01K-MZ09-37TT — LAT 37.77°N / LON −122.42°W</span>
-      </footer>
     </SectionFrame>
   );
 }
 
-export const ContactSection = memo(ContactSectionImpl);
 export default ContactSection;

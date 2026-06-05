@@ -1,0 +1,21 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-06-03T06:53:15.088Z",
+  "data": {
+    "effectId": "01KT643YXPSRDK7YQ2D0X3PPSA",
+    "invocationKey": "portfolio/parallax-overhaul:S000005:review-workstream",
+    "invocationHash": "51bc385fd58014108e17a453b4265dafe8f55e99031259cf736958fdaa08e4bb",
+    "stepId": "S000005",
+    "taskId": "review-workstream",
+    "kind": "agent",
+    "label": "agent",
+    "taskDefRef": "tasks/01KT643YXPSRDK7YQ2D0X3PPSA/task.json",
+    "labels": [
+      "agent",
+      "review",
+      "WS3",
+      "iteration-1"
+    ]
+  },
+  "checksum": "37d738801b2e682766c437f42c28a3763afee37d767f2573140f4c5b822ab8db"
+}

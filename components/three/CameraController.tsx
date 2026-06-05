@@ -2,102 +2,62 @@
 
 import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { sceneStore } from "@/lib/sceneStore";
-import { readPerfTier } from "@/lib/usePerfTier";
+import { makePoseTarget, samplePose } from "@/lib/scenePoses";
+import { cursor } from "@/lib/useCursor";
 
 /**
- * Camera rig. Provides:
- *   - a drei <PerspectiveCamera makeDefault/> registered to the store
- *   - mouse-parallax target offset (lerped toward, not snapped)
- *   - hand-off flag `sceneStore.camera.gsapControlled` so a scrolling
- *     GSAP timeline can override without fighting the parallax lerp.
- *
- * Camera always lookAts origin each frame so any tween on position
- * stays composited with the orbit behavior.
+ * Camera rig. The full position (X orbit / Y height / Z dolly) AND the
+ * look-at height are scroll-driven via the pose curve, tracing a
+ * continuous journey around the character. A gentle cursor parallax is
+ * layered on top. Everything is damped in the render loop (frame-rate
+ * independent) so the move stays cinematic at any scroll velocity. No
+ * GSAP touches the camera.
  */
 
-const PARALLAX_STRENGTH_X = 0.45;
-const PARALLAX_STRENGTH_Y = 0.30;
-const PARALLAX_LERP = 0.08;
+const PARALLAX_X = 0.5;
+const PARALLAX_Y = 0.35;
+const damp = THREE.MathUtils.damp;
 
-/**
- * Final camera position each frame is:
- *   basePos (GSAP scroll-driven)
- *   + cinematicOffset (per-boundary push-in tween)
- *   + parallaxOffset (mouse, lerped)
- *
- * That way scroll choreography, the cinematic cut-beat, and mouse
- * parallax compose instead of clobbering each other.
- */
 export function CameraController() {
   const camRef = useRef<THREE.PerspectiveCamera>(null);
-  const parallaxTarget = useRef({ x: 0, y: 0 });
-  const parallaxCurrent = useRef({ x: 0, y: 0 });
+  const target = useMemo(() => makePoseTarget(), []);
+  const lookAt = useMemo(() => new THREE.Vector3(0, 0.05, 0), []);
 
   useEffect(() => {
-    if (camRef.current) {
-      sceneStore.camera.ref = camRef.current;
-    }
+    if (camRef.current) sceneStore.camera.ref = camRef.current;
     return () => {
       sceneStore.camera.ref = null;
     };
   }, []);
 
-  const low = readPerfTier() === "low";
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (low) return;
-    const onMove = (e: MouseEvent) => {
-      const nx = (e.clientX / window.innerWidth) * 2 - 1;
-      const ny = (e.clientY / window.innerHeight) * 2 - 1;
-      parallaxTarget.current.x = nx;
-      parallaxTarget.current.y = -ny;
-    };
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [low]);
-
-  useFrame(() => {
+  useFrame((_, delta) => {
     const cam = camRef.current;
     if (!cam) return;
+    const dt = Math.min(delta, 0.05);
 
-    // Lerp parallax current → target so the camera glides with the
-    // cursor rather than snapping.
-    if (!low) {
-      parallaxCurrent.current.x +=
-        (parallaxTarget.current.x - parallaxCurrent.current.x) * PARALLAX_LERP;
-      parallaxCurrent.current.y +=
-        (parallaxTarget.current.y - parallaxCurrent.current.y) * PARALLAX_LERP;
-    }
+    samplePose(sceneStore.progress, target);
 
-    const base = sceneStore.camera.basePos;
-    const cin = sceneStore.camera.cinematicOffset;
-    const px = low ? 0 : parallaxCurrent.current.x * PARALLAX_STRENGTH_X;
-    const py = low ? 0 : parallaxCurrent.current.y * PARALLAX_STRENGTH_Y;
+    const tx = target.camX + cursor.x * PARALLAX_X;
+    const ty = target.camY + cursor.y * PARALLAX_Y;
 
-    cam.position.set(base.x + cin.x + px, base.y + cin.y + py, base.z + cin.z);
-    cam.lookAt(sceneStore.camera.target);
+    cam.position.x = damp(cam.position.x, tx, 3, dt);
+    cam.position.y = damp(cam.position.y, ty, 3, dt);
+    cam.position.z = damp(cam.position.z, target.camZ, 3, dt);
 
-    // FOV composites scroll-driven baseFov with the boundary pulse.
-    const fov = sceneStore.camera.baseFov + sceneStore.camera.fovPulse;
-    if (Math.abs(cam.fov - fov) > 0.001) {
-      cam.fov = fov;
-      cam.updateProjectionMatrix();
-    }
+    // Damp the look-at height so the framing glides between sections;
+    // the shape stays centred (camera always looks at the origin).
+    lookAt.y = damp(lookAt.y, target.lookY, 3, dt);
+    cam.lookAt(lookAt);
   });
 
   return (
     <PerspectiveCamera
       ref={camRef}
       makeDefault
-      position={[
-        sceneStore.camera.basePos.x,
-        sceneStore.camera.basePos.y,
-        sceneStore.camera.basePos.z
-      ]}
+      position={[0, 0.7, 8.4]}
       fov={45}
       near={0.1}
       far={100}

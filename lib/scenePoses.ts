@@ -1,245 +1,155 @@
-import type * as THREE from "three";
+import * as THREE from "three";
 
 /**
- * Scene poses — the cinnamon-style choreography config.
+ * Scene poses — one per section. The 3D centerpiece is a single
+ * shader-displaced "Reactive Core". As the page scrolls, a normalized
+ * progress value (0..1, from `sceneStore.progress`) is mapped onto this
+ * curve and every visual property is damped toward the sampled target
+ * in the render loop. No GSAP tween touches THREE objects, so there is
+ * no scrub lag — the core simply morphs, recolors and dollies as you go.
  *
- * Each pose defines, per section, where the core + camera sit AND
- * where each of the five module satellites ends up in world space.
- * SceneDock scrubs a master GSAP timeline across the whole document
- * and interpolates every object toward the current section's pose.
- *
- * The existing `Modules` component still spins the rig every frame;
- * we write the per-module position/rotation/scale on top so the
- * orbit-motion + pose-tween compose: modules DRIFT within their
- * section formation rather than snap between fixed coordinates.
- *
- * Rationale for each formation:
- *   - hero     — standard 5-module orbit around the core (intro)
- *   - about    — modules pull back + dim, core dominates foreground
- *   - skills   — modules elongate into a tall vertical totem on the
- *                 LEFT so the skill bars on the right stay readable
- *   - projects — modules stretch into a WIDE horizontal bar behind
- *                 the pinned projects carousel (runway lights)
- *   - exp      — modules collapse into a vertical TIMELINE next to
- *                 the glowing ring
- *   - contact  — modules converge to a tight cluster near the core,
- *                 signal coalescing before "transmit"
- *
- * All positions are in world units (the R3F scene uses 1u ≈ 1m).
+ * Colors mirror the section accent palette in `lib/sections.ts`.
  */
-
-export type ModuleId = "frontend" | "backend" | "devops" | "cloud" | "mobile";
-
-export type ModulePose = {
-  /** World-space position override for the module group. */
-  pos: [number, number, number];
-  /** Scale multiplier applied to the module's inner group. */
+export interface ScenePose {
+  /** Core + particle accent color. */
+  color: THREE.Color;
+  /** Noise displacement amplitude on the core surface. */
+  displaceAmp: number;
+  /** Noise frequency — higher = tighter, busier surface. */
+  displaceFreq: number;
+  /** Idle rotation speed of the core (rad/s). */
+  rotSpeed: number;
+  /** Camera offset on X — drives the per-section orbit. */
+  camX: number;
+  /** Camera offset on Y (height). */
+  camY: number;
+  /** Camera distance on Z. */
+  camZ: number;
+  /** Y height the camera looks at (the subject's torso line). */
+  lookY: number;
+  /** Particle field dispersion multiplier. */
+  particleSpread: number;
+  /** Traveling model world position [x, y, z]. */
+  pos: readonly [number, number, number];
+  /** Traveling model Euler rotation [x, y, z] (radians). */
+  rot: readonly [number, number, number];
+  /** Traveling model uniform scale. */
   scale: number;
-  /** 0..1 — drives emissiveIntensity + material.opacity on the
-   *  primary mesh so off-section modules fade without vanishing. */
-  brightness: number;
-};
-
-export type ScenePose = {
-  id: "hero" | "about" | "skills" | "projects" | "exp" | "contact";
-  /** DevStation (core group) — where the laptop sits. */
-  core: {
-    pos: [number, number, number];
-    rotX: number;
-    rotY: number;
-    rotZ: number;
-    scale: number;
-  };
-  /** Camera world position — lookAt is always origin. */
-  cam: [number, number, number];
-  /** FOV override — bigger = more dramatic, more fisheye. */
-  fov: number;
-  /** Per-module formation point. Missing → keep previous. */
-  modules: Record<ModuleId, ModulePose>;
-};
-
-const RIM = 3.0;
-const LOW = -2.0;
-const HIGH = 2.0;
-
-export const SCENE_POSES: ScenePose[] = [
-  // ─── 01. HERO ────────────────────────────────────────────────────
-  // Laptop rotated slightly, modules spread 72° apart at rim radius.
-  {
-    id: "hero",
-    core: { pos: [2.2, -0.1, 0.0], rotX: 0.05, rotY: -0.12, rotZ: 0, scale: 1.55 },
-    cam: [0.0, 0.1, 8.0],
-    fov: 45,
-    modules: {
-      frontend: { pos: [ Math.cos(0)              * RIM, 0.30, Math.sin(0)              * RIM], scale: 1.0, brightness: 1.0 },
-      backend:  { pos: [ Math.cos(Math.PI * 0.4)  * RIM, -0.20, Math.sin(Math.PI * 0.4)  * RIM], scale: 1.0, brightness: 1.0 },
-      devops:   { pos: [ Math.cos(Math.PI * 0.8)  * RIM, 0.40, Math.sin(Math.PI * 0.8)  * RIM], scale: 1.0, brightness: 1.0 },
-      cloud:    { pos: [ Math.cos(Math.PI * 1.2)  * RIM, -0.30, Math.sin(Math.PI * 1.2)  * RIM], scale: 1.0, brightness: 1.0 },
-      mobile:   { pos: [ Math.cos(Math.PI * 1.6)  * RIM, 0.20, Math.sin(Math.PI * 1.6)  * RIM], scale: 1.0, brightness: 1.0 }
-    }
-  },
-  // ─── 02. ABOUT ───────────────────────────────────────────────────
-  // Core pushed right, modules retreat to background and dim — so the
-  // bio copy on the left stays the focal point.
-  {
-    id: "about",
-    core: { pos: [3.4, 0.25, -0.4], rotX: 0.10, rotY: -0.38, rotZ: 0, scale: 0.92 },
-    cam: [-0.3, 0.25, 6.2],
-    fov: 42,
-    modules: {
-      frontend: { pos: [ 4.0,  1.6, -4.5], scale: 0.55, brightness: 0.35 },
-      backend:  { pos: [ 5.5, -1.4, -4.0], scale: 0.55, brightness: 0.35 },
-      devops:   { pos: [ 2.0, -2.4, -5.0], scale: 0.55, brightness: 0.35 },
-      cloud:    { pos: [ 6.0,  0.6, -5.5], scale: 0.55, brightness: 0.35 },
-      mobile:   { pos: [ 3.0,  2.4, -5.0], scale: 0.55, brightness: 0.35 }
-    }
-  },
-  // ─── 03. SKILLS ──────────────────────────────────────────────────
-  // Modules stack into a VERTICAL TOTEM on the left. Each module
-  // becomes a "skill block" floating in a column. Core drifts right.
-  {
-    id: "skills",
-    core: { pos: [3.2, 0.0, -0.8], rotX: 0.0, rotY: 0.45, rotZ: 0, scale: 0.75 },
-    cam: [0.6, 0.2, 7.2],
-    fov: 50,
-    modules: {
-      mobile:   { pos: [-4.2,  2.2, -0.5], scale: 0.65, brightness: 1.0 },
-      frontend: { pos: [-4.2,  1.1, -0.5], scale: 0.65, brightness: 1.0 },
-      backend:  { pos: [-4.2,  0.0, -0.5], scale: 0.65, brightness: 1.0 },
-      devops:   { pos: [-4.2, -1.1, -0.5], scale: 0.65, brightness: 1.0 },
-      cloud:    { pos: [-4.2, -2.2, -0.5], scale: 0.65, brightness: 1.0 }
-    }
-  },
-  // ─── 04. PROJECTS ────────────────────────────────────────────────
-  // The SVG visual pane (right col-span-6) is the FEATURED subject
-  // here — the 3D laptop is hidden by shrinking to scale 0.001
-  // (subpixel, effectively invisible). Position is set to match the
-  // EXPERIENCE pose so that:
-  //   - entering projects = laptop flies left from skills and
-  //     vanishes in place (smooth "swish away")
-  //   - exiting projects to experience = laptop materializes in
-  //     place and grows from 0 to full (no flying across screen)
-  // Modules are also shrunk and dimmed to near-zero.
-  {
-    id: "projects",
-    core: { pos: [-3.2, -0.3, 0.2], rotX: 0.0, rotY: -0.3, rotZ: 0, scale: 0.001 },
-    cam: [0.0, 0.3, 8.5],
-    fov: 48,
-    modules: {
-      mobile:   { pos: [-3.2, -0.3, 0.2], scale: 0.001, brightness: 0.0 },
-      frontend: { pos: [-3.2, -0.3, 0.2], scale: 0.001, brightness: 0.0 },
-      backend:  { pos: [-3.2, -0.3, 0.2], scale: 0.001, brightness: 0.0 },
-      devops:   { pos: [-3.2, -0.3, 0.2], scale: 0.001, brightness: 0.0 },
-      cloud:    { pos: [-3.2, -0.3, 0.2], scale: 0.001, brightness: 0.0 }
-    }
-  },
-  // ─── 05. EXPERIENCE ──────────────────────────────────────────────
-  // Modules collapse into a vertical timeline stack on the RIGHT,
-  // mirroring the spinning timeline ring already in the scene.
-  {
-    id: "exp",
-    core: { pos: [-3.2, -0.3, 0.2], rotX: 0.0, rotY: -0.55, rotZ: 0, scale: 0.82 },
-    cam: [-0.4, 0.8, 7.0],
-    fov: 48,
-    modules: {
-      frontend: { pos: [ 4.0,  HIGH * 0.9, -0.2], scale: 0.5, brightness: 0.9 },
-      backend:  { pos: [ 4.2,  1.0,        -0.2], scale: 0.5, brightness: 0.9 },
-      devops:   { pos: [ 4.4,  0.0,        -0.2], scale: 0.5, brightness: 0.9 },
-      cloud:    { pos: [ 4.2, -1.0,        -0.2], scale: 0.5, brightness: 0.9 },
-      mobile:   { pos: [ 4.0,  LOW * 0.9,  -0.2], scale: 0.5, brightness: 0.9 }
-    }
-  },
-  // ─── 06. CONTACT ─────────────────────────────────────────────────
-  // Final convergence — core centered + shrunk, modules pull tight
-  // into a cluster right in front of the camera. "Signal coalescing".
-  {
-    id: "contact",
-    core: { pos: [0.0, 0.0, 0.0], rotX: 0.0, rotY: 0.0, rotZ: 0, scale: 0.55 },
-    cam: [0.0, 0.0, 8.5],
-    fov: 45,
-    modules: {
-      frontend: { pos: [ 0.9,  0.9, 1.2], scale: 0.45, brightness: 1.0 },
-      backend:  { pos: [-0.9,  0.9, 1.2], scale: 0.45, brightness: 1.0 },
-      devops:   { pos: [ 0.0,  1.3, 1.4], scale: 0.45, brightness: 1.0 },
-      cloud:    { pos: [ 0.9, -0.9, 1.2], scale: 0.45, brightness: 1.0 },
-      mobile:   { pos: [-0.9, -0.9, 1.2], scale: 0.45, brightness: 1.0 }
-    }
-  }
-];
-
-/**
- * Given a world-space target and the module group's parent (the
- * rotating rig in `Modules`), compute the local-space position that
- * will put the module at the world target. The rig rotates around Y,
- * so this is effectively an inverse Y-rotation on (x, z).
- */
-export function worldToRigLocal(
-  worldX: number,
-  worldY: number,
-  worldZ: number,
-  rigRotationY: number
-): [number, number, number] {
-  const cos = Math.cos(-rigRotationY);
-  const sin = Math.sin(-rigRotationY);
-  const lx = worldX * cos - worldZ * sin;
-  const lz = worldX * sin + worldZ * cos;
-  return [lx, worldY, lz];
 }
 
-/** Human-friendly section-id → pose-index lookup. */
-export const POSE_INDEX: Record<ScenePose["id"], number> = {
-  hero: 0,
-  about: 1,
-  skills: 2,
-  projects: 3,
-  exp: 4,
-  contact: 5
-};
-
-/** Lerp helper used by the scrub handler. Stays allocation-free. */
-export function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t;
-}
+const c = (hex: string) => new THREE.Color(hex);
 
 /**
- * The DOM section ids (HTML ids) paired with their pose index. The
- * experience section uses id="experience" in the DOM but "exp" in the
- * pose config — this array is the mapping of record.
+ * One waypoint per section. The camera X/Y/Z + lookY together trace a
+ * continuous cinematic journey around the character:
+ *   far observe → dolly in (left) → orbit right → recede broad →
+ *   orbit left → pull back centred.
+ * The accent color still tints the rim light + particle field per
+ * section, preserving the original "recolor as you scroll" identity.
  */
-export const SECTION_TO_POSE: Array<{
-  sectionId: string;
-  poseIndex: number;
-}> = [
-  { sectionId: "hero",       poseIndex: 0 },
-  { sectionId: "about",      poseIndex: 1 },
-  { sectionId: "skills",     poseIndex: 2 },
-  { sectionId: "projects",   poseIndex: 3 },
-  { sectionId: "experience", poseIndex: 4 },
-  { sectionId: "contact",    poseIndex: 5 }
+export const SCENE_POSES: readonly ScenePose[] = [
+  // 01 hero / boot — far, slightly high, observing.
+  //     The robot is COMPOSITED INTO the Firewatch hero: the ambient canvas
+  //     sits at z-10, BETWEEN the mid ridges (z<10) and the foreground trees
+  //     (z 12/13), so the trees occlude its feet — it stands GROUNDED in the
+  //     valley on the RIGHT, opposite the hiker on the left cliff, yawed to
+  //     face the name. This pose 0 IS its on-screen hero placement; keep its
+  //     feet low enough that the foreground silhouettes cover them.
+  { color: c("#4f9cff"), displaceAmp: 0.20, displaceFreq: 1.6, rotSpeed: 0.16, camX: 0.0,  camY: 0.7, camZ: 8.4, lookY: 0.05, particleSpread: 1.0,
+    pos: [2.2, -0.15, 0.05], rot: [0.14, -0.58, 0.04], scale: 1.0 },
+  // NOTE (margins pass): in the lower sections the robot is a small TRAVELING
+  // ACCENT, not a mascot — it drifts through the UPPER margin / side corners,
+  // pushed BACK (negative z) and SMALL (scale ~0.55–0.75), alternating
+  // left/right so it still visibly journeys without sitting on top of the
+  // editorial text. (The hero pose 0 above is the only large/grounded one.)
+  // 02 about / init — small, settle into the CENTER starfield strip (the
+  //     bio is on the left, the telemetry card on the right; keep OFF both).
+  { color: c("#9b5cff"), displaceAmp: 0.12, displaceFreq: 2.2, rotSpeed: 0.10, camX: -1.6, camY: 0.4, camZ: 6.2, lookY: 0.15, particleSpread: 0.85,
+    pos: [0.0, 0.8, -0.4], rot: [-0.05, 0.4, -0.05], scale: 0.45 },
+  // 03 skills / activation — small, drift center of the skill rows.
+  { color: c("#00d4ff"), displaceAmp: 0.30, displaceFreq: 2.9, rotSpeed: 0.30, camX: 2.4,  camY: 0.9, camZ: 6.0, lookY: 0.25, particleSpread: 1.3,
+    pos: [-0.8, 1.2, -0.6], rot: [0.1, -0.7, 0.14], scale: 0.45 },
+  // 04 projects / execution — recede HIGH above the horizontal cards.
+  { color: c("#ff8a3c"), displaceAmp: 0.16, displaceFreq: 1.5, rotSpeed: 0.18, camX: 0.0,  camY: 0.2, camZ: 9.2, lookY: 0.0,  particleSpread: 1.55,
+    pos: [2.2, 3.2, -1.8], rot: [0.3, -1.6, -0.06], scale: 0.45 },
+  // 05 experience / timeline — small, hold in the RIGHT margin past the cards.
+  { color: c("#39ffa5"), displaceAmp: 0.22, displaceFreq: 2.0, rotSpeed: 0.13, camX: -2.2, camY: 0.6, camZ: 6.6, lookY: 0.2,  particleSpread: 1.1,
+    pos: [4.5, 1.5, -0.7], rot: [-0.12, 0.7, 0.08], scale: 0.45 },
+  // 06 contact / signal — small, settle in the CENTER (off the right card).
+  { color: c("#4f9cff"), displaceAmp: 0.36, displaceFreq: 3.3, rotSpeed: 0.42, camX: 0.0,  camY: 0.5, camZ: 8.6, lookY: 0.1,  particleSpread: 0.6,
+    pos: [0.6, -0.3, -0.3], rot: [0.04, -0.4, 0.0], scale: 0.5 },
 ];
 
-/**
- * Apply brightness to a module's primary mesh material. Extracted so
- * the SceneDock can call it per-frame without allocating.
- */
-export function applyBrightness(
-  mesh: THREE.Mesh | null,
-  brightness: number
-): void {
-  if (!mesh) return;
-  const raw = mesh.material;
-  const mat = Array.isArray(raw) ? raw[0] : raw;
-  if (!mat) return;
-  const any = mat as THREE.Material & {
-    emissiveIntensity?: number;
-    opacity?: number;
-    transparent?: boolean;
+/** Mutable target a consumer fills each frame (avoids per-frame allocs). */
+export interface ScenePoseTarget {
+  color: THREE.Color;
+  displaceAmp: number;
+  displaceFreq: number;
+  rotSpeed: number;
+  camX: number;
+  camY: number;
+  camZ: number;
+  lookY: number;
+  particleSpread: number;
+  /** Traveling model world position. */
+  pos: THREE.Vector3;
+  /** Traveling model Euler rotation (radians). */
+  rot: THREE.Vector3;
+  /** Traveling model uniform scale. */
+  scale: number;
+}
+
+export function makePoseTarget(): ScenePoseTarget {
+  const p0 = SCENE_POSES[0];
+  return {
+    color: p0.color.clone(),
+    displaceAmp: p0.displaceAmp,
+    displaceFreq: p0.displaceFreq,
+    rotSpeed: p0.rotSpeed,
+    camX: p0.camX,
+    camY: p0.camY,
+    camZ: p0.camZ,
+    lookY: p0.lookY,
+    particleSpread: p0.particleSpread,
+    pos: new THREE.Vector3(p0.pos[0], p0.pos[1], p0.pos[2]),
+    rot: new THREE.Vector3(p0.rot[0], p0.rot[1], p0.rot[2]),
+    scale: p0.scale,
   };
-  any.transparent = true;
-  if (typeof any.emissiveIntensity === "number") {
-    any.emissiveIntensity = 0.2 + brightness * 0.8;
-  }
-  if (typeof any.opacity === "number") {
-    any.opacity = 0.35 + brightness * 0.65;
-  }
+}
+
+const lerp = THREE.MathUtils.lerp;
+
+/**
+ * Sample the pose curve at the given progress (0..1) into `out`,
+ * mutating it in place. Linearly blends between the two nearest poses.
+ */
+export function samplePose(progress: number, out: ScenePoseTarget): void {
+  const n = SCENE_POSES.length;
+  const t = THREE.MathUtils.clamp(progress, 0, 1) * (n - 1);
+  const i = Math.floor(t);
+  const f = t - i;
+  const a = SCENE_POSES[i];
+  const b = SCENE_POSES[Math.min(i + 1, n - 1)];
+
+  out.color.copy(a.color).lerp(b.color, f);
+  out.displaceAmp = lerp(a.displaceAmp, b.displaceAmp, f);
+  out.displaceFreq = lerp(a.displaceFreq, b.displaceFreq, f);
+  out.rotSpeed = lerp(a.rotSpeed, b.rotSpeed, f);
+  out.camX = lerp(a.camX, b.camX, f);
+  out.camY = lerp(a.camY, b.camY, f);
+  out.camZ = lerp(a.camZ, b.camZ, f);
+  out.lookY = lerp(a.lookY, b.lookY, f);
+  out.particleSpread = lerp(a.particleSpread, b.particleSpread, f);
+
+  out.pos.set(
+    lerp(a.pos[0], b.pos[0], f),
+    lerp(a.pos[1], b.pos[1], f),
+    lerp(a.pos[2], b.pos[2], f)
+  );
+  out.rot.set(
+    lerp(a.rot[0], b.rot[0], f),
+    lerp(a.rot[1], b.rot[1], f),
+    lerp(a.rot[2], b.rot[2], f)
+  );
+  out.scale = lerp(a.scale, b.scale, f);
 }

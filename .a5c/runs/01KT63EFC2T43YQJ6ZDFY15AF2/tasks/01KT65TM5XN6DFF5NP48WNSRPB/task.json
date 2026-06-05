@@ -1,0 +1,37 @@
+{
+  "kind": "breakpoint",
+  "metadata": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "passed": true,
+        "reviewSummary": "WS4 GSAP choreography implemented to spec across all four sections: About headline clip + SplitText line reveal + scrubbed panel depth parallax; Skills staggered reveal + fine-pointer-gated 3D tilt via matchMedia; Experience drawSVG spine scrub + per-entry slide/fade; Contact CTA scale/glow flourish. All wrapped in gsap.context() with ctx.revert() (SplitText reverted), registerAll() used, reduced-motion guards set explicit VISIBLE end-states, no GSAP pin added, tsc clean. All five screenshots show fully visible content (no opacity:0 stuck states). The one guardrail violation the reviewer flagged (About count-up mixing React children + textContent) was FIXED post-review: the stat number is now a single React-owned string `{`0${suffix}`}` so the gsap textContent write replaces it cleanly; tsc re-confirmed clean.",
+        "screenshot": "/tmp/ws4_experience.png",
+        "workstreamId": "WS4"
+      },
+      "question": "\"GSAP choreography: About / Skills / Experience / Contact\" finished after 1 iteration(s), pass=true. Review the screenshot and approve to continue to the next workstream?",
+      "title": "Workstream complete: GSAP choreography: About / Skills / Experience / Contact"
+    },
+    "requestedAt": "2026-06-03T07:23:06.301Z"
+  },
+  "title": "breakpoint",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT65TM5XN6DFF5NP48WNSRPB",
+  "taskId": "__sdk.breakpoint",
+  "invocationKey": "portfolio/parallax-overhaul:S000012:__sdk.breakpoint",
+  "stepId": "S000012",
+  "inputs": {
+    "label": "breakpoint",
+    "payload": {
+      "context": {
+        "passed": true,
+        "reviewSummary": "WS4 GSAP choreography implemented to spec across all four sections: About headline clip + SplitText line reveal + scrubbed panel depth parallax; Skills staggered reveal + fine-pointer-gated 3D tilt via matchMedia; Experience drawSVG spine scrub + per-entry slide/fade; Contact CTA scale/glow flourish. All wrapped in gsap.context() with ctx.revert() (SplitText reverted), registerAll() used, reduced-motion guards set explicit VISIBLE end-states, no GSAP pin added, tsc clean. All five screenshots show fully visible content (no opacity:0 stuck states). The one guardrail violation the reviewer flagged (About count-up mixing React children + textContent) was FIXED post-review: the stat number is now a single React-owned string `{`0${suffix}`}` so the gsap textContent write replaces it cleanly; tsc re-confirmed clean.",
+        "screenshot": "/tmp/ws4_experience.png",
+        "workstreamId": "WS4"
+      },
+      "question": "\"GSAP choreography: About / Skills / Experience / Contact\" finished after 1 iteration(s), pass=true. Review the screenshot and approve to continue to the next workstream?",
+      "title": "Workstream complete: GSAP choreography: About / Skills / Experience / Contact"
+    },
+    "requestedAt": "2026-06-03T07:23:06.301Z"
+  }
+}

@@ -1,104 +1,61 @@
 "use client";
 
-import { Suspense, useEffect, useRef } from "react";
-import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { readPerfTier, useDeviceCapabilities } from "@/lib/usePerfTier";
+import { useDeviceCapabilities } from "@/lib/usePerfTier";
 import { CameraController } from "./CameraController";
 import { Lights } from "./Lights";
-import { DevStation } from "./DevStation";
-import { Modules } from "./Modules";
-import { ConnectionLines } from "./ConnectionLines";
-import { TimelineRing } from "./TimelineRing";
-import { GroundReflector } from "./GroundReflector";
-import { useCursor, isCursorReduced } from "@/lib/useCursor";
+import { ParticleField } from "./ParticleField";
+import { TravelerModel } from "./TravelerModel";
 
 /**
- * Cursor-tracked cyan point light.
+ * Ambient global scene: a camera rig, a light pair and a drifting
+ * particle field. The 3D "hero" objects now live per-section (the
+ * orbiting-cards hero, the Universe-in-Numbers orb, etc.) — this global
+ * layer is just star-dust depth behind the content. The camera still
+ * drifts per section so the dust parallaxes as you scroll.
  *
- * Reads the global `cursor` (normalized −1..1) each frame and lerps a
- * point light's position toward where the cursor is in world space.
- * Adds responsiveness to the whole scene without coupling to any one
- * mesh. Disabled when `prefers-reduced-motion` is set.
- */
-function CursorLight() {
-  const ref = useRef<THREE.PointLight>(null);
-  const cursor = useCursor();
-  // Non-reactive read so the closure captures the tier once. Swapping
-  // tiers mid-session requires a reload anyway (the Canvas frameloop
-  // and DPR are both keyed on it), so re-reading each frame is waste.
-  const low = readPerfTier() === "low";
-
-  useFrame(() => {
-    const l = ref.current;
-    if (!l) return;
-    if (low || isCursorReduced()) {
-      // Park it at a neutral spot; no per-frame lerp on low-tier.
-      l.position.set(0, 0, 2.5);
-      return;
-    }
-    const targetX = cursor.x * 4;
-    const targetY = cursor.y * 2.5;
-    l.position.x += (targetX - l.position.x) * 0.08;
-    l.position.y += (targetY - l.position.y) * 0.08;
-  });
-
-  // Install the listener early so the global cursor object updates
-  // even before the first useFrame tick has fired.
-  useEffect(() => {
-    /* useCursor() above already installed the listener. */
-  }, []);
-
-  return (
-    <pointLight
-      ref={ref}
-      color="#00d4ff"
-      intensity={3}
-      distance={5}
-      decay={2}
-      position={[0, 0, 2.5]}
-    />
-  );
-}
-
-/**
- * Full Developer Control Core composition. Kept as a sibling to
- * _Scene so tests can import the graph without the Canvas wrapper.
- *
- * Postprocessing is the single most expensive thing on integrated
- * GPUs. We render the EffectComposer (Bloom only — ChromaticAberration
- * and Vignette were dropped) ONLY on confirmed-high desktops that
- * aren't on Windows. The Bloom-free version still reads as "glowy"
- * because the meshes use additive emissive materials; it just loses
- * the halo spill — that's the intentional fallback look.
+ * A single, gentle Bloom pass is added ONLY on confirmed-high desktops.
  */
 export function Scene({ perfLow = false }: { perfLow?: boolean }) {
   const { tier, gpuTier, isLowEnd, isWindows } = useDeviceCapabilities();
   const enablePost =
-    !perfLow &&
-    !isLowEnd &&
-    tier === "high" &&
-    gpuTier === "high" &&
-    !isWindows;
+    !perfLow && !isLowEnd && tier === "high" && gpuTier === "high" && !isWindows;
+
   return (
     <Suspense fallback={null}>
       <CameraController />
       <Lights />
-      <CursorLight />
-      <GroundReflector />
-      <DevStation />
-      <Modules />
-      <ConnectionLines />
-      <TimelineRing />
+      <ParticleField />
+      {/* The ONE robot travels through the lower sections here (scroll-driven
+          via samplePose), then hands off from the hero's own [HeroRobot] (which
+          dives away at the hero's end). HeroRobot CLONES the GLB, so the two
+          instances never fight over the shared scene. */}
+      <TravelerModel />
       {enablePost && (
-        <EffectComposer enableNormalPass={false}>
+        // PERF: an EffectComposer adds a per-frame FBO scene-render plus
+        // mip blur passes + a composite, every frame the canvas runs.
+        // `mipmapBlur` is already the cheap path; we trim the rest so only
+        // the brightest core/rim texels bloom:
+        //   - luminanceThreshold 0.85 → 0.90: fewer texels enter the bloom
+        //     buffer, so the bright-pass + blur touch a smaller masked area.
+        //   - intensity 0.32 → 0.28 and radius 0.45 → 0.40: a tighter,
+        //     shorter blur kernel = fewer mip taps per frame.
+        //   - resolutionScale 0.5: the bloom FBO/blur runs at half the
+        //     canvas resolution (the glow is low-frequency, so a half-res
+        //     bloom is visually indistinguishable but ~4× cheaper to blur).
+        // Net: the rim still glows; the per-frame post cost drops sharply.
+        <EffectComposer
+          enableNormalPass={false}
+          resolutionScale={0.5}
+          multisampling={0}
+        >
           <Bloom
             mipmapBlur
-            intensity={1.1}
-            luminanceThreshold={0.15}
-            luminanceSmoothing={0.2}
-            radius={0.8}
+            intensity={0.28}
+            luminanceThreshold={0.9}
+            luminanceSmoothing={0.12}
+            radius={0.4}
           />
         </EffectComposer>
       )}

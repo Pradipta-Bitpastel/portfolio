@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KT63EV7KRB149NZ2DZ63F6SB",
+  "taskId": "implement-workstream",
+  "invocationKey": "portfolio/parallax-overhaul:S000001:implement-workstream",
+  "status": "ok",
+  "result": {
+    "filesChanged": [
+      "components/sections/HeroSection.tsx",
+      "app/globals.css"
+    ],
+    "notes": "Screenshot at scroll=0 confirms real photo layers composite with correct depth and title legible. Source art has a baked-in FIREWATCH wordmark behind the title (part of parallax PNGs). Optional floating 3D model deferred to WS2.",
+    "screenshotPath": "/tmp/ws1_hero.png",
+    "summary": "Replaced the procedural SVG mountains/sun/fog in HeroSection.tsx with the 9 real Firewatch PNG layers (parallax0 back/sky .. parallax8 front/trees), stacked z-0..z-8 inside absolute-inset wrappers rendered object-cover and oversized ~110% via negative inset (-inset-[5%], not a scale class) so scroll+mouse parallax never expose edges. Reused the existing single-rAF native-scroll+pointer engine that owns each layer's inline translate3d; data-speed ramps back 0.0 -> front 0.55, data-depth back 2 -> front 26. parallax0 eager (LCP, fetchPriority high); rest lazy. PRADIPTA JANA identity + role cycler overlaid at z-20 with gentle data-speed=0.12/data-depth=0.6. Reduced-motion early-returns from rAF (static first frame). Removed dead .hero-sun/.hero-stars CSS and unused RidgeLayer/FogBand/Watchtower/PRNG code. No Lenis, no new ScrollTrigger pin.",
+    "typecheckPassed": true
+  },
+  "startedAt": "2026-06-03T06:45:08.963Z",
+  "finishedAt": "2026-06-03T06:45:08.963Z",
+  "value": {
+    "filesChanged": [
+      "components/sections/HeroSection.tsx",
+      "app/globals.css"
+    ],
+    "notes": "Screenshot at scroll=0 confirms real photo layers composite with correct depth and title legible. Source art has a baked-in FIREWATCH wordmark behind the title (part of parallax PNGs). Optional floating 3D model deferred to WS2.",
+    "screenshotPath": "/tmp/ws1_hero.png",
+    "summary": "Replaced the procedural SVG mountains/sun/fog in HeroSection.tsx with the 9 real Firewatch PNG layers (parallax0 back/sky .. parallax8 front/trees), stacked z-0..z-8 inside absolute-inset wrappers rendered object-cover and oversized ~110% via negative inset (-inset-[5%], not a scale class) so scroll+mouse parallax never expose edges. Reused the existing single-rAF native-scroll+pointer engine that owns each layer's inline translate3d; data-speed ramps back 0.0 -> front 0.55, data-depth back 2 -> front 26. parallax0 eager (LCP, fetchPriority high); rest lazy. PRADIPTA JANA identity + role cycler overlaid at z-20 with gentle data-speed=0.12/data-depth=0.6. Reduced-motion early-returns from rAF (static first frame). Removed dead .hero-sun/.hero-stars CSS and unused RidgeLayer/FogBand/Watchtower/PRNG code. No Lenis, no new ScrollTrigger pin.",
+    "typecheckPassed": true
+  }
+}

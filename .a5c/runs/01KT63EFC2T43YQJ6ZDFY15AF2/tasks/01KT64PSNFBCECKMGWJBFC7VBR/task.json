@@ -1,0 +1,105 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "properties": {
+        "feedback": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "pass": {
+          "type": "boolean"
+        },
+        "score": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pass",
+        "score",
+        "summary"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "implementation": {
+          "filesChanged": [
+            "lib/scenePoses.ts",
+            "components/three/TravelerModel.tsx",
+            "components/three/Scene.tsx"
+          ],
+          "notes": "tsc --noEmit exits 0. THREE screenshots captured (ws2_a hero / ws2_b ~35% / ws2_c ~65%) but the helmet does NOT appear: documented headless-GPU limitation, NOT a code failure. Headless chromium SwiftShader -> getGPUTier() in lib/usePerfTier.ts classifies renderer as 'low' -> SceneContainer renders SvgCoreFallback and the ambient WebGL Canvas never mounts (diagnostic: 0 canvas elements, 0 GLB requests). GLB serves HTTP 200 (3.77MB). On a real GPU the canvas mounts and the helmet travels/lands per section. The fallback behaving this way also confirms the gating guardrail is intact. NEEDS real-GPU browser verification by the user.",
+          "screenshotPath": "/tmp/ws2_b.png",
+          "summary": "Implemented WS2 traveling 3D model. Extended ScenePose with pos[x,y,z]/rot[x,y,z]/scale per section + matching ScenePoseTarget fields (pos/rot as Vector3, scale number), makePoseTarget, and component-wise lerp in samplePose. Per-section waypoints trace hero(up/right near sun) -> about(close/left) -> skills(orbit right) -> projects(recede high/back) -> experience(orbit left) -> contact(centred). Created TravelerModel.tsx: useGLTF('/models/DamagedHelmet.glb') + preload, clones scene, each frame reads sceneStore.progress + samplePose and THREE.MathUtils.damp's group position/rotation/scale toward target (same pattern as CameraController, slightly slower so it trails the camera) + subtle sin idle bob + slow Y spin; drei Environment+Lightformers light the PBR helmet. Mounted in Scene.tsx beside ParticleField inside the existing single Suspense. No second pause mechanism: model shares the canvas whose frameloop flips to 'never' on portfolio:bg-pause (one canvas active at a time). SceneContainer/SvgCoreFallback gating intact.",
+          "typecheckPassed": true
+        },
+        "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+        "repoRoot": "/Users/pradiptajana/Portfolio",
+        "workstream": {
+          "detail": "Reintroduce a single persistent 3D model that travels through sections driven by sceneStore.progress. Extend lib/scenePoses.ts ScenePose with pos[x,y,z], rot[x,y,z], scale per section. Create components/three/TravelerModel.tsx (drei useGLTF, lazy+Suspense) loading public/models/DamagedHelmet.glb (already present) OR download a thematic GLB (drone/robot, e.g. three.js examples RobotExpressive.glb) into public/models. Damp the model toward samplePose(progress) each frame (same pattern as the camera) + subtle idle bob/rotation. Mount it in the existing scene canvas. Pause its frameloop on the portfolio:bg-pause event when Showcase is in view. Keep low-tier/touch/reduced-motion fallback. ACCEPTANCE: screenshots at 2-3 scroll positions show the model in clearly different poses/positions per section; tsc clean; one WebGL canvas active at a time.",
+          "id": "WS2",
+          "title": "Traveling 3D model"
+        }
+      },
+      "instructions": [
+        "Read PARALLAX_OVERHAUL_PLAN.md and the changed files (lib/scenePoses.ts, components/three/TravelerModel.tsx, components/three/Scene.tsx).",
+        "View the screenshot at /tmp/ws2_b.png using the Read tool and judge it visually against the workstream's acceptance criteria: Reintroduce a single persistent 3D model that travels through sections driven by sceneStore.progress. Extend lib/scenePoses.ts ScenePose with pos[x,y,z], rot[x,y,z], scale per section. Create components/three/TravelerModel.tsx (drei useGLTF, lazy+Suspense) loading public/models/DamagedHelmet.glb (already present) OR download a thematic GLB (drone/robot, e.g. three.js examples RobotExpressive.glb) into public/models. Damp the model toward samplePose(progress) each frame (same pattern as the camera) + subtle idle bob/rotation. Mount it in the existing scene canvas. Pause its frameloop on the portfolio:bg-pause event when Showcase is in view. Keep low-tier/touch/reduced-motion fallback. ACCEPTANCE: screenshots at 2-3 scroll positions show the model in clearly different poses/positions per section; tsc clean; one WebGL canvas active at a time.",
+        "Verify guardrails were respected and `npx tsc --noEmit` passes (run it yourself to confirm).",
+        "Be strict but fair: pass=true only if the workstream's acceptance criteria are visibly and functionally met.",
+        "If pass=false, give specific, actionable feedback the implementer can act on next iteration.",
+        "Return ONLY the JSON result described in the output schema."
+      ],
+      "outputFormat": "JSON with pass (boolean), score (number 0-100), summary (string), feedback (string[])",
+      "role": "principal front-end reviewer with a high visual-design bar",
+      "task": "Review the implementation of workstream \"WS2 — Traveling 3D model\" against the plan and its acceptance criteria, including the captured screenshot."
+    }
+  },
+  "description": "Visual + code review of workstream WS2 against the plan.",
+  "io": {
+    "inputJsonPath": "tasks/01KT64PSNFBCECKMGWJBFC7VBR/input.json",
+    "outputJsonPath": "tasks/01KT64PSNFBCECKMGWJBFC7VBR/result.json"
+  },
+  "kind": "agent",
+  "labels": [
+    "agent",
+    "iteration-1",
+    "review",
+    "WS2"
+  ],
+  "title": "Review: Traveling 3D model (iter 1)",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT64PSNFBCECKMGWJBFC7VBR",
+  "taskId": "review-workstream",
+  "invocationKey": "portfolio/parallax-overhaul:S000008:review-workstream",
+  "stepId": "S000008",
+  "inputs": {
+    "devUrl": "http://localhost:3000",
+    "implementation": {
+      "filesChanged": [
+        "lib/scenePoses.ts",
+        "components/three/TravelerModel.tsx",
+        "components/three/Scene.tsx"
+      ],
+      "notes": "tsc --noEmit exits 0. THREE screenshots captured (ws2_a hero / ws2_b ~35% / ws2_c ~65%) but the helmet does NOT appear: documented headless-GPU limitation, NOT a code failure. Headless chromium SwiftShader -> getGPUTier() in lib/usePerfTier.ts classifies renderer as 'low' -> SceneContainer renders SvgCoreFallback and the ambient WebGL Canvas never mounts (diagnostic: 0 canvas elements, 0 GLB requests). GLB serves HTTP 200 (3.77MB). On a real GPU the canvas mounts and the helmet travels/lands per section. The fallback behaving this way also confirms the gating guardrail is intact. NEEDS real-GPU browser verification by the user.",
+      "screenshotPath": "/tmp/ws2_b.png",
+      "summary": "Implemented WS2 traveling 3D model. Extended ScenePose with pos[x,y,z]/rot[x,y,z]/scale per section + matching ScenePoseTarget fields (pos/rot as Vector3, scale number), makePoseTarget, and component-wise lerp in samplePose. Per-section waypoints trace hero(up/right near sun) -> about(close/left) -> skills(orbit right) -> projects(recede high/back) -> experience(orbit left) -> contact(centred). Created TravelerModel.tsx: useGLTF('/models/DamagedHelmet.glb') + preload, clones scene, each frame reads sceneStore.progress + samplePose and THREE.MathUtils.damp's group position/rotation/scale toward target (same pattern as CameraController, slightly slower so it trails the camera) + subtle sin idle bob + slow Y spin; drei Environment+Lightformers light the PBR helmet. Mounted in Scene.tsx beside ParticleField inside the existing single Suspense. No second pause mechanism: model shares the canvas whose frameloop flips to 'never' on portfolio:bg-pause (one canvas active at a time). SceneContainer/SvgCoreFallback gating intact.",
+      "typecheckPassed": true
+    },
+    "iteration": 1,
+    "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+    "repoRoot": "/Users/pradiptajana/Portfolio",
+    "ws": {
+      "detail": "Reintroduce a single persistent 3D model that travels through sections driven by sceneStore.progress. Extend lib/scenePoses.ts ScenePose with pos[x,y,z], rot[x,y,z], scale per section. Create components/three/TravelerModel.tsx (drei useGLTF, lazy+Suspense) loading public/models/DamagedHelmet.glb (already present) OR download a thematic GLB (drone/robot, e.g. three.js examples RobotExpressive.glb) into public/models. Damp the model toward samplePose(progress) each frame (same pattern as the camera) + subtle idle bob/rotation. Mount it in the existing scene canvas. Pause its frameloop on the portfolio:bg-pause event when Showcase is in view. Keep low-tier/touch/reduced-motion fallback. ACCEPTANCE: screenshots at 2-3 scroll positions show the model in clearly different poses/positions per section; tsc clean; one WebGL canvas active at a time.",
+      "id": "WS2",
+      "title": "Traveling 3D model"
+    }
+  }
+}

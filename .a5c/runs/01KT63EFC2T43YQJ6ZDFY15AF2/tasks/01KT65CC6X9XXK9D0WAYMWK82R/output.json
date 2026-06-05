@@ -1,0 +1,7 @@
+{
+  "filesChanged": ["components/sections/AboutSection.tsx", "components/sections/SkillsSection.tsx", "components/sections/ExperienceSection.tsx", "components/sections/ContactSection.tsx"],
+  "summary": "WS4 GSAP ScrollTrigger choreography across About/Skills/Experience/Contact. About: SplitText line-by-line clip/y reveal on lead+bio + scrubbed depth parallax on telemetry/ledger panels (existing headline clip + count-up untouched). Skills: pointer-driven 3D hover tilt (gsap.quickTo rotateX/rotateY) gated to (hover:hover)+(pointer:fine)+no-preference, on top of existing staggered enter. Experience: drawSVG-scrubbed timeline spine + center-aware slide+fade per role entry, with reduced-motion branch setting spine 100% + entries visible. Contact: SEND SIGNAL CTA flourish (back.out pop + one cyan ring pulse). All wrapped in gsap.context() scoped per section, registerAll(), ctx.revert() on unmount (SplitText reverted too), reduced-motion guarded with visible end-states. No pin added; no React-children+textContent mix.",
+  "typecheckPassed": true,
+  "screenshotPath": "/tmp/ws4_experience.png",
+  "notes": "Verified About/Skills/Experience/Contact + manifest end-states at 1440x820@2x after SYS.PRELOAD: all content fully visible (no stuck opacity:0). tsc clean. The traveling model overlaps section centers in static shots (headless shows the SVG core fallback) but does not obscure content."
+}

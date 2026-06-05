@@ -1,0 +1,92 @@
+{
+  "agent": {
+    "name": "general-purpose",
+    "outputSchema": {
+      "properties": {
+        "filesChanged": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "screenshotPath": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "typecheckPassed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "filesChanged",
+        "summary",
+        "typecheckPassed",
+        "screenshotPath"
+      ],
+      "type": "object"
+    },
+    "prompt": {
+      "context": {
+        "devUrl": "http://localhost:3000",
+        "iteration": 1,
+        "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+        "previousReviewFeedback": null,
+        "repoRoot": "/Users/pradiptajana/Portfolio",
+        "workstream": {
+          "detail": "Replace the SVG mountains in components/sections/HeroSection.tsx with the 9 real PNG layers public/images/parallax/parallax0.png (back/sky) .. parallax8.png (front/trees), stacked z-0..z-8, object-cover, oversized via wrapper (NOT a transform class). Reuse the existing rAF parallax engine: translate3d(mouseX*depth, min(scrollY,vh)*speed, 0) with back layers slow (speed~0) ramping to front fast (speed~0.55), and depth ramping back~2 to front~26. Keep PRADIPTA JANA identity + role cycler overlaid above the layers, fading on scroll. Reduced-motion = static first frame. ACCEPTANCE: screenshot shows the real Firewatch sunset photo layers (not SVG), correct depth stacking, title legible above; tsc clean; mouse+scroll parallax wired.",
+          "id": "WS1",
+          "title": "Hero: real Firewatch parallax"
+        }
+      },
+      "instructions": [
+        "Read PARALLAX_OVERHAUL_PLAN.md in /Users/pradiptajana/Portfolio and focus ONLY on this workstream: WS1 — Hero: real Firewatch parallax.",
+        "Workstream details/acceptance: Replace the SVG mountains in components/sections/HeroSection.tsx with the 9 real PNG layers public/images/parallax/parallax0.png (back/sky) .. parallax8.png (front/trees), stacked z-0..z-8, object-cover, oversized via wrapper (NOT a transform class). Reuse the existing rAF parallax engine: translate3d(mouseX*depth, min(scrollY,vh)*speed, 0) with back layers slow (speed~0) ramping to front fast (speed~0.55), and depth ramping back~2 to front~26. Keep PRADIPTA JANA identity + role cycler overlaid above the layers, fading on scroll. Reduced-motion = static first frame. ACCEPTANCE: screenshot shows the real Firewatch sunset photo layers (not SVG), correct depth stacking, title legible above; tsc clean; mouse+scroll parallax wired.",
+        "If a previousReviewFeedback is present, address every point it raises.",
+        "Honor every guardrail in the plan's Guardrails section (native scroll only, no extra GSAP pin except the Projects horizontal track, rAF engine owns layer transforms, keep reduced-motion/touch/low-tier fallbacks, no React-children+textContent mix).",
+        "Make the actual file edits in the repo (use Edit/Write). Match the surrounding code style.",
+        "After editing, run `npx tsc --noEmit` from the repo root and fix any type errors you introduced.",
+        "Verify the dev server responds at the devUrl (it should already be running); if not, note it but do not block.",
+        "Capture a Playwright screenshot to /tmp so the reviewer can see it: write a temporary CJS script in the repo root that launches chromium (viewport 1440x820, deviceScaleFactor 2), navigates to the relevant scroll position for this workstream (use page.evaluate(()=>window.scrollTo(...)) + waitForTimeout), screenshots to a unique /tmp path, then delete the temp script.",
+        "Return ONLY the JSON result described in the output schema — no prose."
+      ],
+      "outputFormat": "JSON with filesChanged (string[]), summary (string), typecheckPassed (boolean), screenshotPath (string), notes (string)",
+      "role": "senior creative front-end engineer (Next.js 14 + React Three Fiber + GSAP)",
+      "task": "Implement workstream \"WS1 — Hero: real Firewatch parallax\" of the portfolio overhaul, then verify it."
+    }
+  },
+  "description": "Implement workstream WS1 per the plan, then self-verify.",
+  "io": {
+    "inputJsonPath": "tasks/01KT63EV7KRB149NZ2DZ63F6SB/input.json",
+    "outputJsonPath": "tasks/01KT63EV7KRB149NZ2DZ63F6SB/result.json"
+  },
+  "kind": "agent",
+  "labels": [
+    "agent",
+    "implement",
+    "iteration-1",
+    "WS1"
+  ],
+  "title": "Implement: Hero: real Firewatch parallax (iter 1)",
+  "schemaVersion": "2026.01.tasks-v1",
+  "effectId": "01KT63EV7KRB149NZ2DZ63F6SB",
+  "taskId": "implement-workstream",
+  "invocationKey": "portfolio/parallax-overhaul:S000001:implement-workstream",
+  "stepId": "S000001",
+  "inputs": {
+    "devUrl": "http://localhost:3000",
+    "iteration": 1,
+    "planPath": "PARALLAX_OVERHAUL_PLAN.md",
+    "previousReview": null,
+    "repoRoot": "/Users/pradiptajana/Portfolio",
+    "ws": {
+      "detail": "Replace the SVG mountains in components/sections/HeroSection.tsx with the 9 real PNG layers public/images/parallax/parallax0.png (back/sky) .. parallax8.png (front/trees), stacked z-0..z-8, object-cover, oversized via wrapper (NOT a transform class). Reuse the existing rAF parallax engine: translate3d(mouseX*depth, min(scrollY,vh)*speed, 0) with back layers slow (speed~0) ramping to front fast (speed~0.55), and depth ramping back~2 to front~26. Keep PRADIPTA JANA identity + role cycler overlaid above the layers, fading on scroll. Reduced-motion = static first frame. ACCEPTANCE: screenshot shows the real Firewatch sunset photo layers (not SVG), correct depth stacking, title legible above; tsc clean; mouse+scroll parallax wired.",
+      "id": "WS1",
+      "title": "Hero: real Firewatch parallax"
+    }
+  }
+}

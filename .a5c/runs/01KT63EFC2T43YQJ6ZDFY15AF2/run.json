@@ -1,0 +1,13 @@
+{
+  "runId": "01KT63EFC2T43YQJ6ZDFY15AF2",
+  "request": "portfolio/parallax-overhaul",
+  "processId": "portfolio/parallax-overhaul",
+  "entrypoint": {
+    "importPath": "../../processes/parallax-overhaul.js",
+    "exportName": "process"
+  },
+  "processPath": "../../processes/parallax-overhaul.js",
+  "layoutVersion": "2026.01-storage-preview",
+  "createdAt": "2026-06-03T06:41:31.021Z",
+  "completionProof": "200f771321f96263f35ab61492089fdf"
+}

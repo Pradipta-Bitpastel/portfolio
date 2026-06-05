@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { SECTIONS, type SectionId } from "@/lib/sections";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { ScrollTrigger } from "@/lib/gsap";
 import { cn } from "@/lib/cn";
 
 /**
@@ -46,10 +46,12 @@ export function SectionNav() {
     const target = document.getElementById(id);
     if (!target) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const smoother = (gsap as any).core?.globals?.()?.ScrollSmoother?.get?.();
-    if (smoother && typeof smoother.scrollTo === "function") {
-      smoother.scrollTo(target, true);
+    // Prefer the Lenis engine so the jump keeps the smooth feel; fall
+    // back to native smooth scroll when Lenis isn't running (reduced
+    // motion).
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (t: HTMLElement) => void } }).__lenis;
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(target);
       return;
     }
     target.scrollIntoView({ behavior: "smooth", block: "start" });

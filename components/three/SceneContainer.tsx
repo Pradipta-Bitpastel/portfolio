@@ -118,12 +118,19 @@ export function SceneContainer() {
   // pointer events because `_Scene` registers the Canvas event source
   // at `document.documentElement`, so the DevStation laptop click /
   // hover handlers fire from window-level events.
+  //
+  // Z-LAYERING (single-canvas "robot in hero AND through all sections"):
+  // the canvas sits at z-10 — ABOVE the hero (z-auto) so the traveling
+  // robot is VISIBLE composited over the Firewatch hero, and BELOW the
+  // non-hero content (wrapped at z-20 in SectionOrchestrator) so it keeps
+  // drifting BEHIND every lower section exactly as before. HUD / nav /
+  // toggle / preloader all sit at z-40+ and stay on top.
   const Scene = getScene();
   return (
     <WebGLErrorBoundary fallback={<SvgCoreFallback />}>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-0"
+        className="pointer-events-none fixed inset-0 z-10"
       >
         <Scene />
       </div>

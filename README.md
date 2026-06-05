@@ -1,8 +1,10 @@
 # Developer Control Core
 
-Pradipta Kumar Jana's portfolio — a single long-scroll Next.js 14 experience driving a live 3D "developer control core" with GSAP-choreographed sections.
+<!-- DEMO-REVERT (original): Pradipta Kumar Jana's portfolio — a single long-scroll Next.js 14 experience driving a live 3D "developer control core" with GSAP-choreographed sections. -->
+Alex Carter's portfolio — a single long-scroll Next.js 14 experience driving a live 3D "developer control core" with GSAP-choreographed sections.  <!-- DEMO -->
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Pradipta-Bitpastel/portfolio)
+<!-- DEMO-REVERT (original): [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Pradipta-Bitpastel/portfolio) -->
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/acme-dev/portfolio)  <!-- DEMO -->
 
 ## Stack
 

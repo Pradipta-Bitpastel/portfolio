@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "2026.01.results-v1",
+  "effectId": "01KT65TM5XN6DFF5NP48WNSRPB",
+  "taskId": "__sdk.breakpoint",
+  "invocationKey": "portfolio/parallax-overhaul:S000012:__sdk.breakpoint",
+  "status": "ok",
+  "result": {
+    "approved": true,
+    "decision": "approve",
+    "note": "User approved WS4 (GSAP choreography). Count-up guardrail fix applied. Continue to WS5 final perf + polish."
+  },
+  "startedAt": "2026-06-03T07:23:35.476Z",
+  "finishedAt": "2026-06-03T07:23:35.476Z",
+  "value": {
+    "approved": true,
+    "decision": "approve",
+    "note": "User approved WS4 (GSAP choreography). Count-up guardrail fix applied. Continue to WS5 final perf + polish."
+  }
+}

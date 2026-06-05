@@ -30,19 +30,39 @@ export function Scene() {
   const { tier, gpuTier, isWindows, isLowEnd } = useDeviceCapabilities();
   const hiddenRef = useRef(false);
 
+  const pausedRef = useRef(false);
+
   useEffect(() => {
     if (typeof document === "undefined") return;
     setEventSource(document.documentElement);
 
-    const update = () => {
-      const hidden = document.hidden;
-      if (hidden === hiddenRef.current) return;
-      hiddenRef.current = hidden;
-      setFrameloop(hidden ? "never" : "always");
+    // Pause the ambient scene when the page is hidden OR a heavy
+    // in-section canvas (the 3D showcase) is on screen — running two
+    // WebGL canvases at once is the main source of jank, so we yield the
+    // GPU to whichever is in focus.
+    const apply = () => {
+      const off = document.hidden || pausedRef.current;
+      setFrameloop(off ? "never" : "always");
     };
-    document.addEventListener("visibilitychange", update);
+    const onVis = () => {
+      if (document.hidden === hiddenRef.current) return;
+      hiddenRef.current = document.hidden;
+      apply();
+    };
+    const onBg = (e: Event) => {
+      pausedRef.current = !!(e as CustomEvent<boolean>).detail;
+      apply();
+    };
+    // Race-proof init: the hero may have dispatched bg-pause BEFORE this
+    // listener attached (it's the first section, in view at load). It also
+    // mirrors the state onto window.__bgPause, so read that now.
+    pausedRef.current = !!(window as unknown as { __bgPause?: boolean }).__bgPause;
+    apply();
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("portfolio:bg-pause", onBg as EventListener);
     return () => {
-      document.removeEventListener("visibilitychange", update);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("portfolio:bg-pause", onBg as EventListener);
     };
   }, []);
 
@@ -63,7 +83,15 @@ export function Scene() {
   return (
     <Canvas
       frameloop={frameloop}
-      dpr={isLow ? [1, 1.25] : [1, 1.5]}
+      // PERF (fill-rate scales ~dpr²): the ambient canvas is a SOFT,
+      // out-of-focus backdrop (drifting dust + a fresnel core behind the
+      // content) — crispness is imperceptible here, so we cap dpr lower
+      // than the rest of the UI. High: 1.5 → 1.25 shades ~30% fewer
+      // fragments/frame across the whole pipeline (particles, core AND
+      // every Bloom FBO pass, which is resolution-proportional). Low:
+      // 1.25 → 1.0 cuts that path ~36%. This is the single biggest scroll
+      // win because the canvas redraws every frame the hero scrolls.
+      dpr={isLow ? [1, 1] : [1, 1.25]}
       camera={{ position: [0, 0, 8], fov: 45 }}
       gl={{
         antialias: !isLow,

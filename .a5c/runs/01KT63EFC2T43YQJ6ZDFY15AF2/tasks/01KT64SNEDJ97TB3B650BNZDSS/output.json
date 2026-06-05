@@ -1,0 +1,6 @@
+{
+  "approved": true,
+  "decision": "approve-with-revisions",
+  "note": "User requested revisions. Done: (1) HERO PARALLAX FIX — rebuilt hero as a tall (180vh) section with a CSS-sticky stage (top-0 h-100svh, no GSAP pin); rAF now drives parallax from the hero's OWN scroll progress (getBoundingClientRect) so layers genuinely separate (back travels ~3% vh, front ~45% vh). Verified at scroll 0 and 45% via /tmp/herofix_top.png + /tmp/herofix_mid.png: clear foreground separation. (2) HERO RECOLOR — warm sunset shifted to the site's cool blue-hour palette via CSS filter hue-rotate(185deg) saturate .9 brightness .8 + a site-gradient tint overlay (mix-blend color) + vignette; PRADIPTA amber pops on blue, fades into #0b0f19 page. Verified visually. (3) MODEL SWAP — replaced DamagedHelmet with a procedural low-poly developer LAPTOP (open lid, emissive cyan/blue code-screen, ~12 meshes) fitting the web-dev role; kept all travel/damp/idle/pause wiring + scenePoses; useFrame allocation-free; tsc clean; DamagedHelmet.glb left on disk (still used by Showcase). Model needs real-GPU browser to view (headless shows SVG fallback).",
+  "screenshots": ["/tmp/herofix_top.png", "/tmp/herofix_mid.png"]
+}

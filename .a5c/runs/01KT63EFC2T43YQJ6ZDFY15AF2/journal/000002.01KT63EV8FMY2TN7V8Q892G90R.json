@@ -1,0 +1,21 @@
+{
+  "type": "EFFECT_REQUESTED",
+  "recordedAt": "2026-06-03T06:41:43.183Z",
+  "data": {
+    "effectId": "01KT63EV7KRB149NZ2DZ63F6SB",
+    "invocationKey": "portfolio/parallax-overhaul:S000001:implement-workstream",
+    "invocationHash": "01e29c32e0ac0302ac38717059c4e7cb701983538175dc5478da4e50ddd0cc59",
+    "stepId": "S000001",
+    "taskId": "implement-workstream",
+    "kind": "agent",
+    "label": "agent",
+    "taskDefRef": "tasks/01KT63EV7KRB149NZ2DZ63F6SB/task.json",
+    "labels": [
+      "agent",
+      "implement",
+      "WS1",
+      "iteration-1"
+    ]
+  },
+  "checksum": "355a5e618d0723e1e51f4ca7b88f2ee7089d2182d604dd3e590f39e0e08f69f8"
+}

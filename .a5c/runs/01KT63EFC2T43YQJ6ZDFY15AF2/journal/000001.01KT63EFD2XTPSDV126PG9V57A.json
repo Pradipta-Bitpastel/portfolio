@@ -1,0 +1,14 @@
+{
+  "type": "RUN_CREATED",
+  "recordedAt": "2026-06-03T06:41:31.042Z",
+  "data": {
+    "runId": "01KT63EFC2T43YQJ6ZDFY15AF2",
+    "processId": "portfolio/parallax-overhaul",
+    "entrypoint": {
+      "importPath": "../../processes/parallax-overhaul.js",
+      "exportName": "process"
+    },
+    "inputsRef": "inputs.json"
+  },
+  "checksum": "4cc52fcaede112303c28aaab578ac747653b115a44c97cc41ef4bb0edd0151cc"
+}
