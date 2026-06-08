@@ -146,7 +146,19 @@ export function ProjectsSection() {
 
             // PERF: quickSetters write straight to the transform cache, far
             // cheaper than gsap.set() in the hot path.
-            const setScale = slides.map((s) => gsap.quickSetter(s, "scale"));
+            //
+            // Use per-axis scaleX/scaleY setters — NOT a "scale" shorthand
+            // quickSetter. GSAP can't fast-path the 2-component "scale" and
+            // falls back to `setAttribute("scaleX,scaleY", …)`; the comma is
+            // an invalid attribute name, so WebKit/Safari throws "Invalid
+            // qualified name" (Chrome silently tolerates it). That throw fired
+            // inside this pin trigger's onRefresh during ScrollTrigger.refresh(),
+            // aborting the whole refresh and leaving EVERY section's scroll
+            // reveal frozen in its hidden from-state — i.e. a blank page below
+            // the hero in Safari. Two single-axis setters avoid the attr path
+            // entirely and write straight to the transform cache everywhere.
+            const setScaleX = slides.map((s) => gsap.quickSetter(s, "scaleX"));
+            const setScaleY = slides.map((s) => gsap.quickSetter(s, "scaleY"));
             const setOpacity = slides.map((s) => gsap.quickSetter(s, "opacity"));
             const setRail = rail ? gsap.quickSetter(rail, "scaleX") : null;
             let lastIdx = -1;
@@ -174,7 +186,9 @@ export function ProjectsSection() {
                 const center = centers[i] - offset;
                 const dist = Math.abs(center - half) / w; // 0 = centered
                 const k = dist >= 1 ? 0 : 1 - dist;
-                setScale[i](0.9 + 0.1 * k);
+                const sc = 0.9 + 0.1 * k;
+                setScaleX[i](sc);
+                setScaleY[i](sc);
                 setOpacity[i](0.42 + 0.58 * k);
               }
             };
